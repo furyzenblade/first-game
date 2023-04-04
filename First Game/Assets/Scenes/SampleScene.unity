@@ -348,9 +348,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Hello World!
 
-    Ich bin Jan
-
-'
+    Ich bin David'
 --- !u!222 &1200741295
 CanvasRenderer:
   m_ObjectHideFlags: 0
