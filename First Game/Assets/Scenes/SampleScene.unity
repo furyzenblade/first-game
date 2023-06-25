@@ -180,8 +180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c970166c1e04a440b2666237eca224c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FileName: 
-  FileContent: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -560,15 +558,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91ad41c14bc801b43b1310b6d1204eae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveUp: {fileID: 0}
-  MoveLeft: {fileID: 0}
-  MoveDown: {fileID: 0}
-  MoveRight: {fileID: 0}
-  DefaultDash: {fileID: 0}
-  Ability1: {fileID: 0}
-  Ability2: {fileID: 0}
-  Ability3: {fileID: 0}
-  Ability4: {fileID: 0}
 --- !u!1 &1651713354
 GameObject:
   m_ObjectHideFlags: 0

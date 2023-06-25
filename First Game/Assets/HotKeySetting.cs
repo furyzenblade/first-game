@@ -20,11 +20,7 @@ public class HotKeySetting : MonoBehaviour
         else { this.Modifiers.Add(EventModifiers.None); }
 
         // Setting zur Liste hinzufügen
-        SceneDB.AllSettings.Add(this);
-        if (BasicSetting)
-            SceneDB.BasicSettings.Add(this);
-        else
-            SceneDB.AdvancedSettings.Add(this);
+        SceneDB.KeyBindings.Add(this);
     }
 
     // Variablen zum Speichern des Keys und der Modifier
@@ -35,8 +31,6 @@ public class HotKeySetting : MonoBehaviour
     public bool BasicSetting;
 
     // Variablen zur eindeutigen Identifizierung eines Settings
-    public int ID = SceneDB.AddSettingID();
-
     public string Name;
     public string Description;
 
