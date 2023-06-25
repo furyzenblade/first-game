@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class fireballSpawner : MonoBehaviour
+public class FireballSpawner : MonoBehaviour
 {
     public GameObject fireball;
 
@@ -13,7 +13,7 @@ public class fireballSpawner : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     public void SpawnFireBall()

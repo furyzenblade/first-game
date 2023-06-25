@@ -2,18 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SettingSaver : MonoBehaviour
+public class HotKeySetting : MonoBehaviour
 {
     // Erstellt ein Setting mit Key & Name
     // Optional sind KeyModifier & Description
-    public SettingSaver(KeyCode Key, string Name, EventModifiers Modifiers = EventModifiers.None, bool BasicSetting = true, string Description = "")
+    public HotKeySetting(KeyCode Key, string Name, List<EventModifiers> Modifiers = null, bool BasicSetting = true, string Description = "")
     {
         // Speichert die gegebenen Werte
         this.Key = Key;
         this.Name = Name;
-        this.Modifiers = Modifiers;
         this.BasicSetting = BasicSetting;
         this.Description = Description;
+
+        // Wenn kein Modifier übergeben wurde, wird None rein gepackt, sonst werden Modifier so übergeben
+        if (Modifiers != null)
+            this.Modifiers = Modifiers;
+        else { this.Modifiers.Add(EventModifiers.None); }
 
         // Setting zur Liste hinzufügen
         SceneDB.AllSettings.Add(this);
@@ -25,7 +29,7 @@ public class SettingSaver : MonoBehaviour
 
     // Variablen zum Speichern des Keys und der Modifier
     public KeyCode Key;
-    public EventModifiers  Modifiers;
+    public List<EventModifiers> Modifiers = new() { };
 
     // Gibt an, ob das Setting zu Basic oder Advanced Settings gehört
     public bool BasicSetting;
@@ -44,8 +48,14 @@ public class SettingSaver : MonoBehaviour
         // Gibt false zurück, sollten die Werte nicht perfekt übereinstimmen 
         if (!Input.GetKey(Key))
             Match = false;
-        if (Event.current.modifiers != Modifiers)
+
+        foreach (EventModifiers Modifier in Modifiers)
+        {
+            if ((Event.current.modifiers & Modifier) == 0)
+            {
                 Match = false;
+            }
+        }
 
         return Match;
     }

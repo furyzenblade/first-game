@@ -11,18 +11,18 @@ public class CharacterController : MonoBehaviour
     #region Settings
 
     // Movement Settings
-    public SettingSaver MoveUp;
-    public SettingSaver MoveLeft;
-    public SettingSaver MoveDown;
-    public SettingSaver MoveRight;
+    public HotKeySetting MoveUp;
+    public HotKeySetting MoveLeft;
+    public HotKeySetting MoveDown;
+    public HotKeySetting MoveRight;
 
-    public SettingSaver DefaultDash;
+    public HotKeySetting DefaultDash;
 
     // Ability Hotkeys
-    public SettingSaver Ability1;
-    public SettingSaver Ability2;
-    public SettingSaver Ability3;
-    public SettingSaver Ability4;
+    public HotKeySetting Ability1;
+    public HotKeySetting Ability2;
+    public HotKeySetting Ability3;
+    public HotKeySetting Ability4;
 
     // Sonstige Hotkeys
 
@@ -45,10 +45,10 @@ public class CharacterController : MonoBehaviour
         Ability4 = SaveSetting(KeyCode.Alpha4, "Ability 4");
     }
 
-    public SettingSaver SaveSetting(KeyCode Key, string Name, EventModifiers Modifiers = EventModifiers.None, bool BasicSetting = true, string Description = "")
+    public HotKeySetting SaveSetting(KeyCode Key, string Name, List<EventModifiers> Modifiers = null, bool BasicSetting = true, string Description = "")
     {
         // Setting wird generiert
-        SettingSaver Setting = gameObject.AddComponent<SettingSaver>();
+        HotKeySetting Setting = gameObject.AddComponent<HotKeySetting>();
 
         // Speichert die gegebenen Werte
         Setting.Key = Key;

@@ -40,7 +40,7 @@ public class FireBallBehaviour : MonoBehaviour
     void Update()
     {
         // Move the object forward based on its rotation
-        transform.Translate(Vector3.right * (MovementSpeed / 60));
+        transform.Translate(Vector3.right * (MovementSpeed * Time.deltaTime));
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

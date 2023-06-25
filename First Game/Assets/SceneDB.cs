@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SceneDB : MonoBehaviour
@@ -20,13 +22,60 @@ public class SceneDB : MonoBehaviour
         return SettingID - 1;
     }
 
-    // Game Settings: 
-    public static List<SettingSaver> AllSettings = new() { };
-    public static List<SettingSaver> AdvancedSettings = new() { };
-    public static List<SettingSaver> BasicSettings = new() { };
+    // Speichert alle Settings nach Kategorie
+    #region SettingStorage
+
+    // HotKey Settings
+    public static List<HotKeySetting> AllSettings = new() { };
+    public static List<HotKeySetting> AdvancedSettings = new() { };
+    public static List<HotKeySetting> BasicSettings = new() { };
+
+    // Audio Settings
+
+
+    // Graphic Settings
+
+
+    #endregion SettingStorage
 
     void Start()
     {
         EnemyID = 0;
+        Application.targetFrameRate = 60;
+
+    }
+
+    // Liest am Anfang alle HotKeySettings ein
+    public static string HotKeySettingsPath = @""; 
+    private static void GetHotKeySettings()
+    {
+        if (!File.Exists(HotKeySettingsPath))
+            Debug.LogError("Couldn't find a HotKeySettings- File");
+        else
+        {
+            StreamReader StreamReader = new(HotKeySettingsPath);
+
+            while(!StreamReader.EndOfStream)
+            {
+                HotKeySetting CurrentSetting = AnalyseHotKeySetting(StreamReader.ReadLine());
+            }
+        }
+    }
+
+    // Analysiert einen Teil der 
+    private static HotKeySetting AnalyseHotKeySetting(string FileContent)
+    {
+        HotKeySetting CurrentSetting = null;
+
+        // Variablen zur zukünftigen Zuweisung deklarieren
+        KeyCode Key;
+        string Name;
+        List<EventModifiers> Modifiers = null;
+        bool BasicSetting = true;
+        string Description = "";
+
+
+
+        return CurrentSetting;
     }
 }
