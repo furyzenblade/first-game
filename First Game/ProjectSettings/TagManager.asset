@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Hostile
+  - KeyBindings
   layers:
   - Default
   - TransparentFX
