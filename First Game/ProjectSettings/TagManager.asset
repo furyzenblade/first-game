@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Hostile
   - KeyBindings
+  - Character
   layers:
   - Default
   - TransparentFX

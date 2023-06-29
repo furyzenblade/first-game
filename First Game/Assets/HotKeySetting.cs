@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.IO;
+using UnityEditor.PackageManager;
 
 // Erstellt für das Setting UI einen Namen
 // Optional: Name & ob es ein Base Setting ist
@@ -62,7 +63,6 @@ public class HotKeySetting : MonoBehaviour
             CurrentSetting.Name = Values[5];
             CurrentSetting.IsBasicSetting = Convert.ToBoolean(Values[6]);
             CurrentSetting.Description = Values[7];
-
             // CurrentSetting wird in die Liste eingetragen
             HotKeySettings.Add(CurrentSetting);
         }
@@ -98,25 +98,46 @@ public class HotKeySetting : MonoBehaviour
 
     public void UpdateModifiers()
     {
-        Event e = Event.current;
+        Modifier_Alt = AltIsPressed();
+        Modifier_CapsLock = CapsLockIsPressed();
+        Modifier_Control = ControlIsPressed();
+        Modifier_Shift = ShiftIsPressed();
+    }
 
-        if ((e.modifiers & EventModifiers.Alt) != 0)
-            Modifier_Alt = true;
-        else { Modifier_Alt = false; }
+    public static bool AltIsPressed()
+    {
+        // Prüft, ob Alt gedrückt wurde
+        bool AltIsPressed = Input.GetKey(KeyCode.LeftAlt);
+        // Wenn !AltIsPressed wird nach RightAlt geprüft
+        if (!AltIsPressed)
+            AltIsPressed = Input.GetKey(KeyCode.RightAlt);
 
-        if ((e.modifiers & EventModifiers.CapsLock) != 0)
-            Modifier_CapsLock = true;
-        else { Modifier_CapsLock = false; }
-
-        if ((e.modifiers & EventModifiers.Command) != 0)
-            Modifier_Control = true;
-        else if ((e.modifiers & EventModifiers.Control) != 0)
-            Modifier_Control = true;
-        else { Modifier_Control = false; }
-
-        if ((e.modifiers & EventModifiers.Shift) != 0)
-            Modifier_Shift = true;
-        else { Modifier_Shift = false; }
+        // Wert wird zurück gegeben
+        return AltIsPressed;
+    }
+    public static bool CapsLockIsPressed()
+    {
+        // Prüft, ob CapsLock gedrückt wurde
+        return Input.GetKey(KeyCode.CapsLock);
+    }
+    public static bool ControlIsPressed()
+    {
+        // Prüft, ob Control gedrückt wurde
+        bool ControlIsPressed = Input.GetKey(KeyCode.LeftControl);
+        if (!ControlIsPressed)
+            ControlIsPressed = Input.GetKey(KeyCode.RightControl);
+        if (!ControlIsPressed)
+            ControlIsPressed = Input.GetKey(KeyCode.LeftCommand);
+        if (!ControlIsPressed)
+            ControlIsPressed = Input.GetKey(KeyCode.RightCommand);
+        return ControlIsPressed;
+    }
+    public static bool ShiftIsPressed()
+    {
+        bool ShiftIsPressed = Input.GetKey(KeyCode.LeftShift);
+        if (!ShiftIsPressed)
+            ShiftIsPressed = Input.GetKey(KeyCode.RightShift);
+        return ShiftIsPressed;
     }
 
     public bool InputIsValid()
@@ -132,13 +153,13 @@ public class HotKeySetting : MonoBehaviour
             else
             {
                 // Wenn die aktuellen Modifier exakt die Values haben, wird IsValid true sein
-                if ((Event.current.modifiers & EventModifiers.Alt) == 0 != Modifier_Alt)
+                if (AltIsPressed() != Modifier_Alt)
                     IsValid = false;
-                if ((Event.current.modifiers & EventModifiers.CapsLock) == 0 != Modifier_CapsLock)
+                if (CapsLockIsPressed() != Modifier_CapsLock)
                     IsValid = false;
-                if ((Event.current.modifiers & EventModifiers.Control) == 0 != Modifier_Control || (Event.current.modifiers & EventModifiers.Command) == 0 != Modifier_Control)
+                if (ControlIsPressed() != Modifier_Control)
                     IsValid = false;
-                if ((Event.current.modifiers & EventModifiers.Shift) == 0 != Modifier_Shift)
+                if (ShiftIsPressed() != Modifier_Shift)
                     IsValid = false;
             }
         }
@@ -151,22 +172,15 @@ public class HotKeySetting : MonoBehaviour
             {
                 // Überprüft, ob alle Modifier von Key auch aktiv sind
                 IsValid = true;
-                if (Modifier_Alt)
-                    if ((Event.current.modifiers & EventModifiers.Alt) == 0 == Modifier_Alt)
-                        IsValid = false;
-                if (Modifier_CapsLock)
-                    if ((Event.current.modifiers & EventModifiers.CapsLock) == 0)
-                        IsValid = false;
-                if (Modifier_Control)
-                {
-                    if ((Event.current.modifiers & EventModifiers.Command) == 0)
-                        IsValid = false;
-                    if ((Event.current.modifiers & EventModifiers.Control) == 0)
-                        IsValid = false;
-                }
-                if (Modifier_Shift)
-                    if ((Event.current.modifiers & EventModifiers.Shift) == 0)
-                        IsValid = false;
+
+                if (Modifier_Alt && !AltIsPressed())
+                    IsValid = false;
+                if (Modifier_CapsLock && !CapsLockIsPressed())
+                    IsValid = false;
+                if (Modifier_CapsLock && !ControlIsPressed())
+                    IsValid = false;
+                if (Modifier_Shift && !ShiftIsPressed())
+                    IsValid = false;
             }
         }
 
