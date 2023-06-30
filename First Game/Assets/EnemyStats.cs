@@ -14,6 +14,10 @@ public class EnemyStats : MonoBehaviour
     // Stats, die kontrollieren, wie viel Damage man bekommt
     public float Armor;
 
+    // Utility Stats
+    public float MovementSpeed;
+    public int BasicAttackRange;
+
     void Start()
     {
         

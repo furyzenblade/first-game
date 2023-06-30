@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class SceneDB : MonoBehaviour
 {
@@ -33,6 +35,10 @@ public class SceneDB : MonoBehaviour
     // Graphic Settings
 
 
+    // Managed die Aggro der Characters
+    public static List<int> CharacterAggros = new() { };
+    public static GameObject HighestAggroCharacter;
+
     #endregion SettingStorage
 
     // Default Settings werden hier manuell gespeichert
@@ -47,10 +53,16 @@ public class SceneDB : MonoBehaviour
 
     void Start()
     {
+        // Der erste Character wird controlled, weil bei Online Games eig. immer der lokale als erstes erscheint denke ich (philipp)
         GameObject.FindGameObjectWithTag("Character").GetComponent<CharacterController>().IsControlledChar = true;
 
+        // EnemyID wird auf 0 gesetzt, weil noch kein Enemy gespawned wurde
         EnemyID = 0;
+
+        // FrameRate vom Game in FPS
         Application.targetFrameRate = 60;
+
+        // KeyBindings werden geladen
         //GetKeyBindings();
 
         SaveDefaultSettings();
@@ -59,6 +71,12 @@ public class SceneDB : MonoBehaviour
 
     void Update()
     {
+        // Character Aggro wird ermittelt
+        CharacterAggros = GetCharacterAggros();
+        HighestAggroCharacter = GetHighestAggroCharacter();
+
+        #region InputManager
+
         // Gibt die Direction an, in die der Character sich bewegt
         Vector3 MoveCharacterDirection = Vector3.zero;
 
@@ -93,6 +111,8 @@ public class SceneDB : MonoBehaviour
             if (Character.GetComponent<CharacterController>().IsControlledChar)
                 Character.GetComponent<CharacterController>().MoveCharacter(MoveCharacterDirection);
         }
+
+        #endregion InputManagers
     }
 
     // Liest am Anfang alle HotKeySettings ein
@@ -156,5 +176,38 @@ public class SceneDB : MonoBehaviour
             KeyBindings = HotKeySetting.AnalyseKeyBindings(GameLanguageConverter.StrDecode(DefaultKeyBindingsPath));
             KeyBindings = HotKeySetting.AnalyseKeyBindings(GameLanguageConverter.StrDecode(DefaultKeyBindingsPath));
         }
+    }
+
+    // Ruft die Character Aggro jedes Characters ab
+    private static List<int> GetCharacterAggros()
+    {
+        // Liste mit den Aggros von den Charactern
+        List<int> Aggros = new() { };
+
+        // Für jeden Character wird die Aggro abgerufen
+        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Character"))
+        {
+            Aggros.Add(Character.GetComponent<CharacterController>().Aggro);
+        }
+
+        return Aggros;
+    }
+
+    // Holt den höchsten Aggro Character 
+    private static GameObject GetHighestAggroCharacter()
+    {
+        // Liste mit den Aggros von den Charactern & Charactern an sich
+        List<int> Aggros = new() { };
+        List<GameObject> Characters = new() { };
+
+        // Für jeden Character wird die Aggro abgerufen
+        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Character"))
+        {
+            Aggros.Add(Character.GetComponent<CharacterController>().Aggro);
+            Characters.Add(Character);
+        }
+
+        // Der Character mit der highest Aggro wird zurück gegeben
+        return Characters[Aggros.IndexOf(Aggros.Max())];
     }
 }
