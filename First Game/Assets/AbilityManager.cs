@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class FireBallBehaviour : MonoBehaviour
+public class AbilityManager : MonoBehaviour
 {
     // Generelle Objects, die wir brauchen für alles
     public CircleCollider2D Hitbox;
@@ -31,11 +31,7 @@ public class FireBallBehaviour : MonoBehaviour
 
     // Listen zum Verhindern falschen Verhaltens wie multiple Hits etc. 
     private readonly List<int> HitEntityIDs = new() { };
-
-    void Start()
-    {
-        
-    }
+    public int Slot;
 
     void Update()
     {
@@ -52,17 +48,17 @@ public class FireBallBehaviour : MonoBehaviour
             bool CanHitEntity = true;
             foreach (int ID in HitEntityIDs)
             {
-                if (collision.gameObject.GetComponent<EnemyEventHandler>().ID == ID)
+                if (collision.gameObject.GetComponent<EnemyAI>().ID == ID)
                     CanHitEntity = false;
             }
 
             if (CanHitEntity)
             {
                 // GameObject mit der Collision bekommt Damage
-                collision.gameObject.GetComponent<EnemyEventHandler>().Damage(Damage, CritChance, CritDamage);
+                collision.gameObject.GetComponent<EnemyAI>().AddDamage(Damage, CritChance, CritDamage);
 
                 // Getroffene GameObject ID wird gespeichert
-                HitEntityIDs.Add(collision.gameObject.GetComponent<EnemyEventHandler>().ID);
+                HitEntityIDs.Add(collision.gameObject.GetComponent<EnemyAI>().ID);
 
                 // Wenn CanHitMultipleTargets an ist, wird der Feuerball nicht zerstört
                 if (!CanHitMultipleTargets)

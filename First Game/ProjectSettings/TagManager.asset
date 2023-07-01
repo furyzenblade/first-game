@@ -7,6 +7,7 @@ TagManager:
   - Hostile
   - KeyBindings
   - Character
+  - Ability
   layers:
   - Default
   - TransparentFX

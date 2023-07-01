@@ -48,7 +48,8 @@ public class SceneDB : MonoBehaviour
         new() { KeyCode.W.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveUp", true.ToString(), ""},
         new() { KeyCode.A.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveLeft", true.ToString(), ""},
         new() { KeyCode.S.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveDown", true.ToString(), ""},
-        new() { KeyCode.D.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveRight", true.ToString(), ""}
+        new() { KeyCode.D.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveRight", true.ToString(), ""},
+        new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""}
     };
 
     void Start()
@@ -77,40 +78,51 @@ public class SceneDB : MonoBehaviour
 
         #region InputManager
 
-        // Gibt die Direction an, in die der Character sich bewegt
-        Vector3 MoveCharacterDirection = Vector3.zero;
-
-        // Für alle validen Inputs wird eine Aktion gesucht & ausgeführt
-        foreach (int number in GetValidInputIndexes())
-        {
-            // switch() case verarbeitet die Input Numbers
-            switch (number)
-            {
-                case 0:
-                    MoveCharacterDirection += Vector3.up;
-                    break;
-                case 1:
-                    MoveCharacterDirection += Vector3.left;
-                    break;
-                case 2:
-                    MoveCharacterDirection += Vector3.down;
-                    break;
-                case 3:
-                    MoveCharacterDirection += Vector3.right;
-                    break;
-                // Weitere Settings hier hin
-
-
-
-            }
-        }
-
         // Character wird erfasst
         foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Character"))
         {
             if (Character.GetComponent<CharacterController>().IsControlledChar)
-                Character.GetComponent<CharacterController>().MoveCharacter(MoveCharacterDirection);
+            {
+                // Gibt die Direction an, in die der Character sich bewegt
+                Vector3 MoveCharacterDirection = Vector3.zero;
+
+                // Für alle validen Inputs wird eine Aktion gesucht & ausgeführt
+                foreach (int number in GetValidInputIndexes())
+                {
+                    CharacterController CharacterController = Character.GetComponent<CharacterController>();
+
+                    // switch() case verarbeitet die Input Numbers
+                    switch (number)
+                    {
+                        case 0:
+                            MoveCharacterDirection += Vector3.up;
+                            break;
+                        case 1:
+                            MoveCharacterDirection += Vector3.left;
+                            break;
+                        case 2:
+                            MoveCharacterDirection += Vector3.down;
+                            break;
+                        case 3:
+                            MoveCharacterDirection += Vector3.right;
+                            break;
+                        case 4:
+                            // Holt die Ability auf einem Slot
+                            GameObject Ability = GetAbilityOnSlot(1);
+                            // Wenn eine Ability gefunden wurde, wird sie ausgelöst
+                            if (Ability != null)
+                                CharacterController.UseAbility(Ability);
+                            break;
+                            // Weitere Settings hier hin
+
+
+
+                    }
+                    Character.GetComponent<CharacterController>().MoveCharacter(MoveCharacterDirection);
+                }
+            }
         }
+        
 
         #endregion InputManagers
     }
@@ -209,5 +221,18 @@ public class SceneDB : MonoBehaviour
 
         // Der Character mit der highest Aggro wird zurück gegeben
         return Characters[Aggros.IndexOf(Aggros.Max())];
+    }
+
+    public static GameObject GetAbilityOnSlot(int SlotIndex)
+    {
+        List<GameObject> Abilitys = GameObject.FindGameObjectsWithTag("Ability").ToList();
+
+        foreach (GameObject Ability in Abilitys)
+        {
+            if (Ability.GetComponent<AbilityManager>().Slot == SlotIndex)
+                return Ability;
+        }
+
+        return null;
     }
 }

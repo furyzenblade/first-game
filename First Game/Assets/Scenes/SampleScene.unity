@@ -371,52 +371,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &866362465
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 866362467}
-  - component: {fileID: 866362466}
-  m_Layer: 0
-  m_Name: fireballBlaster
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &866362466
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 866362465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61e00a2efdac64f44a8e597655084e46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fireball: {fileID: 5909526306438202683, guid: 8fc2e7e522c607e4291921dc16997d8e,
-    type: 3}
---- !u!4 &866362467
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 866362465}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1139301894
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,8 +380,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1139301896}
-  - component: {fileID: 1139301897}
-  - component: {fileID: 1139301898}
   - component: {fileID: 1139301899}
   - component: {fileID: 1139301900}
   - component: {fileID: 1139301901}
@@ -446,44 +398,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1139301894}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1139301897
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139301894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4be3d7cea847ca4d9d269e25c5ff9f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ID: 0
---- !u!114 &1139301898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139301894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3fc924697af85c489aeeee144b98bec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HP: 0
-  MaxHP: 0
-  AttackSpeed: 0
-  Armor: 0
-  MovementSpeed: 5
-  BasicAttackRange: 10
 --- !u!114 &1139301899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -496,6 +417,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d82122ed0032b3f4c88d4e2ca13ac04b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ID: 0
+  HP: 100
+  MaxHP: 100
+  Damage: 10
+  AttackSpeed: 5
+  Armor: 0
+  MovementSpeed: 5
+  BasicAttackRange: 1
 --- !u!212 &1139301900
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -604,7 +533,7 @@ Transform:
   m_Children:
   - {fileID: 594958267}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1588933434
 GameObject:
@@ -704,13 +633,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91ad41c14bc801b43b1310b6d1204eae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 0
-  HP: 0
+  MaxHP: 100
+  HP: 100
   Armor: 0
-  Attack: 0
+  Attack: 10
   AttackSpeed: 0
-  CritChance: 0
-  CritDamage: 0
+  CritChance: 50
+  CritDamage: 50
   MovementSpeed: 5
   AbliltyHaste: 0
   CurrentMovementSpeed: 0
@@ -758,7 +687,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1651713354}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1.99, y: -0.91, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
