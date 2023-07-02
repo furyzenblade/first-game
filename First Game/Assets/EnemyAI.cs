@@ -27,6 +27,11 @@ public class EnemyAI : MonoBehaviour
 
     private GameObject AttackedCharacter;
 
+    private void Start()
+    {
+        GetComponent<Rigidbody2D>().collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+    }
+
     void Update()
     {
         if (HP < 0)
@@ -53,7 +58,7 @@ public class EnemyAI : MonoBehaviour
     }
 
     // Gibt an, wie viel Cooldown für einen Basic Attack herrscht
-    float Cooldown;
+    public float Cooldown;
     // Wenn kein Cooldown & in AttackRange wird der Enemy attacked
     private void TryBasicAttack()
     {

@@ -18,7 +18,7 @@ public class CharacterController : MonoBehaviour
     public int Armor;
 
     // Offensive Stats    
-    public int Attack;
+    public int Damage;
     public float AttackSpeed;
     public int CritChance;
     public float CritDamage;
@@ -40,6 +40,18 @@ public class CharacterController : MonoBehaviour
     // Aggro 
     public int Aggro;
 
+    // Ability Management
+    public List<int> Abilitys = new() { };
+    public List<float> AbilityCooldowns = new() { };
+
+    void Start()
+    {
+        GetComponent<Rigidbody2D>().collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        // Abilitys werden gesetzt
+        Abilitys.Add(0);
+        AbilityCooldowns.Add(0);
+    }
+
     void Update()
     {
         if (HP < 0)
@@ -53,6 +65,12 @@ public class CharacterController : MonoBehaviour
 
         foreach (SlowAttribute Slow in Slows)
             CurrentMovementSpeed *= 1 - (Slow.Strength / 100);
+
+        // Reduziert die Cooldowns aller abilitys slightly
+        for(int i = 0; i < AbilityCooldowns.Count; i++)
+        {
+            AbilityCooldowns[i] -= Time.deltaTime;
+        }
     }
 
     public void MoveCharacter(Vector3 Dir)
@@ -65,27 +83,39 @@ public class CharacterController : MonoBehaviour
             GameObject.FindGameObjectWithTag("MainCamera").transform.position += Dir * (MovementSpeed * Time.deltaTime);
     }
 
-    public void UseAbility(GameObject Ability)
+    public void UseAbility(int Index)
     {
-        #region CalculateRotation
-        // Maus Position wird abgerufen
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = -Camera.main.transform.position.z; // Adjust the z-coordinate based on the camera's position
+        GameObject Ability = SceneDB.AllAbilitys[Abilitys[Index]];
+        AbilityManager AbilityManager = Ability.GetComponent<AbilityManager>();
 
-        // Convert the mouse position from screen coordinates to world coordinates
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        if (AbilityCooldowns[Index] < 0.0f)
+        {
+            AbilityCooldowns[Index] = AbilityManager.Cooldown;
 
-        // Calculate the direction vector from the object's position to the mouse position
-        Vector3 direction = mouseWorldPosition - transform.position;
+            #region CalculateRotation
+            // Maus Position wird abgerufen
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition.z = -Camera.main.transform.position.z; // Adjust the z-coordinate based on the camera's position
 
-        // Calculate the rotation angle based on the direction vector
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            // Convert the mouse position from screen coordinates to world coordinates
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
-        // Convert the rotation to a Quaternion
-        Quaternion Rotation = Quaternion.Euler(0f, 0f, angle);
-        #endregion CalculateRotation
+            // Calculate the direction vector from the object's position to the mouse position
+            Vector3 direction = mouseWorldPosition - transform.position;
 
-        Instantiate(Ability, gameObject.transform.position, Rotation);
+            // Calculate the rotation angle based on the direction vector
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            // Convert the rotation to a Quaternion
+            Quaternion Rotation = Quaternion.Euler(0f, 0f, angle);
+            #endregion CalculateRotation
+
+            Instantiate(Ability, gameObject.transform.position, Rotation);
+
+            Ability.GetComponent<AbilityManager>().Damage = Damage;
+            Ability.GetComponent<AbilityManager>().CritChance = CritChance;
+            Ability.GetComponent<AbilityManager>().CritDamage = CritDamage;
+        }
     }
 
     // Gibt dem Character Damage
@@ -98,6 +128,11 @@ public class CharacterController : MonoBehaviour
         Damage *= (float)Math.Round(Convert.ToDouble(1 - ((100f - Mathf.Exp(-((ArmorConstant + Armor) / 1000f))) / 100f)), 5);
 
         HP -= Damage;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Collided with: " + collision.gameObject);
     }
 
 }

@@ -133,7 +133,6 @@ GameObject:
   m_Component:
   - component: {fileID: 452423750}
   - component: {fileID: 452423749}
-  - component: {fileID: 452423751}
   m_Layer: 0
   m_Name: SceneDB
   m_TagString: Untagged
@@ -153,6 +152,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385adf5a82a281f4a86577e91b19d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FireBall: {fileID: 5909526306438202683, guid: 8fc2e7e522c607e4291921dc16997d8e,
+    type: 3}
+  NextAbility: {fileID: 0}
 --- !u!4 &452423750
 Transform:
   m_ObjectHideFlags: 0
@@ -168,18 +170,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &452423751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 452423748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c970166c1e04a440b2666237eca224c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -383,6 +373,7 @@ GameObject:
   - component: {fileID: 1139301899}
   - component: {fileID: 1139301900}
   - component: {fileID: 1139301901}
+  - component: {fileID: 1139301902}
   m_Layer: 0
   m_Name: DarkZombie
   m_TagString: Hostile
@@ -425,6 +416,7 @@ MonoBehaviour:
   Armor: 0
   MovementSpeed: 5
   BasicAttackRange: 1
+  Cooldown: 0
 --- !u!212 &1139301900
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -503,6 +495,27 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.2, y: 0.415}
   m_EdgeRadius: 0
+--- !u!50 &1139301902
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1139301894}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
 --- !u!1 &1173713057
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,6 +560,7 @@ GameObject:
   - component: {fileID: 1588933435}
   - component: {fileID: 1588933437}
   - component: {fileID: 1588933438}
+  - component: {fileID: 1588933439}
   m_Layer: 0
   m_Name: Character
   m_TagString: Character
@@ -635,8 +649,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHP: 100
   HP: 100
-  Armor: 0
-  Attack: 10
+  Armor: 2147483647
+  Damage: 10
   AttackSpeed: 0
   CritChance: 50
   CritDamage: 50
@@ -645,6 +659,8 @@ MonoBehaviour:
   CurrentMovementSpeed: 0
   IsControlledChar: 0
   Aggro: 0
+  Abilitys: 
+  AbilityCooldowns: []
 --- !u!70 &1588933438
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -661,6 +677,27 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.5625}
   m_Size: {x: 0.875, y: 1.125}
   m_Direction: 0
+--- !u!50 &1588933439
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1588933434}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 1000000
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
 --- !u!1 &1651713354
 GameObject:
   m_ObjectHideFlags: 0
@@ -687,7 +724,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1651713354}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.99, y: -0.91, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

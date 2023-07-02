@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -52,8 +53,24 @@ public class SceneDB : MonoBehaviour
         new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""}
     };
 
+    // Liste an allen Abilitys im Game
+    public static List<GameObject> AllAbilitys = new() { };
+    public GameObject FireBall;
+    public GameObject NextAbility;
+
+    // Setzt 1x am Anfang alle Abilitys in 1 Liste
+    private void PlaceAbilitysInList()
+    {
+        // Jede Ability muss so einzeln eingefügt werden
+        AllAbilitys.Add(FireBall);
+
+    }
+
     void Start()
     {
+        // Alle existierenden Abilitys werden geholt
+        PlaceAbilitysInList();
+
         // Der erste Character wird controlled, weil bei Online Games eig. immer der lokale als erstes erscheint denke ich (philipp)
         GameObject.FindGameObjectWithTag("Character").GetComponent<CharacterController>().IsControlledChar = true;
 
@@ -108,10 +125,10 @@ public class SceneDB : MonoBehaviour
                             break;
                         case 4:
                             // Holt die Ability auf einem Slot
-                            GameObject Ability = GetAbilityOnSlot(1);
+                            GameObject Ability = AllAbilitys[CharacterController.Abilitys[0]];
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
                             if (Ability != null)
-                                CharacterController.UseAbility(Ability);
+                                CharacterController.UseAbility(0);
                             break;
                             // Weitere Settings hier hin
 

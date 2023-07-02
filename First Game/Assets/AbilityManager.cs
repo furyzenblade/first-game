@@ -5,14 +5,12 @@ using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
 {
-    // Generelle Objects, die wir brauchen für alles
-    public CircleCollider2D Hitbox;
-
     // Movement Zeugs
     public float MovementSpeed;
 
     // Utility Upgrades / Values etc.
     public bool CanHitMultipleTargets;
+    public float Cooldown;
     public float Scale
     {
         get { return scale; }
@@ -32,6 +30,12 @@ public class AbilityManager : MonoBehaviour
     // Listen zum Verhindern falschen Verhaltens wie multiple Hits etc. 
     private readonly List<int> HitEntityIDs = new() { };
     public int Slot;
+
+    void Start()
+    {
+        GetComponent<Rigidbody2D>().collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        Debug.Log("Fireball was fired");
+    }
 
     void Update()
     {
@@ -65,6 +69,6 @@ public class AbilityManager : MonoBehaviour
                     Destroy(gameObject);
             }
         }
-        catch { }
+        catch { Debug.LogError("Something with damaging an enemy went wrong"); }
     }
 }
