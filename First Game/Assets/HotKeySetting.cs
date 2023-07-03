@@ -1,15 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.IO;
-using UnityEditor.PackageManager;
 
-// Erstellt für das Setting UI einen Namen
-// Optional: Name & ob es ein Base Setting ist
+// Ein Container für den einfachen Zugriff & die einfache Verwaltung von Hotkeys & Daten
 public class HotKeySetting : MonoBehaviour
 {
+    // Reine Speicherung der Bedingungen, welche Inputs zum Triggern dieses Settings nötig sind
     #region HotKeySettings
 
     // Speichert den Key für den Input
@@ -26,6 +24,7 @@ public class HotKeySetting : MonoBehaviour
 
     #endregion HotKeySettings
 
+    // Alles, damit ein UI zum Ändern von Settings reibungslos funktioniert
     #region UISettings
 
     // Gibt an, ob das Setting zu Basic oder Advanced Settings gehört
@@ -37,10 +36,11 @@ public class HotKeySetting : MonoBehaviour
 
     #endregion UISettings
 
+    // Versucht, mithilfe einer File eine Liste an HotKeys zu erstellen
     public static List<HotKeySetting> AnalyseKeyBindings(string FileContent)
     {
         // File wird mit char gesplittet
-        string[] SingleSettings = FileContent.Split(SceneDB.SettingSeparator);
+        string[] SingleSettings = FileContent.Split(SceneDB.ObjectSeparator);
 
         // Liste mit HotKeySettings
         List<HotKeySetting> HotKeySettings = new() { };
@@ -63,13 +63,16 @@ public class HotKeySetting : MonoBehaviour
             CurrentSetting.Name = Values[5];
             CurrentSetting.IsBasicSetting = Convert.ToBoolean(Values[6]);
             CurrentSetting.Description = Values[7];
+
             // CurrentSetting wird in die Liste eingetragen
             HotKeySettings.Add(CurrentSetting);
         }
 
+        // Liste an Settings wird zurück gegeben
         return HotKeySettings;
     }
 
+    // Erstellt & speichert eine File mit allen HotKey Settings, die es gibt
     public static void SaveKeyBindings(List<HotKeySetting> KeyBindings)
     {
         string FinalFileContent = "";
@@ -89,13 +92,14 @@ public class HotKeySetting : MonoBehaviour
 
             // Wenn nicht das letzte KeyBinding wird ein Separator geaddet
             if (KeyBinding != KeyBindings.Last())
-                FinalFileContent += SceneDB.SettingSeparator;
+                FinalFileContent += SceneDB.ObjectSeparator;
         }
 
         // Encodet die File und speichert sie dynamisch am Speicherort
         File.WriteAllBytes(SceneDB.CreateDynamicFilePath(SceneDB.KeyBindingsPath), GameLanguageConverter.Encode(FinalFileContent, SceneDB.KeyBindingsPath));
     }
 
+    // Setzt die Modifier zu den aktuell gedrückten
     public void UpdateModifiers()
     {
         Modifier_Alt = AltIsPressed();
@@ -104,6 +108,7 @@ public class HotKeySetting : MonoBehaviour
         Modifier_Shift = ShiftIsPressed();
     }
 
+    // Prüft, ob der im Namen stehende Modifier aktuell gedrückt wurde
     public static bool AltIsPressed()
     {
         // Prüft, ob Alt gedrückt wurde
@@ -140,6 +145,7 @@ public class HotKeySetting : MonoBehaviour
         return ShiftIsPressed;
     }
 
+    // Prüft, ob das HotKeySetting aktuell gedrückt wurde
     public bool InputIsValid()
     {
         bool IsValid = true;

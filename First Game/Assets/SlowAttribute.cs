@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
+// Enthält einen Slow mit Cooldown
 public class SlowAttribute : MonoBehaviour
 {
+    // Reduziert den Slow Cooldown & zerstört sich selbst, wenn der Cooldown vorbei ist
     void Update()
     {
         // Slow Duration verringert sich

@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c33ae4453d567424797e8b46e1595852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MovementSpeed: 7.5
   CanHitMultipleTargets: 0
-  Cooldown: 2
+  MovementSpeed: 7.5
+  Cooldown: -1
   Damage: 10
   CritChance: 50
   CritDamage: 50

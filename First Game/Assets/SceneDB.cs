@@ -1,19 +1,20 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
+// Eine globale, überwiegend statische Klasse, die z.B. User Inputs verwaltet, um Performance zu sparen
+// Oder das übergibt neue IDs etc., ohne mit anderen Klassen oder GameObjects komunizieren zu müssen
+// Speichert / berechnet auch z.B. globale Werte wie den highest aggro character oder so
 public class SceneDB : MonoBehaviour
 {
+    // Chars zum Spliten von Informationen aus Files werden gegeben
+    public const char ObjectSeparator = '\u2016';
+    public const char ContentSpliter = '\u2017';
+
     // Gibt eine globale, individuelle Enemy ID an
     public static int EnemyID { get; private set; }
+    // Generiert die nächste EnemyID & gibt diese zurück
     public static int AddEnemyID()
     {
         EnemyID++;
@@ -22,10 +23,6 @@ public class SceneDB : MonoBehaviour
 
     // Speichert alle Settings nach Kategorie
     #region SettingStorage
-
-    // Chars zum Spliten von Informationen werden gegeben
-    public const char SettingSeparator = '\u2016';
-    public const char ContentSpliter = '\u2017';
 
     // HotKey Settings
     public static List<HotKeySetting> KeyBindings = new() { };
@@ -53,12 +50,12 @@ public class SceneDB : MonoBehaviour
         new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""}
     };
 
-    // Liste an allen Abilitys im Game
+    // Liste an allen Abilitys im Game (Muss denke ich (philipp) nochmal reworked werden & generischer programmiert werden) 
     public static List<GameObject> AllAbilitys = new() { };
     public GameObject FireBall;
     public GameObject NextAbility;
 
-    // Setzt 1x am Anfang alle Abilitys in 1 Liste
+    // Setzt 1x am Anfang alle Abilitys in 1 Liste (Rework denke nötig)
     private void PlaceAbilitysInList()
     {
         // Jede Ability muss so einzeln eingefügt werden
@@ -66,6 +63,7 @@ public class SceneDB : MonoBehaviour
 
     }
 
+    // Lädt praktisch das Game mit Settings etc.
     void Start()
     {
         // Alle existierenden Abilitys werden geholt
@@ -87,6 +85,7 @@ public class SceneDB : MonoBehaviour
         GetDefaultSettings();
     }
 
+    // Updatet globale Werte wie Aggro etc. framewise, damit nicht mehrere GameObjects dies machen müssen
     void Update()
     {
         // Character Aggro wird ermittelt
@@ -135,8 +134,8 @@ public class SceneDB : MonoBehaviour
 
 
                     }
-                    Character.GetComponent<CharacterController>().MoveCharacter(MoveCharacterDirection);
                 }
+                Character.GetComponent<CharacterController>().MoveCharacter(MoveCharacterDirection);
             }
         }
         
@@ -172,7 +171,7 @@ public class SceneDB : MonoBehaviour
             }
             // Wenn letztes Setting wird nicht separiert
             if (SingleSetting != DefaultSettings.Last())
-                AllSettings += SettingSeparator;
+                AllSettings += ObjectSeparator;
         }
 
         File.WriteAllBytes(CreateDynamicFilePath(DefaultKeyBindingsPath), GameLanguageConverter.Encode(DefaultKeyBindingsPath, AllSettings, true));
@@ -201,10 +200,7 @@ public class SceneDB : MonoBehaviour
         if (!File.Exists(CreateDynamicFilePath(DefaultKeyBindingsPath)))
             Debug.LogError("Couldn't find a DefaultHotKeySettings- File");
         else
-        {
             KeyBindings = HotKeySetting.AnalyseKeyBindings(GameLanguageConverter.StrDecode(DefaultKeyBindingsPath));
-            KeyBindings = HotKeySetting.AnalyseKeyBindings(GameLanguageConverter.StrDecode(DefaultKeyBindingsPath));
-        }
     }
 
     // Ruft die Character Aggro jedes Characters ab

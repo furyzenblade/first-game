@@ -1,16 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 
-// MAX. 2.1GB Dateien können hiermit verarbeitet werden
+// MAX. 2.1GB Dateien können hiermit verschlüsselt / entschlüsselt werden
 // Verarbeiten von Dateien ab 100MB+ werden nicht empfohlen wegen Performance
-
 public class GameLanguageConverter : MonoBehaviour
 {
     // Methode zum Converten des File Names in einen Seed zum auslesen

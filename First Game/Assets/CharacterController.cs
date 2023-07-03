@@ -1,12 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using UnityEngine;
-using Unity.VisualScripting;
 using System.Linq;
 using System;
 
+// Kontrolliert einen Character mit allen Inputs etc., 
 public class CharacterController : MonoBehaviour
 {
     // Character Stats
@@ -44,16 +41,21 @@ public class CharacterController : MonoBehaviour
     public List<int> Abilitys = new() { };
     public List<float> AbilityCooldowns = new() { };
 
+    // Beim Start werden die Abilitys, die der Character hat, zugewiesen 
+    // Sobald es Einstellungen, Ability Trees etc. gibt, muss das hier reworked werden
     void Start()
     {
-        GetComponent<Rigidbody2D>().collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         // Abilitys werden gesetzt
         Abilitys.Add(0);
         AbilityCooldowns.Add(0);
     }
 
+    // Jeden Frame wird geprüft, ob der Character noch lebt etc. 
+    // Reduziert auch Ability Cooldowns
+    // Statuseffekte, Buffs etc. zerstören sich selbst, wenn die Duration abgelaufen ist
     void Update()
     {
+        // Wenn der Character keine HP mehr hat, wird er inaktiv gesetzt
         if (HP < 0)
             gameObject.SetActive(false);
 
@@ -63,39 +65,51 @@ public class CharacterController : MonoBehaviour
         // Wenn Slows existieren, dann werden sie aufgelistet
         try { Slows = gameObject.GetComponents<SlowAttribute>().ToList(); } catch { }
 
+        // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
         foreach (SlowAttribute Slow in Slows)
             CurrentMovementSpeed *= 1 - (Slow.Strength / 100);
 
         // Reduziert die Cooldowns aller abilitys slightly
+        // Muss auch für Buff Durations etc. gemacht werden
         for(int i = 0; i < AbilityCooldowns.Count; i++)
         {
+            // Time.deltaTime sorgt dafür, dass pro Sekunde 1.0f reduziert werden
             AbilityCooldowns[i] -= Time.deltaTime;
         }
     }
 
+    // Bewegt den Character jeden Frame in die global errechnete Richtung
     public void MoveCharacter(Vector3 Dir)
     {
-        // Bewegt den Character
+        // Bewegt den Character abhängig von der Direction
         gameObject.transform.position += Dir * (MovementSpeed * Time.deltaTime);
 
-        // Bewegt die Kamera
+        // Bewegt die Kamera mit dem Movement
         if (IsControlledChar)
             GameObject.FindGameObjectWithTag("MainCamera").transform.position += Dir * (MovementSpeed * Time.deltaTime);
     }
 
+    // Nutzt die Ability mit einem bestimmten Index, die hier gespeichert wurde
+    // Bestimmungsverfahren, welche Ability genutzt wird, erfordert dringend ein Rework
     public void UseAbility(int Index)
     {
+        // Bestimmt & holt die Ability, die zu nutzen ist
         GameObject Ability = SceneDB.AllAbilitys[Abilitys[Index]];
         AbilityManager AbilityManager = Ability.GetComponent<AbilityManager>();
 
+        // Wenn die Ability keinen Cooldown hat, wird sie gezündet
         if (AbilityCooldowns[Index] < 0.0f)
         {
+            // Setzt den Cooldown der Ability zurück
             AbilityCooldowns[Index] = AbilityManager.Cooldown;
 
+            // Bestimmt die Rotation der Maus als Quaternion (ChatGPT Code)
             #region CalculateRotation
+
             // Maus Position wird abgerufen
             Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = -Camera.main.transform.position.z; // Adjust the z-coordinate based on the camera's position
+            // Setzt die Z- Koordinate auf einen richtigen Wert oder so
+            mousePosition.z = -Camera.main.transform.position.z;
 
             // Convert the mouse position from screen coordinates to world coordinates
             Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
@@ -108,31 +122,29 @@ public class CharacterController : MonoBehaviour
 
             // Convert the rotation to a Quaternion
             Quaternion Rotation = Quaternion.Euler(0f, 0f, angle);
+
             #endregion CalculateRotation
 
+            // Erstellt die Ability mit Position & Rotation
             Instantiate(Ability, gameObject.transform.position, Rotation);
 
+            // Gibt der Ability ihre Stats
             Ability.GetComponent<AbilityManager>().Damage = Damage;
             Ability.GetComponent<AbilityManager>().CritChance = CritChance;
             Ability.GetComponent<AbilityManager>().CritDamage = CritDamage;
         }
     }
 
-    // Gibt dem Character Damage
+    // Gibt dem Character Damage ohne Möglichkeit auf Crits
     public void AddDamage(float Damage)
     {
-        // Setzt die Damage Reduction Value exakt in den Ursprung
+        // Setzt die Damage Reduction Value fast exakt in den Ursprung (Rundung regelt)
         float ArmorConstant = -4605.1701859479995f;
 
         // Berechnet, wie viel Damage durch Armor abgezogen wird
         Damage *= (float)Math.Round(Convert.ToDouble(1 - ((100f - Mathf.Exp(-((ArmorConstant + Armor) / 1000f))) / 100f)), 5);
 
+        // Reduziert die HP
         HP -= Damage;
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("Collided with: " + collision.gameObject);
-    }
-
 }

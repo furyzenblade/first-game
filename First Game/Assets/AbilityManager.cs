@@ -1,15 +1,20 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
+// Eine Klasse, die grundlegend alle Abilitys haben soll
+// Speichert auﬂerdem das custom behaviour jeder Ability
+// Was die Ability machen soll, wird mit dem GameObject- Tag bestimmt
+// Oder generisch programmieren wie FindComponent<T> oder so
 public class AbilityManager : MonoBehaviour
 {
+    // Upgrades der Ability
+    // Besser noch in eine eigene Klasse stopfen oder so
+    public bool CanHitMultipleTargets;
+
     // Movement Zeugs
     public float MovementSpeed;
 
-    // Utility Upgrades / Values etc.
-    public bool CanHitMultipleTargets;
+    // Utility Upgrades
     public float Cooldown;
     public float Scale
     {
@@ -31,18 +36,14 @@ public class AbilityManager : MonoBehaviour
     private readonly List<int> HitEntityIDs = new() { };
     public int Slot;
 
-    void Start()
-    {
-        GetComponent<Rigidbody2D>().collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        Debug.Log("Fireball was fired");
-    }
-
     void Update()
     {
-        // Move the object forward based on its rotation
+        // Objekt wird nach Vorne bewegt
+        // Noch in Behaviour- Klasse rein packen
         transform.Translate(Vector3.right * (MovementSpeed * Time.deltaTime));
     }
 
+    // Wenn der mit einem Objekt collidet (Auch Behaviour eigentlich)
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Wenn kein EnemyEventHandler vorhanden ist, wird die Collision ignoriert
@@ -52,10 +53,12 @@ public class AbilityManager : MonoBehaviour
             bool CanHitEntity = true;
             foreach (int ID in HitEntityIDs)
             {
+                // Wenn der Getroffene die gleiche ID hat, wie eine gespeicherte, wird er ignoriert und nicht mehrfach getroffen
                 if (collision.gameObject.GetComponent<EnemyAI>().ID == ID)
                     CanHitEntity = false;
             }
 
+            // Wenn das erste Mal gehittet: 
             if (CanHitEntity)
             {
                 // GameObject mit der Collision bekommt Damage
@@ -69,6 +72,7 @@ public class AbilityManager : MonoBehaviour
                     Destroy(gameObject);
             }
         }
-        catch { Debug.LogError("Something with damaging an enemy went wrong"); }
+        // Getroffenes Objekt war kein Enemy (hat keine EnemyAI) also wird er ignoriert
+        catch { }
     }
 }
