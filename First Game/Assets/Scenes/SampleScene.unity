@@ -169,7 +169,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!114 &452423749
 MonoBehaviour:
@@ -183,9 +183,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385adf5a82a281f4a86577e91b19d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FireBall: {fileID: 5909526306438202683, guid: 8fc2e7e522c607e4291921dc16997d8e,
-    type: 3}
-  NextAbility: {fileID: 0}
 --- !u!4 &452423750
 Transform:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 // Eine globale, überwiegend statische Klasse, die z.B. User Inputs verwaltet, um Performance zu sparen
@@ -47,27 +48,33 @@ public class SceneDB : MonoBehaviour
         new() { KeyCode.A.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveLeft", true.ToString(), ""},
         new() { KeyCode.S.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveDown", true.ToString(), ""},
         new() { KeyCode.D.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveRight", true.ToString(), ""},
-        new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""}
+        new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""},
+        new() { KeyCode.Alpha2.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 2", true.ToString(), ""}
     };
 
     // Liste an allen Abilitys im Game (Muss denke ich (philipp) nochmal reworked werden & generischer programmiert werden) 
     public static List<GameObject> AllAbilitys = new() { };
-    public GameObject FireBall;
-    public GameObject NextAbility;
-
-    // Setzt 1x am Anfang alle Abilitys in 1 Liste (Rework denke nötig)
-    private void PlaceAbilitysInList()
-    {
-        // Jede Ability muss so einzeln eingefügt werden
-        AllAbilitys.Add(FireBall);
-
-    }
 
     // Lädt praktisch das Game mit Settings etc.
     void Start()
     {
-        // Alle existierenden Abilitys werden geholt
-        PlaceAbilitysInList();
+        // Find all prefab GUIDs in the Assets folder
+        string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab");
+
+        foreach (string guid in prefabGuids)
+        {
+            // Get the file path of the prefab using the GUID
+            string prefabPath = AssetDatabase.GUIDToAssetPath(guid);
+
+            // Load the prefab at the path
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+
+            // Do something with the prefab
+            if (prefab != null && prefab.CompareTag("Ability"))
+            {
+                AllAbilitys.Add(prefab);
+            }
+        }
 
         // Der erste Character wird controlled, weil bei Online Games eig. immer der lokale als erstes erscheint denke ich (philipp)
         GameObject.FindGameObjectWithTag("Character").GetComponent<CharacterController>().IsControlledChar = true;
@@ -129,9 +136,14 @@ public class SceneDB : MonoBehaviour
                             if (Ability != null)
                                 CharacterController.UseAbility(0);
                             break;
-                            // Weitere Settings hier hin
-
-
+                        case 5:
+                            // Holt die Ability auf einem Slot
+                            Ability = AllAbilitys[CharacterController.Abilitys[1]];
+                            // Wenn eine Ability gefunden wurde, wird sie ausgelöst
+                            if (Ability != null)
+                                CharacterController.UseAbility(1);
+                            break;
+                        // Weitere Settings hier hin
 
                     }
                 }
