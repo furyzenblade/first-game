@@ -47,13 +47,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c33ae4453d567424797e8b46e1595852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanHitMultipleTargets: 0
-  MovementSpeed: 7.5
-  Cooldown: -1
+  Hitbox: {fileID: 0}
+  CharacterPhysics: {fileID: 0}
+  MovementSpeed: 3.11
+  Cooldown: 0.5
   Damage: 10
   CritChance: 50
   CritDamage: 50
   Slot: 1
+  CanHitMultipleTargets: 0
 --- !u!212 &5909526306438202681
 SpriteRenderer:
   m_ObjectHideFlags: 0

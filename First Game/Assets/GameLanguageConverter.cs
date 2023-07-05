@@ -6,8 +6,10 @@ using UnityEngine;
 
 // MAX. 2.1GB Dateien können hiermit verschlüsselt / entschlüsselt werden
 // Verarbeiten von Dateien ab 100MB+ werden nicht empfohlen wegen Performance
-public class GameLanguageConverter : MonoBehaviour
+public class GameLanguageConverter
 {
+    public static string FileEnding = ".GData";
+
     // Methode zum Converten des File Names in einen Seed zum auslesen
     private static int GetSeed(string FileName)
     {
@@ -16,8 +18,8 @@ public class GameLanguageConverter : MonoBehaviour
         {
             FileName = FileName[Application.dataPath.Count()..];
             // Wenn das File Ending vom Game vorhanden ist, wird es abgeschnitten
-            if (FileName.Contains(".GData"))
-                FileName = FileName.Split(".GData")[0];
+            if (FileName.Contains(FileEnding))
+                FileName = FileName.Split(FileEnding)[0];
         }
 
         // Bytes werden aus dem FileName erzeugt

@@ -95,13 +95,13 @@ public class CharacterController : MonoBehaviour
     {
         // Bestimmt & holt die Ability, die zu nutzen ist
         GameObject Ability = SceneDB.AllAbilitys[Abilitys[Index]];
-        AbilityManager AbilityManager = Ability.GetComponent<AbilityManager>();
+        Ability AbilityComponent = Ability.GetComponent<Ability>();
 
         // Wenn die Ability keinen Cooldown hat, wird sie gezündet
         if (AbilityCooldowns[Index] < 0.0f)
         {
             // Setzt den Cooldown der Ability zurück
-            AbilityCooldowns[Index] = AbilityManager.Cooldown;
+            AbilityCooldowns[Index] = GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
 
             // Bestimmt die Rotation der Maus als Quaternion (ChatGPT Code)
             #region CalculateRotation
@@ -129,22 +129,15 @@ public class CharacterController : MonoBehaviour
             Instantiate(Ability, gameObject.transform.position, Rotation);
 
             // Gibt der Ability ihre Stats
-            Ability.GetComponent<AbilityManager>().Damage = Damage;
-            Ability.GetComponent<AbilityManager>().CritChance = CritChance;
-            Ability.GetComponent<AbilityManager>().CritDamage = CritDamage;
+            Ability.GetComponent<Ability>().Damage = Damage;
+            Ability.GetComponent<Ability>().CritChance = CritChance;
+            Ability.GetComponent<Ability>().CritDamage = CritDamage;
         }
     }
 
     // Gibt dem Character Damage ohne Möglichkeit auf Crits
     public void AddDamage(float Damage)
     {
-        // Setzt die Damage Reduction Value fast exakt in den Ursprung (Rundung regelt)
-        float ArmorConstant = -4605.1701859479995f;
-
-        // Berechnet, wie viel Damage durch Armor abgezogen wird
-        Damage *= (float)Math.Round(Convert.ToDouble(1 - ((100f - Mathf.Exp(-((ArmorConstant + Armor) / 1000f))) / 100f)), 5);
-
-        // Reduziert die HP
-        HP -= Damage;
+        HP -= GF.CalculateDamage(Damage, Armor);
     }
 }

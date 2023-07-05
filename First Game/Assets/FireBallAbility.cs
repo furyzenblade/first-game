@@ -1,40 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Eine Klasse, die grundlegend alle Abilitys haben soll
-// Speichert auﬂerdem das custom behaviour jeder Ability
-// Was die Ability machen soll, wird mit dem GameObject- Tag bestimmt
-// Oder generisch programmieren wie FindComponent<T> oder so
-public class AbilityManager : MonoBehaviour
+// Speichert bzw. ist das Behaviour der FireBall Ability
+public class FireBallAbility : Ability
 {
-    // Upgrades der Ability
-    // Besser noch in eine eigene Klasse stopfen oder so
+    // Individuelle Upgrades
     public bool CanHitMultipleTargets;
-
-    // Movement Zeugs
-    public float MovementSpeed;
-
-    // Utility Upgrades
-    public float Cooldown;
-    public float Scale
-    {
-        get { return scale; }
-        set
-        {
-            scale = value;
-            gameObject.transform.localScale += Vector3.one * (scale / 600f);
-        }
-    }
-    private float scale;
-
-    // Damage Operatoren
-    public float Damage;
-    public float CritChance;
-    public float CritDamage = 30;
 
     // Listen zum Verhindern falschen Verhaltens wie multiple Hits etc. 
     private readonly List<int> HitEntityIDs = new() { };
-    public int Slot;
 
     void Update()
     {

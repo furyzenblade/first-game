@@ -90,25 +90,6 @@ public class EnemyAI : MonoBehaviour
     // Gibt dem Enemy Damage abhängig von den Stats des Angreifers und der Armor
     public void AddDamage(float Damage, float CritChance, float CritDamage)
     {
-        // Gibt den finalen Damage an, den der Enemy bekommt
-        float FinalDamage;
-
-        // Bestimmt, ob ein Treffer ein (negativer) Crit ist
-        if (UnityEngine.Random.Range(0, 100) <= Mathf.Abs(CritChance))
-        {
-            // Wenn negative Crit Chance wird der Crit Damage negativ hinzugefügt
-            FinalDamage = Damage + (Damage * ((CritChance / Mathf.Abs(CritChance)) + (Mathf.Abs(CritDamage) / 100f)));
-        }
-        // Wenn kein Crit bleibt der Damage gleich
-        else
-            FinalDamage = Damage;
-
-        // Setzt die Damage Reduction Value exakt in den Ursprung
-        float ArmorConstant = -4605.1701859479995f;
-
-        // Berechnet, wie viel Damage durch Armor abgezogen wird
-        FinalDamage *= (float)Math.Round(Convert.ToDouble(1 - ((100f - Mathf.Exp(-((ArmorConstant + Armor) / 1000f))) / 100f)), 5);
-
-        HP -= FinalDamage;
+        HP -= GF.CalculateDamage(Damage, Armor, CritChance, CritDamage);
     }
 }

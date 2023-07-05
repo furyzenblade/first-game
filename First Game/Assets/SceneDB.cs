@@ -242,7 +242,7 @@ public class SceneDB : MonoBehaviour
 
         foreach (GameObject Ability in Abilitys)
         {
-            if (Ability.GetComponent<AbilityManager>().Slot == SlotIndex)
+            if (Ability.GetComponent<Ability>().Slot == SlotIndex)
                 return Ability;
         }
 
