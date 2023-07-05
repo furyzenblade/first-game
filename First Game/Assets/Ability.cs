@@ -35,7 +35,9 @@ public class Ability : MonoBehaviour
     // Listen zum Verhindern falschen Verhaltens wie multiple Hits etc. 
     public List<int> HitEntityIDs;
     public List<float> HitEntityFrequence;
-        
+
+    // Timer bis die Ability despawned
+    public float TimerTillDeath;
     void Update()
     {
         // Reduziert das HitDelay der Ability für jeden einzelnen Entity
@@ -43,6 +45,11 @@ public class Ability : MonoBehaviour
         {
             HitEntityFrequence[i] -= Time.deltaTime;
         }
+
+        // Reduziert die Zeit bis zum Despawn um 1f/Sek
+        TimerTillDeath -= Time.deltaTime;
+        if (TimerTillDeath < 0)
+            Destroy(gameObject);
     }
 
     // Wenn der mit einem Objekt collidet (Auch Behaviour eigentlich)
@@ -54,7 +61,7 @@ public class Ability : MonoBehaviour
             if (CanHitEntity(collision))
             {
                 // GameObject mit der Collision bekommt Damage
-                collision.gameObject.GetComponent<EnemyAI>().AddDamage(Damage, CritChance, CritDamage);
+                collision.gameObject.GetComponent<DarkZombieAI>().AddDamage(Damage, CritChance, CritDamage);
 
                 // Wenn CanHitMultipleTargets an ist, wird die Ability nicht zerstört
                 if (!CanHitMultipleTargets)
@@ -71,7 +78,7 @@ public class Ability : MonoBehaviour
         // Bestimmt, ob der Entity gehittet werden kann
         bool CanHit = true;
         // Variablen zur Identifizierung vom Entity
-        int EntityID = collision.gameObject.GetComponent<EnemyAI>().ID;
+        int EntityID = collision.gameObject.GetComponent<DarkZombieAI>().ID;
         int EntityIndex = HitEntityIDs.IndexOf(EntityID);
 
         // Wenn das Entity schon in der Liste steht & der Cooldown > 0f ist, kann nicht gehittet werden

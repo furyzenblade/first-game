@@ -45,12 +45,4 @@ public class LightningStrikeBehaviour : Ability
 
         return mousePosition;
     }
-
-    public float SecondsRemaining;
-    void Update()
-    {
-        SecondsRemaining -= Time.deltaTime;
-        if (SecondsRemaining < 0 )
-            Destroy(gameObject);
-    }
 }

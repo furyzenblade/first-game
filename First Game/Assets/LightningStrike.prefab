@@ -108,8 +108,8 @@ MonoBehaviour:
   MultipleHitFrequence: 3.4028235e+38
   HitEntityIDs: 
   HitEntityFrequence: []
+  TimerTillDeath: 1.5
   Range: 5
-  SecondsRemaining: 2
 --- !u!70 &583530166586894522
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
