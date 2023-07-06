@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 // Gibt das Muster an, in dem der Enemy die Character angreift
@@ -5,13 +6,19 @@ using UnityEngine;
     // Basic Attack könnte auch eine Ability werden ?? 
 public class DarkZombieAI : EnemyAI
 {
+    public int SlowStrength;
+
     // Spielt jeden Frame die AI
     private new void Update()
     {
         base.Update();
 
         MoveTowardsEnemy();
-        TryBasicAttack();
+        if (TryBasicAttack())
+        {
+            SlowAttribute Slow = AttackedCharacter.AddComponent<SlowAttribute>();
+            Slow.Strength = SlowStrength;
+        }
     }
 
     // Bewegt den Enemy in Richtung seines Targets
@@ -32,18 +39,23 @@ public class DarkZombieAI : EnemyAI
     // Gibt an, wie viel Cooldown für einen Basic Attack herrscht
     public float Cooldown;
     // Slapped den targeted Character, wenn möglich
-    private void TryBasicAttack()
+    private bool TryBasicAttack()
     {
         // Wenn kein Cooldown & in AttackRange wird der Enemy attacked
-        if (IsInRange(BasicAttackRange) && Cooldown < 0)
+        bool CanAttack = IsInRange(BasicAttackRange) && (Cooldown < 0);
+
+        if (CanAttack)
         {
             // Cooldown wird resettet
-            Cooldown = AttackSpeed;
+            Cooldown += AttackSpeed;
             // Fügt dem angegriffenen Character Schaden hinzu
             AttackedCharacter.GetComponent<CharacterController>().AddDamage(Damage);
         }
         // Cooldown wird um 1.0f pro Sekunde runter gesetzt
-        Cooldown -= Time.deltaTime;
+        if (Cooldown > -Time.deltaTime)
+            Cooldown -= Time.deltaTime;
+
+        return CanAttack;
     }
 
     // Guckt, ob ein Gegner in Range für eine gewisse Ability z.B. BasicAttack ist

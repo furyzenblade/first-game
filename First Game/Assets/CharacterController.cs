@@ -62,7 +62,12 @@ public class CharacterController : MonoBehaviour
         if (HP < 0)
             gameObject.SetActive(false);
 
-        // Aktuelle Stats werden ermittelt
+        HandleSlows();
+        UpdateAbilityCooldowns();
+    }
+
+    private void HandleSlows()
+    {
         CurrentMovementSpeed = MovementSpeed;
 
         // Wenn Slows existieren, dann werden sie aufgelistet
@@ -70,14 +75,18 @@ public class CharacterController : MonoBehaviour
 
         // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
         foreach (SlowAttribute Slow in Slows)
-            CurrentMovementSpeed *= 1 - (Slow.Strength / 100);
+            CurrentMovementSpeed *= 1f - (Slow.Strength / 100f);
+    }
 
+    private void UpdateAbilityCooldowns()
+    {
         // Reduziert die Cooldowns aller abilitys slightly
         // Muss auch für Buff Durations etc. gemacht werden
-        for(int i = 0; i < AbilityCooldowns.Count; i++)
+        for (int i = 0; i < AbilityCooldowns.Count; i++)
         {
             // Time.deltaTime sorgt dafür, dass pro Sekunde 1.0f reduziert werden
-            AbilityCooldowns[i] -= Time.deltaTime;
+            if (AbilityCooldowns[i] > -Time.deltaTime)
+                AbilityCooldowns[i] -= Time.deltaTime;
         }
     }
 
@@ -85,11 +94,11 @@ public class CharacterController : MonoBehaviour
     public void MoveCharacter(Vector3 Dir)
     {
         // Bewegt den Character abhängig von der Direction
-        gameObject.transform.position += Dir * (MovementSpeed * Time.deltaTime);
+        gameObject.transform.position += Dir * (CurrentMovementSpeed * Time.deltaTime);
 
         // Bewegt die Kamera mit dem Movement
         if (IsControlledChar)
-            GameObject.FindGameObjectWithTag("MainCamera").transform.position += Dir * (MovementSpeed * Time.deltaTime);
+            GameObject.FindGameObjectWithTag("MainCamera").transform.position += Dir * (CurrentMovementSpeed * Time.deltaTime);
     }
 
     // Nutzt die Ability mit einem bestimmten Index, die hier gespeichert wurde
@@ -104,7 +113,7 @@ public class CharacterController : MonoBehaviour
         if (AbilityCooldowns[Index] < 0.0f)
         {
             // Setzt den Cooldown der Ability zurück
-            AbilityCooldowns[Index] = GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
+            AbilityCooldowns[Index] += GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
 
             // Erstellt die Ability mit Position & Rotation
             Instantiate(Ability, gameObject.transform.position, Quaternion.identity);

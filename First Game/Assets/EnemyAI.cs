@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
@@ -18,9 +21,13 @@ public class EnemyAI : MonoBehaviour
 
     // Utility Stats
     public float MovementSpeed;
+    private float CurrentMovementSpeed;
     public int BasicAttackRange;
 
     public GameObject AttackedCharacter;
+
+    // Negative Statuseffekte etc.
+    private List<SlowAttribute> Slows = new() { };
 
     // Spielt jeden Frame die AI
     public void Update()
@@ -31,6 +38,18 @@ public class EnemyAI : MonoBehaviour
 
         // Bestimmt, welcher Character angegriffen wird
         AttackedCharacter = SceneDB.HighestAggroCharacter;
+    }
+
+    private void HandleSlows()
+    {
+        CurrentMovementSpeed = MovementSpeed;
+
+        // Wenn Slows existieren, dann werden sie aufgelistet
+        try { Slows = gameObject.GetComponents<SlowAttribute>().ToList(); } catch { }
+
+        // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
+        foreach (SlowAttribute Slow in Slows)
+            CurrentMovementSpeed *= 1f - (Slow.Strength / 100f);
     }
 
     // Gibt dem Enemy Damage abhängig von den Stats des Angreifers und der Armor

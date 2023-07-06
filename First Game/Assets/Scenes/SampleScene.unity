@@ -386,7 +386,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1139301894}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -5}
+  m_LocalPosition: {x: -4, y: 0, z: -5}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -409,10 +409,12 @@ MonoBehaviour:
   MaxHP: 100
   HP: 100
   Damage: 10
-  AttackSpeed: 5
+  AttackSpeed: 0.75
   Armor: 0
   MovementSpeed: 5
   BasicAttackRange: 1
+  AttackedCharacter: {fileID: 0}
+  SlowStrength: 50
   Cooldown: 0
 --- !u!212 &1139301900
 SpriteRenderer:

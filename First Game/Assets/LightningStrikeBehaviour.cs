@@ -9,6 +9,6 @@ public class LightningStrikeBehaviour : Ability
     // Setzt das GameObject an die richtige Stelle
     void Start()
     {
-        AbilityPlacer.GetSpawnPosition(Range, gameObject.AddComponent<CircleCollider2D>(), transform);
+        transform.position = AbilityPlacer.GetSpawnPosition(Range, gameObject.AddComponent<CircleCollider2D>(), transform);
     }
 }
