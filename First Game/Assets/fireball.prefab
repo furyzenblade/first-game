@@ -56,7 +56,7 @@ MonoBehaviour:
   MultipleHitFrequence: 0
   HitEntityIDs: 
   HitEntityFrequence: []
-  TimerTillDeath: 10
+  TimerTillDeath: 5
   MovementSpeed: 7.5
 --- !u!212 &5909526306438202681
 SpriteRenderer:

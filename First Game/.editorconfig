@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS0108: Element blendet vererbte Element aus; fehlendes 'new'-Schlüsselwort
+dotnet_diagnostic.CS0108.severity = none

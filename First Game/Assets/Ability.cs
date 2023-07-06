@@ -38,7 +38,7 @@ public class Ability : MonoBehaviour
 
     // Timer bis die Ability despawned
     public float TimerTillDeath;
-    void Update()
+    public void Update()
     {
         // Reduziert das HitDelay der Ability für jeden einzelnen Entity
         for (int i = 0; i < HitEntityFrequence.Count; i++)

@@ -6,9 +6,7 @@ using UnityEngine;
 public class DarkZombieAI : EnemyAI
 {
     // Spielt jeden Frame die AI
-#pragma warning disable CS0108 // Element blendet vererbte Element aus; fehlendes 'new'-Schlüsselwort
-    private void Update()
-#pragma warning restore CS0108 // Element blendet vererbte Element aus; fehlendes 'new'-Schlüsselwort
+    private new void Update()
     {
         base.Update();
 
