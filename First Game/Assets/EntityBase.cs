@@ -30,6 +30,8 @@ public class EntityBase : MonoBehaviour
     public float MaxSpeed;
     public float Speed;
 
+    public int BasicAttackRange;
+
     public int AbliltyHaste;
 
     #endregion Stats
@@ -119,5 +121,11 @@ public class EntityBase : MonoBehaviour
         // HP werden auf MaxHP gedeckelt
         if (HP > MaxHP)
             HP = MaxHP;
-    }    
+    }
+
+    // Gibt dem Enemy Damage abhängig von den Stats des Angreifers und der Armor
+    public void AddDamage(float Damage, float CritChance = 0, float CritDamage = 0)
+    {
+        HP -= GF.CalculateDamage(Damage, Armor, CritChance, CritDamage);
+    }
 }

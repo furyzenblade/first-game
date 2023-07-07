@@ -405,7 +405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d82122ed0032b3f4c88d4e2ca13ac04b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 0
+  MaxHP: 100
   HP: 100
   Armor: 0
   CurrentArmor: 0
@@ -417,15 +417,14 @@ MonoBehaviour:
   CritDamage: 0
   MaxSpeed: 5
   Speed: 0
+  BasicAttackRange: 1
   AbliltyHaste: 0
   IsStunned: 0
   Abilitys: 
   AbilityCooldowns: []
   ID: 0
-  BasicAttackRange: 1
   AttackedCharacter: {fileID: 0}
-  SlowStrength: 50
-  Cooldown: 0
+  BasicAttackSlowStrength: 30
 --- !u!212 &1139301900
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -630,12 +629,13 @@ MonoBehaviour:
   CurrentArmor: 0
   Damage: 10
   CurrentDamage: 0
-  AttackSpeed: 2
+  AttackSpeed: 5
   CurrentAttackSpeed: 0
   CritChance: 50
   CritDamage: 50
   MaxSpeed: 5
   Speed: 0
+  BasicAttackRange: 0
   AbliltyHaste: 0
   IsStunned: 0
   Abilitys: 

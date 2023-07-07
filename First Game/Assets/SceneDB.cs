@@ -48,6 +48,7 @@ public class SceneDB : MonoBehaviour
         new() { KeyCode.A.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveLeft", true.ToString(), ""},
         new() { KeyCode.S.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveDown", true.ToString(), ""},
         new() { KeyCode.D.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveRight", true.ToString(), ""},
+        new() { KeyCode.Mouse1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "BasicAttack", true.ToString(), "" },
         new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""},
         new() { KeyCode.Alpha2.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 2", true.ToString(), ""}
     };
@@ -55,7 +56,13 @@ public class SceneDB : MonoBehaviour
     // Liste an allen Abilitys im Game (Muss denke ich (philipp) nochmal reworked werden & generischer programmiert werden) 
     public static List<GameObject> AllAbilitys = new() { };
 
-    // Lädt praktisch das Game mit Settings etc.
+    // Aktuell kontrollierter Character
+    public static GameObject ControlledCharacter;
+
+    // Bestimmt, ob der Befehl für einen BasicAttack gegeben wurde
+    public static bool CharacterIsAttacking;
+
+    // Lädt das Game mit Settings etc.
     void Start()
     {
         // Find all prefab GUIDs in the Assets folder
@@ -95,6 +102,11 @@ public class SceneDB : MonoBehaviour
     // Updatet globale Werte wie Aggro etc. framewise, damit nicht mehrere GameObjects dies machen müssen
     void Update()
     {
+        // Aktuell kontrollierter Character wird ermittelt
+        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Character"))
+            if (Character.GetComponent<CharacterController>().IsControlledChar)
+                ControlledCharacter = Character;
+
         // Character Aggro wird ermittelt
         CharacterAggros = GetCharacterAggros();
         HighestAggroCharacter = GetHighestAggroCharacter();
@@ -130,13 +142,20 @@ public class SceneDB : MonoBehaviour
                             MoveCharacterDirection += Vector3.right;
                             break;
                         case 4:
+                            GameObject HitObject = GetHoveredObject();
+                            if (HitObject != null)
+                            {
+                                ControlledCharacter.GetComponent<CharacterController>().UseBasicAttack(HitObject);
+                            }
+                            break;
+                        case 5:
                             // Holt die Ability auf einem Slot
                             GameObject Ability = AllAbilitys[CharacterController.Abilitys[0]];
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
                             if (Ability != null)
                                 CharacterController.UseAbility(0);
                             break;
-                        case 5:
+                        case 6:
                             // Holt die Ability auf einem Slot
                             Ability = AllAbilitys[CharacterController.Abilitys[1]];
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
@@ -248,6 +267,22 @@ public class SceneDB : MonoBehaviour
         return Characters[Aggros.IndexOf(Aggros.Max())];
     }
 
+    public GameObject GetHoveredObject()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
+        try
+        {
+            if (hit.collider.gameObject != null)
+            {
+                return hit.collider.gameObject;
+            }
+        }
+        catch { Debug.Log("Hit GameObject has no Collider"); }
+
+        return null;
+    }
+
     public static GameObject GetAbilityOnSlot(int SlotIndex)
     {
         List<GameObject> Abilitys = GameObject.FindGameObjectsWithTag("Ability").ToList();
@@ -259,5 +294,15 @@ public class SceneDB : MonoBehaviour
         }
 
         return null;
+    }
+
+
+    // Vergleicht zwei Components miteinander (ChatGPT Code)
+    public static bool CompareComponents<T>(T component1, T component2)
+    {
+        string json1 = JsonUtility.ToJson(component1);
+        string json2 = JsonUtility.ToJson(component2);
+
+        return json1 == json2;
     }
 }

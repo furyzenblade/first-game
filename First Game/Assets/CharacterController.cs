@@ -59,10 +59,25 @@ public class CharacterController : EntityBase
         }
     }
 
-    // Gibt dem Character Damage ohne Möglichkeit auf Crits
-    public void AddDamage(float Damage)
+    public void UseBasicAttack(GameObject Enemy)
     {
-        HP -= GF.CalculateDamage(Damage, Armor);
+        // Erstellt eine neue BasicAttack
+        BasicAttack NewAttack = gameObject.AddComponent<BasicAttack>();
+
+        // Gibt dem BasicAttack Werte
+        NewAttack.Damage = Damage;
+        NewAttack.CritChance = CritChance;
+        NewAttack.CritDamage = CritDamage;
+        NewAttack.MovementSpeed = Speed;
+        NewAttack.AttackSpeed = AttackSpeed;
+        NewAttack.Range = BasicAttackRange;
+        NewAttack.Target = Enemy;
+    }
+
+    // Gibt dem Character Damage ohne Möglichkeit auf Crits
+    public new void AddDamage(float Damage, float CritChance = 0, float CritDamage = 0)
+    {
+        base.AddDamage(Damage, CritChance, CritDamage);
 
         // Wenn der Character keine HP mehr hat, wird er inaktiv gesetzt
         if (HP < 0)
