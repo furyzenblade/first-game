@@ -407,7 +407,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHP: 100
   HP: 100
-  Armor: 0
+  Armor: 1000
   CurrentArmor: 0
   Damage: 10
   CurrentDamage: 0
@@ -625,11 +625,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHP: 100
   HP: 100
-  Armor: 150
+  Armor: 1500
   CurrentArmor: 0
   Damage: 10
   CurrentDamage: 0
-  AttackSpeed: 5
+  AttackSpeed: 0.5
   CurrentAttackSpeed: 0
   CritChance: 50
   CritDamage: 50

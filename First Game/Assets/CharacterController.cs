@@ -30,9 +30,8 @@ public class CharacterController : EntityBase
         // Bewegt den Character abhängig von der Direction
         gameObject.transform.position += Dir * (Speed * Time.deltaTime);
 
-        // Bewegt die Kamera mit dem Movement
-        if (IsControlledChar)
-            GameObject.FindGameObjectWithTag("MainCamera").transform.position += Dir * (Speed * Time.deltaTime);
+        // Bewegt die Main Camera parallel zum Character
+        Camera.main.transform.position += Dir * (Speed * Time.deltaTime);
     }
 
     // Nutzt die Ability mit einem bestimmten Index, die hier gespeichert wurde
@@ -61,17 +60,17 @@ public class CharacterController : EntityBase
 
     public void UseBasicAttack(GameObject Enemy)
     {
-        // Erstellt eine neue BasicAttack
-        BasicAttack NewAttack = gameObject.AddComponent<BasicAttack>();
+        if (HandleBasicAttacks(Enemy))
+        {
+            // Erstellt eine neue BasicAttack
+            BasicAttack NewAttack = gameObject.AddComponent<BasicAttack>();
 
-        // Gibt dem BasicAttack Werte
-        NewAttack.Damage = Damage;
-        NewAttack.CritChance = CritChance;
-        NewAttack.CritDamage = CritDamage;
-        NewAttack.MovementSpeed = Speed;
-        NewAttack.AttackSpeed = AttackSpeed;
-        NewAttack.Range = BasicAttackRange;
-        NewAttack.Target = Enemy;
+            // Gibt dem BasicAttack Werte
+            NewAttack.Damage = Damage;
+            NewAttack.CritChance = CritChance;
+            NewAttack.Range = BasicAttackRange;
+            NewAttack.Target = Enemy;
+        }
     }
 
     // Gibt dem Character Damage ohne Möglichkeit auf Crits

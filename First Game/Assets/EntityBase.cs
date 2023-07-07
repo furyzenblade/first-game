@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 // Grundlage für alle GameObjects, die getroffen werden können sollen
@@ -65,6 +66,7 @@ public class EntityBase : MonoBehaviour
             IsStunned = false;
             HandleDamageReductions();
             HandleArmorReductions();
+            HandleAttackspeedSlows();
         }
         // Wenn Stuns existieren, können keine Abilitys gecastet werden & Speed ist 0
         else
@@ -98,6 +100,15 @@ public class EntityBase : MonoBehaviour
         foreach (ArmorReductionAttribute ArmorReduction in gameObject.GetComponents<ArmorReductionAttribute>())
             CurrentArmor *= 1f - (ArmorReduction.Strength / 100f);
     }
+    private void HandleAttackspeedSlows()
+    {
+        CurrentAttackSpeed = AttackSpeed;
+
+        // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
+        foreach (AttackSpeedSlowAttribute AttackSpeedSlow in gameObject.GetComponents<AttackSpeedSlowAttribute>())
+            CurrentAttackSpeed *= 1f - (AttackSpeedSlow.Strength / 100f);
+    }
+
 
     private void UpdateAbilityCooldowns()
     {
@@ -127,5 +138,27 @@ public class EntityBase : MonoBehaviour
     public void AddDamage(float Damage, float CritChance = 0, float CritDamage = 0)
     {
         HP -= GF.CalculateDamage(Damage, Armor, CritChance, CritDamage);
+    }
+
+    public bool HandleBasicAttacks(GameObject Enemy)
+    {
+        if (Enemy.CompareTag("Hostile") || Enemy.CompareTag("Character"))
+        {
+            BasicAttack CurrentAttack = null;
+            try
+            {
+                CurrentAttack = gameObject.GetComponent<BasicAttack>();
+            }
+            catch { }
+
+            if (CurrentAttack == null)
+                return true;
+            else if (CurrentAttack.Target.name != Enemy.name)
+            {
+                Destroy(CurrentAttack);
+                return true;
+            }
+        }
+        return false;
     }
 }

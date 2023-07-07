@@ -18,23 +18,23 @@ public class DarkZombieAI : EnemyAI
 
     public void UseBasicAttack(GameObject Enemy)
     {
-        // Erstellt eine neue BasicAttack
-        BasicAttack NewAttack = gameObject.AddComponent<BasicAttack>();
+        if (HandleBasicAttacks(Enemy))
+        {
+            // Erstellt eine neue BasicAttack
+            BasicAttack NewAttack = gameObject.AddComponent<BasicAttack>();
 
-        // Gibt dem BasicAttack Werte
-        NewAttack.Damage = Damage;
-        NewAttack.CritChance = CritChance;
-        NewAttack.CritDamage = CritDamage;
+            // Gibt dem BasicAttack Werte
+            NewAttack.Damage = Damage;
+            NewAttack.CritChance = CritChance;
 
-        // Utility Werte
-        NewAttack.MovementSpeed = Speed;
-        NewAttack.AttackSpeed = AttackSpeed;
-        NewAttack.Range = BasicAttackRange;
+            // Utility Werte
+            NewAttack.Range = BasicAttackRange;
 
-        // Target
-        NewAttack.Target = Enemy;
+            // Target
+            NewAttack.Target = Enemy;
 
-        // Statuseffekte
-        NewAttack.SlowStrength = BasicAttackSlowStrength;
+            // Statuseffekte
+            NewAttack.SlowStrength = BasicAttackSlowStrength;
+        }
     }
 }

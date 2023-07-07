@@ -15,15 +15,12 @@ public class BasicAttack : MonoBehaviour
     public float AttackSpeed;
     public int Range;
 
-    // Soll vom GameObject jeden Frame aktualisiert werden wegen Statuseffekten
-    public float MovementSpeed;
-
     // Statuseffekte, die von BasicAttack übergeben werden: 
     public int SlowStrength = 0;
 
     void Start()
     {
-        DestroyOtherComponents();
+        //DestroyOtherComponents();
 
         Debug.Log("BasicAttack was generated successfully on: " + gameObject.name + " targeting: " + Target.name);
     }
@@ -31,7 +28,6 @@ public class BasicAttack : MonoBehaviour
     void Update()
     {
         Damage = gameObject.GetComponent<EntityBase>().CurrentDamage;
-        MovementSpeed = gameObject.GetComponent<EntityBase>().Speed;
         AttackSpeed = gameObject.GetComponent<EntityBase>().CurrentAttackSpeed;
 
         if (Target == null || !Target.activeSelf)
@@ -45,33 +41,6 @@ public class BasicAttack : MonoBehaviour
             Cooldown -= Time.deltaTime;
     }
 
-    // Löscht alle BasicAttacks außer das hier
-    public void DestroyOtherComponents()
-    {
-        bool destroySelf = false;
-
-        // Get all BasicAttack components in the gameObject
-        BasicAttack[] attacks = gameObject.GetComponents<BasicAttack>();
-
-        foreach (BasicAttack attack in attacks)
-        {
-            // Compare the components for equality, excluding the current one
-            if (attack != this && SceneDB.CompareComponents(this, attack))
-            {
-                destroySelf = true;
-            }
-            else if (attack != this)
-            {
-                Destroy(attack);
-            }
-        }
-
-        if (destroySelf)
-        {
-            Destroy(this);
-        }
-    }
-
     // Bewegt den Enemy in Richtung seines Targets
     // Unter Bedingungen wie: Nicht in Basic Attack Range sein etc.
     private void MoveTowardsEnemy()
@@ -83,7 +52,11 @@ public class BasicAttack : MonoBehaviour
         if (DistanceToEnemy > Range / 10.0f)
         {
             Vector3 direction = Target.transform.position - transform.position;
-            transform.Translate(MovementSpeed * Time.deltaTime * direction.normalized);
+
+            if (CompareTag("Hostile"))
+                transform.Translate(gameObject.GetComponent<EnemyAI>().Speed * Time.deltaTime * direction.normalized);
+            else
+                gameObject.GetComponent<CharacterController>().MoveCharacter(direction);
         }
     }
 

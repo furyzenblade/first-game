@@ -121,11 +121,11 @@ public class SceneDB : MonoBehaviour
                 // Gibt die Direction an, in die der Character sich bewegt
                 Vector3 MoveCharacterDirection = Vector3.zero;
 
+                CharacterController CharacterController = Character.GetComponent<CharacterController>();
+
                 // Für alle validen Inputs wird eine Aktion gesucht & ausgeführt
                 foreach (int number in GetValidInputIndexes())
                 {
-                    CharacterController CharacterController = Character.GetComponent<CharacterController>();
-
                     // switch() case verarbeitet die Input Numbers
                     switch (number)
                     {
@@ -166,7 +166,15 @@ public class SceneDB : MonoBehaviour
 
                     }
                 }
-                Character.GetComponent<CharacterController>().MoveCharacter(MoveCharacterDirection);
+                // Wenn sich der Character bewegt ...
+                if (MoveCharacterDirection != Vector3.zero)
+                {
+                    // ... Bewegt er sich
+                    CharacterController.MoveCharacter(MoveCharacterDirection);
+
+                    // ... Löscht er alle BasicAttacks
+                    try { Destroy(CharacterController.gameObject.GetComponent<BasicAttack>()); } catch { }
+                }
             }
         }
         
