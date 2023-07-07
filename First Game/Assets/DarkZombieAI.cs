@@ -32,7 +32,7 @@ public class DarkZombieAI : EnemyAI
         if (DistanceToEnemy > BasicAttackRange / 10.0f)
         {
             Vector3 direction = AttackedCharacter.transform.position - transform.position;
-            transform.Translate(MovementSpeed * Time.deltaTime * direction.normalized);
+            transform.Translate(Speed * Time.deltaTime * direction.normalized);
         }
     }
 

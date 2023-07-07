@@ -405,13 +405,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d82122ed0032b3f4c88d4e2ca13ac04b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 0
-  MaxHP: 100
+  MaxHP: 0
   HP: 100
-  Damage: 10
-  AttackSpeed: 0.75
   Armor: 0
-  MovementSpeed: 5
+  CurrentArmor: 0
+  Damage: 10
+  CurrentDamage: 0
+  AttackSpeed: 0.75
+  CurrentAttackSpeed: 0
+  CritChance: 0
+  CritDamage: 0
+  MaxSpeed: 5
+  Speed: 0
+  AbliltyHaste: 0
+  IsStunned: 0
+  Abilitys: 
+  AbilityCooldowns: []
+  ID: 0
   BasicAttackRange: 1
   AttackedCharacter: {fileID: 0}
   SlowStrength: 50
@@ -617,17 +627,21 @@ MonoBehaviour:
   MaxHP: 100
   HP: 100
   Armor: 150
+  CurrentArmor: 0
   Damage: 10
+  CurrentDamage: 0
   AttackSpeed: 2
+  CurrentAttackSpeed: 0
   CritChance: 50
   CritDamage: 50
-  MovementSpeed: 5
+  MaxSpeed: 5
+  Speed: 0
   AbliltyHaste: 0
-  CurrentMovementSpeed: 0
-  IsControlledChar: 0
-  Aggro: 0
+  IsStunned: 0
   Abilitys: 
   AbilityCooldowns: []
+  IsControlledChar: 0
+  Aggro: 0
 --- !u!70 &1588933438
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

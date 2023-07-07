@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // Speichert alle Formeln zur Berechnung von Stats im Game
@@ -43,5 +44,23 @@ public class GF
     public static float CalculateCooldown(float Cooldown, float CDR)
     {
         return Cooldown * (100f / (100 + CDR));
+    }
+
+    // Formeln zum Berechnen von Healing
+    public static float CalculateHealing(float Healing, float HealingPower = 0, float AntiHeal = 0)
+    {
+        return Healing * (1 + HealingPower) * AntiHeal;
+    }
+    public static float CalculateAntiHealing(List<AntiHealAttribute> AntiHeals)
+    {
+        // Healing ist anfangs auf 1 also 100%
+        float Healing = 1;
+
+        // Healing wird für jede AntiHeal Quelle reduziert
+        foreach (AntiHealAttribute AntiHeal in AntiHeals)
+            Healing -= Healing * AntiHeal.Strength;
+
+        // Healing wird als effektive Value zum direkten Multiplizieren übergeben
+        return Healing;
     }
 }
