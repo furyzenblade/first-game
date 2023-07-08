@@ -43,17 +43,17 @@ public class SceneDB : MonoBehaviour
     // Default Settings werden hier manuell gespeichert
     public List<List<string>> DefaultSettings = new()
     {
-        // Die einzelnen Settings als List<string>
+        // Die einzelnen default Settings als List<string>
         new() { KeyCode.W.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveUp", true.ToString(), ""},
         new() { KeyCode.A.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveLeft", true.ToString(), ""},
         new() { KeyCode.S.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveDown", true.ToString(), ""},
         new() { KeyCode.D.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveRight", true.ToString(), ""},
-        new() { KeyCode.Mouse1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "BasicAttack", true.ToString(), "" },
+        new() { KeyCode.Mouse0.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "BasicAttack", true.ToString(), "" },
         new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""},
         new() { KeyCode.Alpha2.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 2", true.ToString(), ""}
     };
 
-    // Liste an allen Abilitys im Game (Muss denke ich (philipp) nochmal reworked werden & generischer programmiert werden) 
+    // Liste an allen Abilitys im Game
     public static List<GameObject> AllAbilitys = new() { };
 
     // Aktuell kontrollierter Character
@@ -276,7 +276,7 @@ public class SceneDB : MonoBehaviour
     }
 
     public GameObject GetHoveredObject()
-    {
+    {        
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
         try
