@@ -22,6 +22,8 @@ public class CharacterController : EntityBase
         AbilityCooldowns.Add(0);
         Abilitys.Add(1);
         AbilityCooldowns.Add(1);
+        Abilitys.Add(2);
+        AbilityCooldowns.Add(2);
     }
 
     // Bewegt den Character jeden Frame in die global errechnete Richtung
@@ -55,6 +57,8 @@ public class CharacterController : EntityBase
             Ability.GetComponent<Ability>().Damage = Damage;
             Ability.GetComponent<Ability>().CritChance = CritChance;
             Ability.GetComponent<Ability>().CritDamage = CritDamage;
+
+            Ability.GetComponent<Ability>();
         }
     }
 

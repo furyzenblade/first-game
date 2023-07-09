@@ -142,7 +142,7 @@ public class EntityBase : MonoBehaviour
 
     public bool HandleBasicAttacks(GameObject Enemy)
     {
-        if (Enemy.CompareTag("Hostile") || Enemy.CompareTag("Character"))
+        if (Enemy.CompareTag("Enemy") || Enemy.CompareTag("Ally"))
         {
             BasicAttack CurrentAttack = null;
             try

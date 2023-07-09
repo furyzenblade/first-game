@@ -5,6 +5,9 @@ using UnityEngine;
 // Prefab für alle Abilitys
 public class Ability : MonoBehaviour
 {
+    // Tag vom GameObject, was diese Ability gezündet hat
+    public string OriginTag;
+
     // Utility Upgrades
     public float Cooldown;
     public float Scale
@@ -22,6 +25,10 @@ public class Ability : MonoBehaviour
     public float Damage;
     public float CritChance;
     public float CritDamage = 30;
+
+    // Healing Operatoren
+    public float Healing;
+    public float HealingPower;
     
     // Nutzbarkeit
     public int Slot;
@@ -52,54 +59,36 @@ public class Ability : MonoBehaviour
             Destroy(gameObject);
     }
 
-    // Wenn der mit einem Objekt collidet (Auch Behaviour eigentlich)
-    private void OnCollisionEnter2D(Collision2D collision)
+    // Fügt einem Entity unter Bedingungen Schaden hinzu
+    public void DamageEntity(GameObject Entity, bool HitsEnemys, bool HitsAllys)
     {
-        // Wenn kein EnemyEventHandler vorhanden ist, wird die Collision ignoriert
-        try
+        if (HitsEnemys && Entity.CompareTag("Enemy"))
         {
-            if (CanHitEntity(collision))
-            {
-                // GameObject mit der Collision bekommt Damage
-                collision.gameObject.GetComponent<DarkZombieAI>().AddDamage(Damage, CritChance, CritDamage);
-
-                // Wenn CanHitMultipleTargets an ist, wird die Ability nicht zerstört
-                if (!CanHitMultipleTargets)
-                    Destroy(gameObject);
-            }
+            Entity.GetComponent<EnemyAI>().AddDamage(Damage, CritChance, CritDamage);
+            if (!CanHitMultipleTargets)
+                Destroy(gameObject);
         }
-        // Getroffenes Objekt war kein Enemy (hat keine EnemyAI) also wird er ignoriert
-        catch { }
+        if (HitsAllys && Entity.CompareTag("Ally"))
+        {
+            Entity.GetComponent<CharacterController>().AddDamage(Damage, CritChance, CritDamage);
+            if (!CanHitMultipleTargets)
+                Destroy(gameObject);
+        }
     }
-
-    // Analysiert ein Entity, ob er gehittet werden kann
-    bool CanHitEntity(Collision2D collision)
+    // Healed einen Entity unter Bedingungen
+    public void HealEntity(GameObject Entity, bool HitsEnemys, bool HitsAllys)
     {
-        // Bestimmt, ob der Entity gehittet werden kann
-        bool CanHit = true;
-        // Variablen zur Identifizierung vom Entity
-        int EntityID = collision.gameObject.GetComponent<DarkZombieAI>().ID;
-        int EntityIndex = HitEntityIDs.IndexOf(EntityID);
-
-        // Wenn das Entity schon in der Liste steht & der Cooldown > 0f ist, kann nicht gehittet werden
-        if (EntityIndex != -1 && HitEntityFrequence[EntityIndex] > 0f)
-            CanHit = false;
-
-        // Aktualisiert die HitEntityID- und HitEntityFrequence- Listen
-        if (CanHit)
+        if (HitsEnemys && Entity.CompareTag("Enemy"))
         {
-            // Wenn kein Index gefunden wurde, wird ein neues erstellt
-            if (EntityIndex == -1)
-            {
-                HitEntityIDs.Add(EntityID);
-                HitEntityFrequence.Add(MultipleHitFrequence);
-            }
-            else
-            {
-                HitEntityFrequence[EntityIndex] = MultipleHitFrequence;
-            }
+            Entity.GetComponent<EnemyAI>().Heal(Healing, HealingPower);
+            if (!CanHitMultipleTargets)
+                Destroy(gameObject);
         }
-
-        return CanHit;
+        if (HitsAllys && Entity.CompareTag("Ally"))
+        {
+            Entity.GetComponent<CharacterController>().Heal(Healing, HealingPower);
+            if (!CanHitMultipleTargets)
+                Destroy(gameObject);
+        }
     }
 }

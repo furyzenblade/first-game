@@ -1,9 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-// Verwaltet die Hitboxen & Spawns der LightningStrike Ability
-public class LightningStrikeBehaviour : Ability
+public class HealingCircleBehaviour : Ability
 {
-    // Range, in der der Blitz platziert werden kann
     public float Range;
 
     // Setzt das GameObject an die richtige Stelle
@@ -14,6 +14,6 @@ public class LightningStrikeBehaviour : Ability
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        DamageEntity(collision.gameObject, true, false);
+        HealEntity(collision.gameObject, false, true);
     }
 }

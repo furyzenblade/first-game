@@ -49,8 +49,12 @@ public class SceneDB : MonoBehaviour
         new() { KeyCode.S.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveDown", true.ToString(), ""},
         new() { KeyCode.D.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveRight", true.ToString(), ""},
         new() { KeyCode.Mouse0.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "BasicAttack", true.ToString(), "" },
+        new() { KeyCode.Mouse1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Base Ability", true.ToString(), ""},
         new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""},
-        new() { KeyCode.Alpha2.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 2", true.ToString(), ""}
+        new() { KeyCode.Alpha2.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 2", true.ToString(), ""},
+        new() { KeyCode.Alpha3.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 3", true.ToString(), ""},
+        new() { KeyCode.Alpha4.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 4", true.ToString(), ""},
+        new() { KeyCode.Alpha5.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 5", true.ToString(), ""}
     };
 
     // Liste an allen Abilitys im Game
@@ -84,7 +88,7 @@ public class SceneDB : MonoBehaviour
         }
 
         // Der erste Character wird controlled, weil bei Online Games eig. immer der lokale als erstes erscheint denke ich (philipp)
-        GameObject.FindGameObjectWithTag("Character").GetComponent<CharacterController>().IsControlledChar = true;
+        GameObject.FindGameObjectWithTag("Ally").GetComponent<CharacterController>().IsControlledChar = true;
 
         // EnemyID wird auf 0 gesetzt, weil noch kein Enemy gespawned wurde
         EnemyID = 0;
@@ -103,7 +107,7 @@ public class SceneDB : MonoBehaviour
     void Update()
     {
         // Aktuell kontrollierter Character wird ermittelt
-        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Character"))
+        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Ally"))
             if (Character.GetComponent<CharacterController>().IsControlledChar)
                 ControlledCharacter = Character;
 
@@ -114,7 +118,7 @@ public class SceneDB : MonoBehaviour
         #region InputManager
 
         // Character wird erfasst
-        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Character"))
+        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Ally"))
         {
             if (Character.GetComponent<CharacterController>().IsControlledChar)
             {
@@ -161,6 +165,13 @@ public class SceneDB : MonoBehaviour
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
                             if (Ability != null)
                                 CharacterController.UseAbility(1);
+                            break;
+                        case 7:
+                            // Holt die Ability auf einem Slot
+                            Ability = AllAbilitys[CharacterController.Abilitys[2]];
+                            // Wenn eine Ability gefunden wurde, wird sie ausgelöst
+                            if (Ability != null)
+                                CharacterController.UseAbility(2);
                             break;
                         // Weitere Settings hier hin
 
@@ -265,7 +276,7 @@ public class SceneDB : MonoBehaviour
         List<GameObject> Characters = new() { };
 
         // Für jeden Character wird die Aggro abgerufen
-        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Character"))
+        foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Ally"))
         {
             Aggros.Add(Character.GetComponent<CharacterController>().Aggro);
             Characters.Add(Character);

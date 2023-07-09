@@ -8,6 +8,8 @@ TagManager:
   - KeyBindings
   - Character
   - Ability
+  - Ally
+  - Enemy
   layers:
   - Default
   - TransparentFX

@@ -53,7 +53,7 @@ public class BasicAttack : MonoBehaviour
         {
             Vector3 direction = Target.transform.position - transform.position;
 
-            if (CompareTag("Hostile"))
+            if (CompareTag("Enemy"))
                 transform.Translate(gameObject.GetComponent<EnemyAI>().Speed * Time.deltaTime * direction.normalized);
             else
                 gameObject.GetComponent<CharacterController>().MoveCharacter(direction);
@@ -92,9 +92,9 @@ public class BasicAttack : MonoBehaviour
 
     private void HitIfEnemy()
     {
-        if (CompareTag("Hostile") && Target.CompareTag("Character"))
+        if (CompareTag("Enemy") && Target.CompareTag("Ally"))
             Target.GetComponent<CharacterController>().AddDamage(Damage, CritChance, CritDamage);
-        else if (CompareTag("Character") && Target.CompareTag("Hostile"))
+        else if (CompareTag("Ally") && Target.CompareTag("Enemy"))
             Target.GetComponent<EnemyAI>().AddDamage(Damage, CritChance, CritDamage);
         else 
             Debug.Log("Target: " + Target.name + " is not attackable with: " + name);

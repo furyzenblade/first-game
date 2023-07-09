@@ -373,7 +373,7 @@ GameObject:
   - component: {fileID: 1139301902}
   m_Layer: 0
   m_Name: DarkZombie
-  m_TagString: Hostile
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -539,7 +539,7 @@ GameObject:
   - component: {fileID: 1588933439}
   m_Layer: 0
   m_Name: Character
-  m_TagString: Character
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

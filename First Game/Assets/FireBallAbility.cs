@@ -18,4 +18,9 @@ public class FireBallAbility : Ability
         // FireBall wird nach Vorne bewegt
         transform.Translate(Vector3.right * (MovementSpeed * Time.deltaTime));
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        DamageEntity(collision.gameObject, true, false);
+    }
 }
