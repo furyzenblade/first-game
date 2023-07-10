@@ -1,15 +1,23 @@
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 // Prefab für alle Abilitys
 public class Ability : MonoBehaviour
 {
-    // Tag vom GameObject, was diese Ability gezündet hat
-    public string OriginTag;
+    // GameObject, das die Ability abgefeuert hat
+    public GameObject Origin { get; set; }
+    public EntityBase OriginBase { get; set; }
 
-    // Utility Upgrades
+    public bool HitsEnemys { get; set; }
+    public bool HitsAllys { get; set; }
+    public bool HealsEnemys { get; set; }
+    public bool HealsAllys { get; set; }
+
+    // Utility Values
     public float Cooldown;
+
+    // Größe der Ability
     public float Scale
     {
         get { return scale; }
@@ -23,28 +31,65 @@ public class Ability : MonoBehaviour
 
     // Damage Operatoren
     public float Damage;
-    public float CritChance;
-    public float CritDamage = 30;
+    public float DamageScaling;
+
+    public float CritChance { get; set; }
+    public float CritDamage { get; set; }
 
     // Healing Operatoren
     public float Healing;
-    public float HealingPower;
-    
-    // Nutzbarkeit
-    public int Slot;
-
-    // Bestimmt, ob mehrere Targets getroffen werden können
-    public bool CanHitMultipleTargets;
+    public float HealingScaling;
 
     // Bestimmt, ob und mit welcher Frequenz Enemys gehittet werden können
     public float MultipleHitFrequence;
 
     // Listen zum Verhindern falschen Verhaltens wie multiple Hits etc. 
-    public List<int> HitEntityIDs;
-    public List<float> HitEntityFrequence;
+    public List<int> HitEntityIDs { get; set; }
+    public List<float> HitEntityFrequence { get; set; }
 
     // Timer bis die Ability despawned
     public float TimerTillDeath;
+
+    // Bestimmt, ob mehrere Targets getroffen werden können
+    public bool CanHitMultipleTargets;
+
+    public void Start()
+    {
+        HitEntityIDs = new List<int>() { };
+        HitEntityFrequence = new List<float>() { };
+
+        // Setzt das Tag der Ability, falls nicht default gesetzt (kann evtl. trotzdem manche bugs nicht verhindern) 
+        tag = "Ability";
+
+        // Setzt die Origin Base für Performance Einsparungen
+        OriginBase = Origin.GetComponent<EntityBase>();
+
+        // Wenn die bools nicht belegt wurden, werden sie automatisch zugewiesen
+        if (HitsEnemys == false && HitsAllys == false && HealsEnemys == false && HealsAllys == false)
+        {
+            // Wenn der Ersteller der Ability ein Enemy ist, hittet er Allys & healed Enemys
+            if (Origin.CompareTag("Enemy"))
+            {
+                HitsAllys = true;
+                HealsEnemys = true;
+            }
+            // Wenn der Ersteller der Ability ein Ally ist, hittet er Enemys & healed Allys
+            else if (Origin.CompareTag("Ally"))
+            {
+                HitsEnemys = true;
+                HealsAllys = true;
+            }
+            // GameObject wird zerstört, wenn es ungültig erschaffen wurde (von keinem Entity)
+            else
+                Destroy(gameObject);
+        }
+
+        // Stats der Ability werden berechnet
+        Damage += DamageScaling / 100 * OriginBase.Damage;
+        CritChance = OriginBase.CritChance;
+        CritDamage = OriginBase.CritDamage;
+        Healing = GF.CalculateHealing(Healing, HealingScaling, OriginBase.HealingPower, OriginBase.GetAntiHealing());
+    }
     public void Update()
     {
         // Reduziert das HitDelay der Ability für jeden einzelnen Entity
@@ -60,35 +105,105 @@ public class Ability : MonoBehaviour
     }
 
     // Fügt einem Entity unter Bedingungen Schaden hinzu
-    public void DamageEntity(GameObject Entity, bool HitsEnemys, bool HitsAllys)
+    public void DamageEntity(GameObject Entity)
     {
-        if (HitsEnemys && Entity.CompareTag("Enemy"))
+        if (CanHitEntity(Entity) && Entity.CompareTag("Enemy"))
         {
             Entity.GetComponent<EnemyAI>().AddDamage(Damage, CritChance, CritDamage);
+
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
         }
-        if (HitsAllys && Entity.CompareTag("Ally"))
+        else if (CanHitEntity(Entity) && Entity.CompareTag("Ally"))
         {
             Entity.GetComponent<CharacterController>().AddDamage(Damage, CritChance, CritDamage);
+
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
         }
     }
     // Healed einen Entity unter Bedingungen
-    public void HealEntity(GameObject Entity, bool HitsEnemys, bool HitsAllys)
+    public void HealEntity(GameObject Entity)
     {
-        if (HitsEnemys && Entity.CompareTag("Enemy"))
+        if (CanHitEntity(Entity, true) && Entity.CompareTag("Enemy"))
         {
-            Entity.GetComponent<EnemyAI>().Heal(Healing, HealingPower);
+            Entity.GetComponent<EnemyAI>().Heal(Healing);
+
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
         }
-        if (HitsAllys && Entity.CompareTag("Ally"))
+        else if(CanHitEntity(Entity, true) && Entity.CompareTag("Ally"))
         {
-            Entity.GetComponent<CharacterController>().Heal(Healing, HealingPower);
+            Entity.GetComponent<CharacterController>().Heal(Healing);
+
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
+        }
+    }
+
+    // prüft, ob ein Entity gehittet werden kann & verwaltet die Liste für ihn
+    private bool CanHitEntity(GameObject Entity, bool heal = false)
+    {
+        // EntityBase wird gespeichert
+        EntityBase EntityBase = Entity.GetComponent<EntityBase>();
+
+        // Wenn keine EntityBase gefunden wurde, kann das Entity nicht getroffen werden
+        if (EntityBase == null) 
+            return false;
+
+        // bool zum speichern, ob ein Entity schonmal getroffen wurde
+        bool EntityWasHitBefore = false;
+
+        // Wenn das Entity schonmal getroffen wurde & der Cooldown größer 0 ist, kann es nicht getroffen werden
+        if (HitEntityIDs.Contains(EntityBase.ID))
+        {
+            // Wenn der Entity bereits in der Liste ist, wurde er schonmal gehittet
+            EntityWasHitBefore = true;
+
+            if (HitEntityFrequence[HitEntityIDs.IndexOf(EntityBase.ID)] > 0)
+                return false;
+        }
+
+        if (heal)
+        {
+            if (HealsEnemys && Entity.CompareTag("Enemy"))
+            {
+                AddEntitysToList(EntityBase.ID, EntityWasHitBefore);
+                return true;
+            }
+            else if (HealsAllys && Entity.CompareTag("Ally"))
+            {
+                AddEntitysToList(EntityBase.ID, EntityWasHitBefore);
+                return true;
+            }
+        }
+        else
+        {
+            if (HitsEnemys && Entity.CompareTag("Enemy"))
+            {
+                AddEntitysToList(EntityBase.ID, EntityWasHitBefore);
+                return true;
+            }
+            else if (HitsAllys && Entity.CompareTag("Ally"))
+            {
+                AddEntitysToList(EntityBase.ID, EntityWasHitBefore);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void AddEntitysToList(int EntityID, bool EntityWasHitBefore)
+    {
+        if (!EntityWasHitBefore)
+        {
+            HitEntityIDs.Add(EntityID);
+            HitEntityFrequence.Add(MultipleHitFrequence);
+        }
+        else
+        {
+            HitEntityFrequence[HitEntityIDs.IndexOf(EntityID)] = MultipleHitFrequence;
         }
     }
 }

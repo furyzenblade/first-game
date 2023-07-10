@@ -101,14 +101,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cooldown: 0.65
   Damage: 10
-  CritChance: 50
-  CritDamage: 50
-  Slot: 0
-  CanHitMultipleTargets: 1
+  DamageScaling: 0.9
+  Healing: 0
+  HealingScaling: 0
   MultipleHitFrequence: 3.4028235e+38
   HitEntityIDs: 
   HitEntityFrequence: []
   TimerTillDeath: 1.5
+  CanHitMultipleTargets: 1
   Range: 5
 --- !u!70 &583530166586894522
 CapsuleCollider2D:

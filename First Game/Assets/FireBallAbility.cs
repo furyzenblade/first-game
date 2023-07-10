@@ -6,8 +6,10 @@ public class FireBallAbility : Ability
     // Movement Zeugs
     public float MovementSpeed;
 
-    private void Start()
+    new void Start()
     {
+        base.Start();
+
         transform.rotation = AbilityPlacer.GetSpawnRotation(transform);
     }
 
@@ -21,6 +23,6 @@ public class FireBallAbility : Ability
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        DamageEntity(collision.gameObject, true, false);
+        DamageEntity(collision.gameObject);
     }
 }

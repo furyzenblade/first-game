@@ -15,8 +15,10 @@ public class CharacterController : EntityBase
     // Beim Start werden die Abilitys, die der Character hat, zugewiesen 
     // Sobald es Einstellungen, Ability Trees etc. gibt, muss das hier reworked werden
     // Mit "Skilltree" oder so reworken
-    void Start()
+    new void Start()
     {
+        base.Start();
+
         // Abilitys werden gesetzt
         Abilitys.Add(0);
         AbilityCooldowns.Add(0);
@@ -51,14 +53,7 @@ public class CharacterController : EntityBase
             AbilityCooldowns[Index] += GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
 
             // Erstellt die Ability mit Position & Rotation
-            Instantiate(Ability, gameObject.transform.position, Quaternion.identity);
-
-            // Gibt der Ability ihre Stats
-            Ability.GetComponent<Ability>().Damage = Damage;
-            Ability.GetComponent<Ability>().CritChance = CritChance;
-            Ability.GetComponent<Ability>().CritDamage = CritDamage;
-
-            Ability.GetComponent<Ability>();
+            Instantiate(Ability, gameObject.transform.position, Quaternion.identity).GetComponent<Ability>().Origin = gameObject;
         }
     }
 

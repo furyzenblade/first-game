@@ -14,12 +14,12 @@ public class SceneDB : MonoBehaviour
     public const char ContentSpliter = '\u2017';
 
     // Gibt eine globale, individuelle Enemy ID an
-    public static int EnemyID { get; private set; }
+    public static int EntityID { get; private set; }
     // Generiert die nächste EnemyID & gibt diese zurück
-    public static int AddEnemyID()
+    public static int AddEntityID()
     {
-        EnemyID++;
-        return EnemyID - 1;
+        EntityID++;
+        return EntityID - 1;
     }
 
     // Speichert alle Settings nach Kategorie
@@ -91,7 +91,7 @@ public class SceneDB : MonoBehaviour
         GameObject.FindGameObjectWithTag("Ally").GetComponent<CharacterController>().IsControlledChar = true;
 
         // EnemyID wird auf 0 gesetzt, weil noch kein Enemy gespawned wurde
-        EnemyID = 0;
+        EntityID = 0;
 
         // FrameRate vom Game in FPS
         Application.targetFrameRate = 60;
@@ -301,20 +301,6 @@ public class SceneDB : MonoBehaviour
 
         return null;
     }
-
-    public static GameObject GetAbilityOnSlot(int SlotIndex)
-    {
-        List<GameObject> Abilitys = GameObject.FindGameObjectsWithTag("Ability").ToList();
-
-        foreach (GameObject Ability in Abilitys)
-        {
-            if (Ability.GetComponent<Ability>().Slot == SlotIndex)
-                return Ability;
-        }
-
-        return null;
-    }
-
 
     // Vergleicht zwei Components miteinander (ChatGPT Code)
     public static bool CompareComponents<T>(T component1, T component2)

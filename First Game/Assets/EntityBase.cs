@@ -7,6 +7,8 @@ using UnityEngine;
 // Grundlage für alle GameObjects, die getroffen werden können sollen
 public class EntityBase : MonoBehaviour
 {
+    public int ID;
+
     // Character Stats
     #region Stats
 
@@ -31,6 +33,8 @@ public class EntityBase : MonoBehaviour
     public float MaxSpeed;
     public float Speed;
 
+    public float HealingPower;
+
     public int BasicAttackRange;
 
     public int AbliltyHaste;
@@ -42,6 +46,11 @@ public class EntityBase : MonoBehaviour
 
     public List<int> Abilitys = new() { };
     public List<float> AbilityCooldowns = new() { };
+
+    public void Start()
+    {
+        ID = SceneDB.AddEntityID();
+    }
 
     // Updated Character Stats & 
     public void Update()
@@ -108,7 +117,10 @@ public class EntityBase : MonoBehaviour
         foreach (AttackSpeedSlowAttribute AttackSpeedSlow in gameObject.GetComponents<AttackSpeedSlowAttribute>())
             CurrentAttackSpeed *= 1f - (AttackSpeedSlow.Strength / 100f);
     }
-
+    public float GetAntiHealing()
+    {
+        return GF.CalculateAntiHealing(gameObject.GetComponents<AntiHealAttribute>().ToList());
+    }
 
     private void UpdateAbilityCooldowns()
     {
@@ -124,10 +136,10 @@ public class EntityBase : MonoBehaviour
 
 
     // Healt ein Entity um eine gewisse Value
-    public void Heal(float Healing, float HealingPower)
+    public void Heal(float Healing)
     {
         // Healing wird berechnet mit Healing, HealPower & AntiHeal
-        HP += GF.CalculateHealing(Healing, HealingPower, GF.CalculateAntiHealing(gameObject.GetComponents<AntiHealAttribute>().ToList()));
+        HP += Healing;
 
         // HP werden auf MaxHP gedeckelt
         if (HP > MaxHP)

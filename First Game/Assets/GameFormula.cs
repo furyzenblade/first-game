@@ -47,9 +47,9 @@ public class GF
     }
 
     // Formeln zum Berechnen von Healing
-    public static float CalculateHealing(float Healing, float HealingPower = 0, float AntiHeal = 0)
+    public static float CalculateHealing(float Healing, float HealingScaling = 1, float HealingPower = 0, float AntiHeal = 0)
     {
-        return Healing * (1 + HealingPower) * AntiHeal;
+        return (Healing + (HealingScaling * HealingPower)) * AntiHeal;
     }
     public static float CalculateAntiHealing(List<AntiHealAttribute> AntiHeals)
     {

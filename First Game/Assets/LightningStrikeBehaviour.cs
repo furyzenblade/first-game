@@ -7,13 +7,15 @@ public class LightningStrikeBehaviour : Ability
     public float Range;
 
     // Setzt das GameObject an die richtige Stelle
-    void Start()
+    new void Start()
     {
+        base.Start();
+
         transform.position = AbilityPlacer.GetSpawnPosition(Range, gameObject.AddComponent<CircleCollider2D>(), transform);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        DamageEntity(collision.gameObject, true, false);
+        DamageEntity(collision.gameObject);
     }
 }

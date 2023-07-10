@@ -405,9 +405,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d82122ed0032b3f4c88d4e2ca13ac04b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 100
-  HP: 100
-  Armor: 1000
+  MaxHP: 100000
+  HP: 100000
+  Armor: 0
   CurrentArmor: 0
   Damage: 10
   CurrentDamage: 0
@@ -417,6 +417,7 @@ MonoBehaviour:
   CritDamage: 0
   MaxSpeed: 5
   Speed: 0
+  HealingPower: 0
   BasicAttackRange: 1
   AbliltyHaste: 0
   IsStunned: 0
@@ -623,8 +624,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91ad41c14bc801b43b1310b6d1204eae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 100
-  HP: 100
+  MaxHP: 100000
+  HP: 100000
   Armor: 1500
   CurrentArmor: 0
   Damage: 10
@@ -635,6 +636,7 @@ MonoBehaviour:
   CritDamage: 50
   MaxSpeed: 5
   Speed: 0
+  HealingPower: 0
   BasicAttackRange: 0
   AbliltyHaste: 0
   IsStunned: 0

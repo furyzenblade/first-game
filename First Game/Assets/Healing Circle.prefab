@@ -136,17 +136,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa72f172a6c6e74599fe30377623ec3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OriginTag: 
-  Cooldown: 7.5
+  Cooldown: 1.27
   Damage: 10
-  CritChance: 50
-  CritDamage: 50
+  DamageScaling: 1.15
   Healing: 15
-  HealingPower: 5
-  Slot: 0
+  HealingScaling: 0
+  MultipleHitFrequence: 0.75
+  TimerTillDeath: 1.5
   CanHitMultipleTargets: 1
-  MultipleHitFrequence: 0.25
-  HitEntityIDs: 
-  HitEntityFrequence: []
-  TimerTillDeath: 1
   Range: 3

@@ -49,14 +49,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cooldown: 0.5
   Damage: 10
-  CritChance: 50
-  CritDamage: 50
-  Slot: 1
-  CanHitMultipleTargets: 0
-  MultipleHitFrequence: 0
-  HitEntityIDs: 
-  HitEntityFrequence: []
+  DamageScaling: 0.6
+  Healing: 0
+  HealingScaling: 0
+  MultipleHitFrequence: 2
   TimerTillDeath: 5
+  CanHitMultipleTargets: 0
   MovementSpeed: 7.5
 --- !u!212 &5909526306438202681
 SpriteRenderer:
