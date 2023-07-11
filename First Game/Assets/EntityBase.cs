@@ -7,7 +7,7 @@ using UnityEngine;
 // Grundlage für alle GameObjects, die getroffen werden können sollen
 public class EntityBase : MonoBehaviour
 {
-    public int ID;
+    public int ID { get; set; }
 
     // Character Stats
     #region Stats
@@ -17,21 +17,21 @@ public class EntityBase : MonoBehaviour
     public double HP;
 
     public float Armor;
-    public float CurrentArmor;
+    public float CurrentArmor { get; set; }
 
     // Offensive Stats
     public float Damage;
-    public float CurrentDamage;
+    public float CurrentDamage { get; set; }
 
     public float AttackSpeed;
-    public float CurrentAttackSpeed;
+    public float CurrentAttackSpeed { get; set; }
 
     public int CritChance;
     public float CritDamage;
 
     // Utility Stats
     public float MaxSpeed;
-    public float Speed;
+    public float Speed { get; set; }
 
     public float HealingPower;
 
@@ -42,14 +42,17 @@ public class EntityBase : MonoBehaviour
     #endregion Stats
 
     // Ability Management
-    public bool IsStunned;
+    public bool IsStunned { get; set; }
 
-    public List<int> Abilitys = new() { };
-    public List<float> AbilityCooldowns = new() { };
+    public List<int> Abilitys { get; set; }
+    public List<float> AbilityCooldowns { get; set; }
 
     public void Start()
     {
         ID = SceneDB.AddEntityID();
+
+        Abilitys = new List<int>() { };
+        AbilityCooldowns = new List<float>() { };
     }
 
     // Updated Character Stats & 

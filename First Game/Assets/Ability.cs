@@ -109,15 +109,21 @@ public class Ability : MonoBehaviour
     {
         if (CanHitEntity(Entity) && Entity.CompareTag("Enemy"))
         {
+            // Damaged den Entity
             Entity.GetComponent<EnemyAI>().AddDamage(Damage, CritChance, CritDamage);
-
+            // Fügt den Entity in die Liste hinzu
+            AddEntitysToList(Entity.GetComponent<EntityBase>().ID);
+            // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
         }
         else if (CanHitEntity(Entity) && Entity.CompareTag("Ally"))
         {
+            // Damaged den Entity
             Entity.GetComponent<CharacterController>().AddDamage(Damage, CritChance, CritDamage);
-
+            // Fügt den Entity in die Liste hinzu
+            AddEntitysToList(Entity.GetComponent<EntityBase>().ID);
+            // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
         }
@@ -127,15 +133,21 @@ public class Ability : MonoBehaviour
     {
         if (CanHitEntity(Entity, true) && Entity.CompareTag("Enemy"))
         {
+            // Healed den Entity
             Entity.GetComponent<EnemyAI>().Heal(Healing);
-
+            // Fügt den Entity in die Liste hinzu
+            AddEntitysToList(Entity.GetComponent<EntityBase>().ID);
+            // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
         }
         else if(CanHitEntity(Entity, true) && Entity.CompareTag("Ally"))
         {
+            // Healed den Entity
             Entity.GetComponent<CharacterController>().Heal(Healing);
-
+            // Fügt den Entity in die Liste hinzu
+            AddEntitysToList(Entity.GetComponent<EntityBase>().ID);
+            // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
         }
@@ -152,7 +164,7 @@ public class Ability : MonoBehaviour
             return false;
 
         // bool zum speichern, ob ein Entity schonmal getroffen wurde
-        bool EntityWasHitBefore = false;
+        EntityWasHitBefore = false;
 
         // Wenn das Entity schonmal getroffen wurde & der Cooldown größer 0 ist, kann es nicht getroffen werden
         if (HitEntityIDs.Contains(EntityBase.ID))
@@ -167,34 +179,23 @@ public class Ability : MonoBehaviour
         if (heal)
         {
             if (HealsEnemys && Entity.CompareTag("Enemy"))
-            {
-                AddEntitysToList(EntityBase.ID, EntityWasHitBefore);
                 return true;
-            }
             else if (HealsAllys && Entity.CompareTag("Ally"))
-            {
-                AddEntitysToList(EntityBase.ID, EntityWasHitBefore);
                 return true;
-            }
         }
         else
         {
             if (HitsEnemys && Entity.CompareTag("Enemy"))
-            {
-                AddEntitysToList(EntityBase.ID, EntityWasHitBefore);
                 return true;
-            }
             else if (HitsAllys && Entity.CompareTag("Ally"))
-            {
-                AddEntitysToList(EntityBase.ID, EntityWasHitBefore);
                 return true;
-            }
         }
 
         return false;
     }
 
-    private void AddEntitysToList(int EntityID, bool EntityWasHitBefore)
+    private bool EntityWasHitBefore = false;
+    private void AddEntitysToList(int EntityID)
     {
         if (!EntityWasHitBefore)
         {

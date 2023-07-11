@@ -287,7 +287,7 @@ public class SceneDB : MonoBehaviour
     }
 
     public GameObject GetHoveredObject()
-    {        
+    {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
         try
@@ -300,14 +300,5 @@ public class SceneDB : MonoBehaviour
         catch { Debug.Log("Hit GameObject has no Collider"); }
 
         return null;
-    }
-
-    // Vergleicht zwei Components miteinander (ChatGPT Code)
-    public static bool CompareComponents<T>(T component1, T component2)
-    {
-        string json1 = JsonUtility.ToJson(component1);
-        string json2 = JsonUtility.ToJson(component2);
-
-        return json1 == json2;
     }
 }
