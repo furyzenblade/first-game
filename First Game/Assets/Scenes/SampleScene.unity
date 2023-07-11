@@ -408,7 +408,7 @@ MonoBehaviour:
   MaxHP: 100000
   HP: 100000
   Armor: 0
-  Damage: 10
+  Damage: 0
   AttackSpeed: 0.75
   CritChance: 0
   CritDamage: 0
@@ -417,6 +417,7 @@ MonoBehaviour:
   BasicAttackRange: 1
   AbliltyHaste: 0
   AttackedCharacter: {fileID: 0}
+  BasicAttackSlowDuration: 1
   BasicAttackSlowStrength: 30
 --- !u!212 &1139301900
 SpriteRenderer:

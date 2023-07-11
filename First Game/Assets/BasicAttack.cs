@@ -15,12 +15,9 @@ public class BasicAttack : MonoBehaviour
     public float AttackSpeed;
     public int Range;
 
-    // Statuseffekte, die von BasicAttack übergeben werden: 
-    public int SlowStrength = 0;
-
     void Start()
     {
-        //DestroyOtherComponents();
+        CustomAttributeHandling = false;
 
         Debug.Log("BasicAttack was generated successfully on: " + gameObject.name + " targeting: " + Target.name);
     }
@@ -78,12 +75,9 @@ public class BasicAttack : MonoBehaviour
                 // Fügt dem angegriffenen Target Schaden hinzu, wenn möglich
                 HitIfEnemy();
 
-                // Fügt, falls vorhanden, Statuseffekte hinzu
-                if (SlowStrength != 0)
-                {
-                    SlowAttribute CurrSlow = Target.AddComponent<SlowAttribute>();
-                    CurrSlow.Strength = SlowStrength;
-                }
+                // Wenn es kein extra handling für Attribute gibt, wird immer alles attatched
+                if (!CustomAttributeHandling)
+                    AttatchAllAttributes();
             }
             catch { Debug.Log("GameObject: " + Target.name + "is not a targetable gameObject"); }
         }
@@ -110,5 +104,77 @@ public class BasicAttack : MonoBehaviour
         if (DistanceToEnemy > AttackRange / 10.0f)
             return false;
         else return true;
+    }
+
+    // Speichert alle übergebenen Statuseffekte 
+    #region SavedAttributes
+
+    public float SlowDuration;
+    public int SlowStrength;
+
+    public float DamageReductionDuration;
+    public int DamageReductionStrength;
+
+    public float ArmorReductionDuration;
+    public int ArmorReductionStrength;
+
+    public float AttackSpeedSlowDuration;
+    public int AttackSpeedSlowStrength;
+
+    public float AntiHealDuration;
+    public int AntiHealStrength;
+
+    public float StunDuration;
+
+    #endregion SavedAttributes
+
+    // Bool zum Bestimmen, ob immer alle Attributes übergeben werden sollen
+    public bool CustomAttributeHandling { get; set; }
+
+    // Fügt dem Target alle gespeicherten Attribute hinzu
+    public void AttatchAllAttributes()
+    {
+        AttatchSlow();
+        AttatchDamageReduction();
+        AttatchArmorReduction();
+        AttatchAttackSpeedSlow();
+        AttatchAntiHeal();
+        AttatchStun();
+    }
+
+    public void AttatchSlow()
+    {
+        SlowAttribute Slow = Target.AddComponent<SlowAttribute>();
+        Slow.Duration = SlowDuration;
+        Slow.Strength = SlowStrength;
+    }
+    public void AttatchDamageReduction()
+    {
+        DamageReductionAttribute DamageReduction = Target.AddComponent<DamageReductionAttribute>();
+        DamageReduction.Duration = DamageReductionDuration;
+        DamageReduction.Strength = DamageReductionStrength;
+    }
+    public void AttatchArmorReduction()
+    {
+        ArmorReductionAttribute ArmorReduction = Target.AddComponent<ArmorReductionAttribute>();
+        ArmorReduction.Duration = ArmorReductionDuration;
+        ArmorReduction.Strength = ArmorReductionStrength;
+    }
+    public void AttatchAttackSpeedSlow()
+    {
+        AttackSpeedChange AttackSpeedSlow = Target.AddComponent<AttackSpeedChange>();
+        AttackSpeedSlow.Duration = AttackSpeedSlowDuration;
+        AttackSpeedSlow.Strength = AttackSpeedSlowStrength;
+    }
+    public void AttatchAntiHeal()
+    {
+        AntiHealAttribute AntiHeal = Target.AddComponent<AntiHealAttribute>();
+        AntiHeal.Duration = AntiHealDuration;
+        AntiHeal.Strength = AntiHealStrength;
+    }
+    public void AttatchStun()
+    {
+        StunAttribute Stun = Target.AddComponent<StunAttribute>();
+        Stun.Duration = StunDuration;
     }
 }

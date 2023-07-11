@@ -117,7 +117,7 @@ public class EntityBase : MonoBehaviour
         CurrentAttackSpeed = AttackSpeed;
 
         // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
-        foreach (AttackSpeedSlowAttribute AttackSpeedSlow in gameObject.GetComponents<AttackSpeedSlowAttribute>())
+        foreach (AttackSpeedChange AttackSpeedSlow in gameObject.GetComponents<AttackSpeedChange>())
             CurrentAttackSpeed *= 1f - (AttackSpeedSlow.Strength / 100f);
     }
     public float GetAntiHealing()
@@ -152,7 +152,7 @@ public class EntityBase : MonoBehaviour
     // Gibt dem Enemy Damage abhängig von den Stats des Angreifers und der Armor
     public void AddDamage(float Damage, float CritChance = 0, float CritDamage = 0)
     {
-        HP -= GF.CalculateDamage(Damage, Armor, CritChance, CritDamage);
+        HP -= GF.CalculateDamage(Damage, CurrentArmor, CritChance, CritDamage);
     }
 
     public bool HandleBasicAttacks(GameObject Enemy)

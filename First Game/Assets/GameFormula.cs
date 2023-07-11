@@ -58,7 +58,7 @@ public class GF
 
         // Healing wird für jede AntiHeal Quelle reduziert
         foreach (AntiHealAttribute AntiHeal in AntiHeals)
-            Healing -= Healing * AntiHeal.Strength;
+            Healing -= Healing * (AntiHeal.Strength / 100f);
 
         // Healing wird als effektive Value zum direkten Multiplizieren übergeben
         return Healing;

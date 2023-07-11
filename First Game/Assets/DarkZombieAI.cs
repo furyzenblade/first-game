@@ -6,6 +6,7 @@ using UnityEngine;
     // Basic Attack könnte auch eine Ability werden ?? 
 public class DarkZombieAI : EnemyAI
 {
+    public float BasicAttackSlowDuration;
     public int BasicAttackSlowStrength;
 
     // Spielt jeden Frame die AI
@@ -34,6 +35,7 @@ public class DarkZombieAI : EnemyAI
             NewAttack.Target = Enemy;
 
             // Statuseffekte
+            NewAttack.SlowDuration = BasicAttackSlowDuration;
             NewAttack.SlowStrength = BasicAttackSlowStrength;
         }
     }

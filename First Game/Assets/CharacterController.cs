@@ -25,7 +25,9 @@ public class CharacterController : EntityBase
         Abilitys.Add(1);
         AbilityCooldowns.Add(1);
         Abilitys.Add(2);
-        AbilityCooldowns.Add(2);
+        AbilityCooldowns.Add(2); 
+        Abilitys.Add(3);
+        AbilityCooldowns.Add(3);
     }
 
     // Bewegt den Character jeden Frame in die global errechnete Richtung

@@ -173,6 +173,20 @@ public class SceneDB : MonoBehaviour
                             if (Ability != null)
                                 CharacterController.UseAbility(2);
                             break;
+                        case 8:
+                            // Holt die Ability auf einem Slot
+                            Ability = AllAbilitys[CharacterController.Abilitys[3]];
+                            // Wenn eine Ability gefunden wurde, wird sie ausgelöst
+                            if (Ability != null)
+                                CharacterController.UseAbility(3);
+                            break;
+                        case 9:
+                            // Holt die Ability auf einem Slot
+                            Ability = AllAbilitys[CharacterController.Abilitys[4]];
+                            // Wenn eine Ability gefunden wurde, wird sie ausgelöst
+                            if (Ability != null)
+                                CharacterController.UseAbility(4);
+                            break;
                         // Weitere Settings hier hin
 
                     }
