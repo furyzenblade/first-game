@@ -10,11 +10,13 @@ public class LightningStrikeBehaviour : Ability
     new void Start()
     {
         base.Start();
-
-        transform.position = AbilityPlacer.GetSpawnPosition(Range, gameObject.AddComponent<CircleCollider2D>(), transform);
+        if (Origin.CompareTag("Enemy"))
+            transform.position = AbilityPlacer.GetClosestPositionToTarget(Origin.transform, Target, Range, false);
+        else
+            transform.position = AbilityPlacer.GetSpawnPosition(Range, gameObject.AddComponent<CircleCollider2D>(), transform);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
         DamageEntity(collision.gameObject);
     }

@@ -154,35 +154,35 @@ public class SceneDB : MonoBehaviour
                             break;
                         case 5:
                             // Holt die Ability auf einem Slot
-                            GameObject Ability = AllAbilitys[CharacterController.Abilitys[0]];
+                            GameObject Ability = CharacterController.Abilitys[0];
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
                             if (Ability != null)
                                 CharacterController.UseAbility(0);
                             break;
                         case 6:
                             // Holt die Ability auf einem Slot
-                            Ability = AllAbilitys[CharacterController.Abilitys[1]];
+                            Ability = CharacterController.Abilitys[1];
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
                             if (Ability != null)
                                 CharacterController.UseAbility(1);
                             break;
                         case 7:
                             // Holt die Ability auf einem Slot
-                            Ability = AllAbilitys[CharacterController.Abilitys[2]];
+                            Ability = CharacterController.Abilitys[2];
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
                             if (Ability != null)
                                 CharacterController.UseAbility(2);
                             break;
                         case 8:
                             // Holt die Ability auf einem Slot
-                            Ability = AllAbilitys[CharacterController.Abilitys[3]];
+                            Ability = CharacterController.Abilitys[3];
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
                             if (Ability != null)
                                 CharacterController.UseAbility(3);
                             break;
                         case 9:
                             // Holt die Ability auf einem Slot
-                            Ability = AllAbilitys[CharacterController.Abilitys[4]];
+                            Ability = CharacterController.Abilitys[4];
                             // Wenn eine Ability gefunden wurde, wird sie ausgelöst
                             if (Ability != null)
                                 CharacterController.UseAbility(4);

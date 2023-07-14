@@ -53,9 +53,22 @@ MonoBehaviour:
   Healing: 0
   HealingScaling: 0
   MultipleHitFrequence: 2
-  TimerTillDeath: 5
+  TimerTillDeath: 3
   CanHitMultipleTargets: 0
+  SlowDuration: 0
+  SlowStrength: 0
+  DamageReductionDuration: 0
+  DamageReductionStrength: 0
+  ArmorReductionDuration: 0
+  ArmorReductionStrength: 0
+  AttackSpeedSlowDuration: 0
+  AttackSpeedSlowStrength: 0
+  AntiHealDuration: 0
+  AntiHealStrength: 0
+  StunDuration: 0
+  CustomAttributeHandling: 0
   MovementSpeed: 7.5
+  EnemyAbilityColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!212 &5909526306438202681
 SpriteRenderer:
   m_ObjectHideFlags: 0

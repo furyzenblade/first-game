@@ -10,7 +10,7 @@ public class StunKickBehaviour : Ability
     {
         base.Start();
 
-        transform.rotation = AbilityPlacer.GetSpawnRotation(transform);
+        transform.rotation = AbilityPlacer.GetSpawnRotation(transform, Target);
     }
 
     new void Update()
@@ -21,7 +21,7 @@ public class StunKickBehaviour : Ability
         transform.Translate(Vector3.right * (MovementSpeed * Time.deltaTime));
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
         DamageEntity(collision.gameObject);
     }

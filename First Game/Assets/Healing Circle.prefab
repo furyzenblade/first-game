@@ -141,7 +141,20 @@ MonoBehaviour:
   DamageScaling: 1.15
   Healing: 15
   HealingScaling: 0
-  MultipleHitFrequence: 0.75
+  MultipleHitFrequence: 0.35
   TimerTillDeath: 1.5
   CanHitMultipleTargets: 1
+  SlowDuration: 0
+  SlowStrength: 0
+  DamageReductionDuration: 0
+  DamageReductionStrength: 0
+  ArmorReductionDuration: 0
+  ArmorReductionStrength: 0
+  AttackSpeedSlowDuration: 0
+  AttackSpeedSlowStrength: 0
+  AntiHealDuration: 0
+  AntiHealStrength: 0
+  StunDuration: 0
+  CustomAttributeHandling: 0
   Range: 3
+  EnemyAbilityColor: {r: 0.83137256, g: 0.105882354, b: 0.33333334, a: 0.8352941}

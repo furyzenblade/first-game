@@ -44,14 +44,13 @@ public class EntityBase : MonoBehaviour
     // Ability Management
     public bool IsStunned { get; set; }
 
-    public List<int> Abilitys { get; set; }
+    public List<GameObject> Abilitys;
     public List<float> AbilityCooldowns { get; set; }
 
     public void Start()
     {
         ID = SceneDB.AddEntityID();
 
-        Abilitys = new List<int>() { };
         AbilityCooldowns = new List<float>() { };
     }
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityPlacer : MonoBehaviour
+public class AbilityPlacer
 {
     // Returned einen Vector3 mit den Koordinaten, an denen ein Objekt erstellt werden soll
     public static Vector3 GetSpawnPosition(float Range, CircleCollider2D SpawnRadius, Transform transform)
@@ -28,10 +28,22 @@ public class AbilityPlacer : MonoBehaviour
         return new Vector3(transform.position.x, transform.position.y, zCoordinate);
     }
 
-    public static Quaternion GetSpawnRotation(Transform transform)
+    public static Quaternion GetSpawnRotation(Transform Origin, Transform Target = null)
     {
-        Vector3 direction = GetMousePosition(transform) - transform.position;
+        Vector3 direction;
+        // Wenn Target null ist, wird die Mausposition verwendet
+        if (Target == null)
+        {
+            direction = GetMousePosition(Origin) - Origin.position;
+        }
+        else
+        {
+            direction = Target.position - Origin.position;
+        }
+
+        // Richtung zum Target wird ermittelt
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
         return Quaternion.Euler(0f, 0f, angle);
     }
 
@@ -43,5 +55,19 @@ public class AbilityPlacer : MonoBehaviour
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
         return mousePosition;
+    }
+
+    // Berechnet die kleinstmögliche Distanz zum Target GameObject
+    public static Vector3 GetClosestPositionToTarget(Transform Origin, Transform Target, float radius, bool OnlyReturnIfHits = false)
+    {
+        Vector3 direction = Target.transform.position - Origin.transform.position;
+        float distance = direction.magnitude;
+        float clampedDistance = Mathf.Clamp(distance, 0f, radius);
+
+        Vector3 closestPosition = Origin.transform.position + direction.normalized * clampedDistance;
+
+        if (OnlyReturnIfHits && closestPosition != Target.transform.position)
+            return Vector3.negativeInfinity;
+        return closestPosition;
     }
 }

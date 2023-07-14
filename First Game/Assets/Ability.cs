@@ -53,8 +53,18 @@ public class Ability : MonoBehaviour
     // Bestimmt, ob mehrere Targets getroffen werden können
     public bool CanHitMultipleTargets;
 
+    public Transform Target { get; set; }
+
+    // Color für die Sprite, wenn sie von einem Enemy gespawned wurde
+    public Color EnemyAbilityColor;
+
     public void Start()
     {
+        transform.position = Origin.transform.position;
+
+        if (Origin.CompareTag("Enemy"))
+            GetComponent<SpriteRenderer>().color = EnemyAbilityColor;
+
         HitEntityIDs = new List<int>() { };
         HitEntityFrequence = new List<float>() { };
 

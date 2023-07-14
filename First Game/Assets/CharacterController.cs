@@ -19,15 +19,19 @@ public class CharacterController : EntityBase
     {
         base.Start();
 
-        // Abilitys werden gesetzt
-        Abilitys.Add(0);
+        for (int i = 0; i < Abilitys.Count; i++)
+        {
+            AbilityCooldowns.Add(-0.000001f);
+        }
+        // Abilitys werden gesetzt (temporär disabled)
+        /*Abilitys.Add(0);
         AbilityCooldowns.Add(0);
         Abilitys.Add(1);
         AbilityCooldowns.Add(1);
         Abilitys.Add(2);
         AbilityCooldowns.Add(2); 
         Abilitys.Add(3);
-        AbilityCooldowns.Add(3);
+        AbilityCooldowns.Add(3);*/
     }
 
     // Bewegt den Character jeden Frame in die global errechnete Richtung
@@ -45,7 +49,7 @@ public class CharacterController : EntityBase
     public void UseAbility(int Index)
     {
         // Bestimmt & holt die Ability, die zu nutzen ist
-        GameObject Ability = SceneDB.AllAbilitys[Abilitys[Index]];
+        GameObject Ability = Abilitys[Index];
         Ability AbilityComponent = Ability.GetComponent<Ability>();
 
         // Wenn die Ability keinen Cooldown hat, wird sie gezündet

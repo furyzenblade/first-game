@@ -48,4 +48,20 @@ public class EnemyAI : EntityBase
 
         return false;
     }
+
+    // Nutzt eine Ability
+    public void UseAbility(int AbilityIndex)
+    {
+        // Erschafft eine Ability
+        GameObject Ability = Instantiate(Abilitys[AbilityIndex]);
+
+        // Setzt die Werte für die Ability
+        Ability.GetComponent<Ability>().Origin = gameObject;
+
+        // Setzt ein Target für die Ability
+        Ability.GetComponent<Ability>().Target = AttackedCharacter.transform;
+
+        // Setzt den Cooldown der Ability zurück
+        AbilityCooldowns[AbilityIndex] += GF.CalculateCooldown(Ability.GetComponent<Ability>().Cooldown, AbliltyHaste);
+    }
 }
