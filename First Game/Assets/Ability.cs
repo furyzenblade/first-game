@@ -9,10 +9,12 @@ public class Ability : MonoBehaviour
     public GameObject Origin { get; set; }
     public EntityBase OriginBase { get; set; }
 
+
+    // Speichert, was alles von der Ability getroffen werden soll
     public bool HitsEnemys { get; set; }
     public bool HitsAllys { get; set; }
     public bool HealsEnemys { get; set; }
-    public bool HealsAllys { get; set; }
+    public bool HealsAllys { get; set; } 
 
     // Utility Values
     public float Cooldown;

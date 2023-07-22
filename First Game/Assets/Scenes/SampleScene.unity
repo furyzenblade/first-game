@@ -417,7 +417,8 @@ MonoBehaviour:
   BasicAttackRange: 1
   AbliltyHaste: 0
   Abilitys:
-  - {fileID: 4649180214062130378, guid: 30ee255fbc076f1468de2f7535119084, type: 3}
+  - {fileID: 5909526306438202683, guid: 8fc2e7e522c607e4291921dc16997d8e, type: 3}
+  - {fileID: 583530166586894526, guid: bdd5cb3350f01ab4ab46b69d6f699852, type: 3}
   AttackedCharacter: {fileID: 0}
   BasicAttackSlowDuration: 1
   BasicAttackSlowStrength: 30

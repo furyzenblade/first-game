@@ -14,6 +14,9 @@ public class LightningStrikeBehaviour : Ability
             transform.position = AbilityPlacer.GetClosestPositionToTarget(Origin.transform, Target, Range, false);
         else
             transform.position = AbilityPlacer.GetSpawnPosition(Range, gameObject.AddComponent<CircleCollider2D>(), transform);
+
+        // Setzt die Startposition des gameObjects auf das Zentrum der Hitbox
+        transform.position -= new Vector3(gameObject.GetComponent<Collider2D>().bounds.center.x, gameObject.GetComponent<Collider2D>().bounds.center.y, 0f);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
