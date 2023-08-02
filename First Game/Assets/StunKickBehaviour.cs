@@ -6,13 +6,6 @@ public class StunKickBehaviour : Ability
 {
     public float MovementSpeed;
 
-    private new void Start()
-    {
-        base.Start();
-
-        transform.rotation = AbilityPlacer.GetSpawnRotation(transform, Target);
-    }
-
     new void Update()
     {
         base.Update();

@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.UI.Image;
 
 // Prefab für alle Abilitys
 public class Ability : MonoBehaviour
@@ -60,9 +63,19 @@ public class Ability : MonoBehaviour
     // Color für die Sprite, wenn sie von einem Enemy gespawned wurde
     public Color EnemyAbilityColor;
 
+    public float Range;
+
+    public bool GetsSpawnRotation;
+    public bool GetsSpawnPosition;
+
     public void Start()
     {
         transform.position = Origin.transform.position;
+
+        if (GetsSpawnRotation)
+            GetSpawnRotation();
+        if (GetsSpawnPosition)
+            GetSpawnPosition();
 
         if (Origin.CompareTag("Enemy"))
             GetComponent<SpriteRenderer>().color = EnemyAbilityColor;
@@ -304,5 +317,48 @@ public class Ability : MonoBehaviour
     {
         StunAttribute Stun = Entity.AddComponent<StunAttribute>();
         Stun.Duration = StunDuration;
+    }
+
+    // Berechnet eine SpawnRotation für die Ability
+    private Quaternion GetSpawnRotation()
+    {
+        // Berechnet & verändert die Rotation
+        Vector3 direction = GetTargetPosition() - transform.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        return transform.rotation;
+    }
+
+    // Berechnet eine SpawnPosition für die Ability
+    private Vector3 GetSpawnPosition()
+    {
+        Vector3 direction = GetTargetPosition()- transform.position;
+        float distance = direction.magnitude;
+        float clampedDistance = Mathf.Clamp(distance, 0f, Range);
+
+        transform.position += direction.normalized * clampedDistance;
+
+        return transform.position;
+    }
+
+    // Berechnet die Position vom Target
+    private Vector3 GetTargetPosition()
+    {
+        // Wenn die Ability von einem Enemy kommt, wird die TargetPosition so bestimmt:
+        if (Origin.CompareTag("Enemy"))
+        {
+            Vector3 Offset = GetComponent<Collider2D>().bounds.center - transform.position;
+
+            return Target.transform.position - Offset;
+        }
+
+        // Wenn die Ability von einem Character kommt, wird sie so bestimmt: 
+        else
+        {
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition.z = transform.position.z;
+            return Camera.main.ScreenToWorldPoint(mousePosition);
+        }
     }
 }

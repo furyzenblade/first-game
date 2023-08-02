@@ -144,6 +144,10 @@ MonoBehaviour:
   MultipleHitFrequence: 0.35
   TimerTillDeath: 1.5
   CanHitMultipleTargets: 1
+  EnemyAbilityColor: {r: 0.83137256, g: 0.105882354, b: 0.33333334, a: 0.8352941}
+  Range: 3
+  GetsSpawnRotation: 0
+  GetsSpawnPosition: 1
   SlowDuration: 0
   SlowStrength: 0
   DamageReductionDuration: 0
@@ -156,5 +160,3 @@ MonoBehaviour:
   AntiHealStrength: 0
   StunDuration: 0
   CustomAttributeHandling: 0
-  Range: 3
-  EnemyAbilityColor: {r: 0.83137256, g: 0.105882354, b: 0.33333334, a: 0.8352941}

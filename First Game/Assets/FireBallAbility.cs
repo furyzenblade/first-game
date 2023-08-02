@@ -6,13 +6,6 @@ public class FireBallAbility : Ability
     // Movement Zeugs
     public float MovementSpeed;
 
-    new void Start()
-    {
-        base.Start();
-
-        transform.rotation = AbilityPlacer.GetSpawnRotation(Origin.transform, Target);
-    }
-
     new void Update()
     {
         base.Update();

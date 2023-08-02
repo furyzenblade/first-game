@@ -108,6 +108,9 @@ MonoBehaviour:
   TimerTillDeath: 1.5
   CanHitMultipleTargets: 1
   EnemyAbilityColor: {r: 0.735849, g: 0, b: 0, a: 1}
+  Range: 5
+  GetsSpawnRotation: 0
+  GetsSpawnPosition: 1
   SlowDuration: 0
   SlowStrength: 0
   DamageReductionDuration: 0
@@ -120,7 +123,6 @@ MonoBehaviour:
   AntiHealStrength: 0
   StunDuration: 0
   CustomAttributeHandling: 0
-  Range: 5
 --- !u!70 &583530166586894522
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
