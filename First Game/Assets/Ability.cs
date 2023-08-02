@@ -58,7 +58,8 @@ public class Ability : MonoBehaviour
     // Bestimmt, ob mehrere Targets getroffen werden können
     public bool CanHitMultipleTargets;
 
-    public Transform Target { get; set; }
+    public GameObject Target { get; set; }
+    public EntityBase TargetBase { get; set; }
 
     // Color für die Sprite, wenn sie von einem Enemy gespawned wurde
     public Color EnemyAbilityColor;
@@ -68,14 +69,23 @@ public class Ability : MonoBehaviour
     public bool GetsSpawnRotation;
     public bool GetsSpawnPosition;
 
-    public void Start()
+    void Start()
     {
-        transform.position = Origin.transform.position;
+        // EntityBases werden gesetzt
+        OriginBase = Origin.GetComponent<EntityBase>();
+
+        // Basic Position wird gesetzt
+        transform.SetPositionAndRotation(OriginBase.GetPosition(), Quaternion.identity);
+
+        if (Origin.CompareTag("Enemy"))
+            TargetBase = Target.GetComponent<EntityBase>();
 
         if (GetsSpawnRotation)
             GetSpawnRotation();
         if (GetsSpawnPosition)
             GetSpawnPosition();
+
+        transform.position = new Vector3(transform.position.x, transform.position.y, -5.0f);
 
         if (Origin.CompareTag("Enemy"))
             GetComponent<SpriteRenderer>().color = EnemyAbilityColor;
@@ -85,9 +95,6 @@ public class Ability : MonoBehaviour
 
         // Setzt das Tag der Ability, falls nicht default gesetzt (kann evtl. trotzdem manche bugs nicht verhindern) 
         tag = "Ability";
-
-        // Setzt die Origin Base für Performance Einsparungen
-        OriginBase = Origin.GetComponent<EntityBase>();
 
         // Wenn die bools nicht belegt wurden, werden sie automatisch zugewiesen
         if (HitsEnemys == false && HitsAllys == false && HealsEnemys == false && HealsAllys == false)
@@ -323,7 +330,7 @@ public class Ability : MonoBehaviour
     private Quaternion GetSpawnRotation()
     {
         // Berechnet & verändert die Rotation
-        Vector3 direction = GetTargetPosition() - transform.position;
+        Vector3 direction = GetTargetPosition() - GetPosition();
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -333,13 +340,13 @@ public class Ability : MonoBehaviour
     // Berechnet eine SpawnPosition für die Ability
     private Vector3 GetSpawnPosition()
     {
-        Vector3 direction = GetTargetPosition()- transform.position;
+        Vector3 direction = GetTargetPosition() - GetPosition();
         float distance = direction.magnitude;
         float clampedDistance = Mathf.Clamp(distance, 0f, Range);
 
         transform.position += direction.normalized * clampedDistance;
 
-        return transform.position;
+        return GetPosition();
     }
 
     // Berechnet die Position vom Target
@@ -348,17 +355,21 @@ public class Ability : MonoBehaviour
         // Wenn die Ability von einem Enemy kommt, wird die TargetPosition so bestimmt:
         if (Origin.CompareTag("Enemy"))
         {
-            Vector3 Offset = GetComponent<Collider2D>().bounds.center - transform.position;
-
-            return Target.transform.position - Offset;
+            return TargetBase.GetPosition() - GetPosition();
         }
 
         // Wenn die Ability von einem Character kommt, wird sie so bestimmt: 
         else
         {
             Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = transform.position.z;
+            mousePosition.z = GetPosition().z;
             return Camera.main.ScreenToWorldPoint(mousePosition);
         }
+    }
+
+    // Gibt die aktuelle Position, zentriert auf die Hitbox, an
+    public Vector3 GetPosition()
+    {
+        return new Vector3(GetComponent<Collider2D>().bounds.center.x, GetComponent<Collider2D>().bounds.center.y, -5.0f);
     }
 }

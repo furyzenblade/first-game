@@ -38,7 +38,7 @@ public class CharacterController : EntityBase
     public void MoveCharacter(Vector3 Dir)
     {
         // Bewegt den Character abhängig von der Direction
-        gameObject.transform.position += Dir * (Speed * Time.deltaTime);
+        transform.position += Dir * (Speed * Time.deltaTime);
 
         // Bewegt die Main Camera parallel zum Character
         Camera.main.transform.position += Dir * (Speed * Time.deltaTime);
@@ -59,7 +59,8 @@ public class CharacterController : EntityBase
             AbilityCooldowns[Index] += GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
 
             // Erstellt die Ability mit Position & Rotation
-            Instantiate(Ability, gameObject.transform.position, Quaternion.identity).GetComponent<Ability>().Origin = gameObject;
+            GameObject SpawnedAbility = Instantiate(Ability, GetPosition(), Quaternion.identity);
+            SpawnedAbility.GetComponent<Ability>().Origin = gameObject;
         }
     }
 

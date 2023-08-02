@@ -108,7 +108,7 @@ MonoBehaviour:
   TimerTillDeath: 1.5
   CanHitMultipleTargets: 1
   EnemyAbilityColor: {r: 0.735849, g: 0, b: 0, a: 1}
-  Range: 5
+  Range: 3
   GetsSpawnRotation: 0
   GetsSpawnPosition: 1
   SlowDuration: 0

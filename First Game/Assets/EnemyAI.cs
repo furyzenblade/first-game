@@ -59,7 +59,7 @@ public class EnemyAI : EntityBase
         Ability.GetComponent<Ability>().Origin = gameObject;
 
         // Setzt ein Target für die Ability
-        Ability.GetComponent<Ability>().Target = AttackedCharacter.transform;
+        Ability.GetComponent<Ability>().Target = AttackedCharacter;
 
         // Setzt den Cooldown der Ability zurück
         AbilityCooldowns[AbilityIndex] += GF.CalculateCooldown(Ability.GetComponent<Ability>().Cooldown, AbliltyHaste);

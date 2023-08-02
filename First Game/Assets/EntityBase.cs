@@ -175,4 +175,10 @@ public class EntityBase : MonoBehaviour
         }
         return false;
     }
+
+    // Gibt die aktuelle Position, zentriert auf die Hitbox, an
+    public Vector3 GetPosition()
+    {
+        return new Vector3(GetComponent<Collider2D>().bounds.center.x, GetComponent<Collider2D>().bounds.center.y, -5.0f);
+    }
 }

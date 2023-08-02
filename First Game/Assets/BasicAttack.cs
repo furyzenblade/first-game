@@ -5,6 +5,10 @@ public class BasicAttack : MonoBehaviour
 {
     // Attackiertes GameObject
     public GameObject Target;
+    public EntityBase TargetBase { get; set; }
+
+    // EntityBase des eigenen GameObjects
+    public EntityBase CurrentBase { get; set; }
 
     // Damage Operatoren
     public float Damage;
@@ -17,9 +21,11 @@ public class BasicAttack : MonoBehaviour
 
     void Start()
     {
-        CustomAttributeHandling = false;
+        // Setzt die EntityBases zum Aufrufen der richtigen Positionen
+        TargetBase = Target.GetComponent<EntityBase>();
+        CurrentBase = GetComponent<EntityBase>();
 
-        Debug.Log("BasicAttack was generated successfully on: " + gameObject.name + " targeting: " + Target.name);
+        CustomAttributeHandling = false;
     }
 
     void Update()
@@ -43,12 +49,12 @@ public class BasicAttack : MonoBehaviour
     private void MoveTowardsEnemy()
     {
         // Berechnet die Distanz zum targetet Character
-        float DistanceToEnemy = Vector2.Distance(Target.GetComponent<Collider2D>().bounds.ClosestPoint(transform.position), new Vector2(transform.position.x, transform.position.y));
+        float DistanceToEnemy = Vector2.Distance(TargetBase.GetPosition(), new Vector2(CurrentBase.GetPosition().x, CurrentBase.GetPosition().y));
 
         // Wenn Distanz > AttackRange bewegt sich das Enemy auf den Character zu
         if (DistanceToEnemy > Range / 10.0f)
         {
-            Vector3 direction = Target.transform.position - transform.position;
+            Vector3 direction = TargetBase.GetPosition() - CurrentBase.GetPosition();
 
             if (CompareTag("Enemy"))
                 transform.Translate(gameObject.GetComponent<EnemyAI>().Speed * Time.deltaTime * direction.normalized);
@@ -98,7 +104,7 @@ public class BasicAttack : MonoBehaviour
     private bool IsInRange(int AttackRange)
     {
         // Berechnet die Distanz zum targetet Character
-        float DistanceToEnemy = Vector2.Distance(Target.GetComponent<Collider2D>().bounds.ClosestPoint(transform.position), new Vector2(transform.position.x, transform.position.y));
+        float DistanceToEnemy = Vector2.Distance(TargetBase.GetPosition(), new Vector2(CurrentBase.GetPosition().x, CurrentBase.GetPosition().y));
 
         // Wenn nach dem Movement noch außerhalb der AttackRange ist, kann nicht angegriffen
         if (DistanceToEnemy > AttackRange / 10.0f)
