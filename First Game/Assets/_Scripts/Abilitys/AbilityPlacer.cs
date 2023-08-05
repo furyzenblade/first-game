@@ -54,6 +54,9 @@ public class AbilityPlacer
         mousePosition.z = transform.position.z; // Set the same z-coordinate as the GameObject
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
+        Debug.Log(Input.mousePosition);
+        Debug.Log(mousePosition);
+
         return mousePosition;
     }
 

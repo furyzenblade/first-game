@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 // Eine globale, überwiegend statische Klasse, die z.B. User Inputs verwaltet, um Performance zu sparen
@@ -9,10 +7,6 @@ using UnityEngine;
 // Speichert / berechnet auch z.B. globale Werte wie den highest aggro character oder so
 public class SceneDB : MonoBehaviour
 {
-    // Chars zum Spliten von Informationen aus Files werden gegeben
-    public const char ObjectSeparator = '\u2016';
-    public const char ContentSpliter = '\u2017';
-
     // Gibt eine globale, individuelle Enemy ID an
     public static int EntityID { get; private set; }
     // Generiert die nächste EnemyID & gibt diese zurück
@@ -22,40 +16,9 @@ public class SceneDB : MonoBehaviour
         return EntityID - 1;
     }
 
-    // Speichert alle Settings nach Kategorie
-    #region SettingStorage
-
-    // HotKey Settings
-    public static List<HotKeySetting> KeyBindings = new() { };
-
-    // Audio Settings
-
-
-    // Graphic Settings
-
-
     // Managed die Aggro der Characters
     public static List<int> CharacterAggros = new() { };
     public static GameObject HighestAggroCharacter;
-
-    #endregion SettingStorage
-
-    // Default Settings werden hier manuell gespeichert
-    public List<List<string>> DefaultSettings = new()
-    {
-        // Die einzelnen default Settings als List<string>
-        new() { KeyCode.W.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveUp", true.ToString(), ""},
-        new() { KeyCode.A.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveLeft", true.ToString(), ""},
-        new() { KeyCode.S.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveDown", true.ToString(), ""},
-        new() { KeyCode.D.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "MoveRight", true.ToString(), ""},
-        new() { KeyCode.Mouse0.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "BasicAttack", true.ToString(), "" },
-        new() { KeyCode.Mouse1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Base Ability", true.ToString(), ""},
-        new() { KeyCode.Alpha1.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 1", true.ToString(), ""},
-        new() { KeyCode.Alpha2.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 2", true.ToString(), ""},
-        new() { KeyCode.Alpha3.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 3", true.ToString(), ""},
-        new() { KeyCode.Alpha4.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 4", true.ToString(), ""},
-        new() { KeyCode.Alpha5.GetHashCode().ToString(), false.ToString(), false.ToString(), false.ToString(), false.ToString(), "Ability 5", true.ToString(), ""}
-    };
 
     // Liste an allen Abilitys im Game
     public static List<GameObject> AllAbilitys = new() { };
@@ -69,19 +32,20 @@ public class SceneDB : MonoBehaviour
     // Lädt das Game mit Settings etc.
     void Start()
     {
-        // Find all prefab GUIDs in the Assets folder
-        string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab");
+        // FrameRate vom Game in FPS
+        Application.targetFrameRate = 60;
 
-        foreach (string guid in prefabGuids)
+        // Lädt die Settings
+        GetSettings();
+
+        // Load all prefabs
+        string pathToPrefabs = "Prefabs/Abilities"; // Update this to the correct path
+
+        GameObject[] allPrefabs = Resources.LoadAll<GameObject>(pathToPrefabs);
+
+        foreach (GameObject prefab in allPrefabs)
         {
-            // Get the file path of the prefab using the GUID
-            string prefabPath = AssetDatabase.GUIDToAssetPath(guid);
-
-            // Load the prefab at the path
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-
-            // Do something with the prefab
-            if (prefab != null && prefab.CompareTag("Ability"))
+            if (prefab.CompareTag("Ability"))
             {
                 AllAbilitys.Add(prefab);
             }
@@ -92,15 +56,6 @@ public class SceneDB : MonoBehaviour
 
         // EnemyID wird auf 0 gesetzt, weil noch kein Enemy gespawned wurde
         EntityID = 0;
-
-        // FrameRate vom Game in FPS
-        Application.targetFrameRate = 60;
-
-        // KeyBindings werden geladen
-        //GetKeyBindings();
-
-        SaveDefaultSettings();
-        GetDefaultSettings();
     }
 
     // Updatet globale Werte wie Aggro etc. framewise, damit nicht mehrere GameObjects dies machen müssen
@@ -187,7 +142,7 @@ public class SceneDB : MonoBehaviour
                             if (Ability != null)
                                 CharacterController.UseAbility(4);
                             break;
-                        // Weitere Settings hier hin
+                            // Weitere Settings hier hin
 
                     }
                 }
@@ -202,69 +157,29 @@ public class SceneDB : MonoBehaviour
                 }
             }
         }
-        
+
 
         #endregion InputManagers
     }
 
-    // Liest am Anfang alle HotKeySettings ein
-    public static string KeyBindingsPath = "/Settings/KeyBindings";
-    public static string DefaultKeyBindingsPath = "/Settings/DefaultKeyBindings";
-    private static void GetKeyBindings()
+    // Liest am Anfang alle Settings ein
+    public static Settings Settings { get; set; }
+    private static void GetSettings()
     {
-        if (!File.Exists(CreateDynamicFilePath(KeyBindingsPath)))
-            Debug.LogError("Couldn't find a HotKeySettings- File");
-        else
-        {
-            KeyBindings = HotKeySetting.AnalyseKeyBindings(GameLanguageConverter.StrDecode(KeyBindingsPath));
-        }
-    }
-    private void SaveDefaultSettings()
-    {
-        // string für die unverschlüsselte, vollständige File wird vorbereitet
-        string AllSettings = "";
-
-        foreach (List<string> SingleSetting in DefaultSettings)
-        {
-            foreach (string Data in SingleSetting)
-            {
-                AllSettings += Data;
-                // Wenn letzte Data wird nicht separiert
-                if (Data != SingleSetting.Last())
-                    AllSettings += ContentSpliter;
-            }
-            // Wenn letztes Setting wird nicht separiert
-            if (SingleSetting != DefaultSettings.Last())
-                AllSettings += ObjectSeparator;
-        }
-
-        File.WriteAllBytes(CreateDynamicFilePath(DefaultKeyBindingsPath), GameLanguageConverter.Encode(DefaultKeyBindingsPath, AllSettings, true));
-    }
-
-    public static string CreateDynamicFilePath(string FileName)
-    {
-        return @"" + Application.dataPath + FileName + ".GData";
+        Settings = new Settings();
     }
 
     private List<int> GetValidInputIndexes()
     {
         List<int> Indexes = new() { };
 
-        for (int i = 0; i < KeyBindings.Count; i++)
+        for (int i = 0; i < Settings.KeyBindings.Count; i++)
         {
-            if (KeyBindings[i].InputIsValid())
+            if (Settings.KeyBindings[i].InputIsValid())
                 Indexes.Add(i);
         }
 
         return Indexes;
-    }
-
-    private void GetDefaultSettings()
-    {
-        if (!File.Exists(CreateDynamicFilePath(DefaultKeyBindingsPath)))
-            Debug.LogError("Couldn't find a DefaultHotKeySettings- File");
-        else
-            KeyBindings = HotKeySetting.AnalyseKeyBindings(GameLanguageConverter.StrDecode(DefaultKeyBindingsPath));
     }
 
     // Ruft die Character Aggro jedes Characters ab
@@ -273,7 +188,7 @@ public class SceneDB : MonoBehaviour
         // Liste mit den Aggros von den Charactern
         List<int> Aggros = new() { };
 
-        // Für jeden Character wird die Aggro abgerufen
+        // Für jeden Character wird die Aggro abgerufenF
         foreach (GameObject Character in GameObject.FindGameObjectsWithTag("Character"))
         {
             Aggros.Add(Character.GetComponent<CharacterController>().Aggro);
@@ -314,5 +229,10 @@ public class SceneDB : MonoBehaviour
         catch { Debug.Log("Hit GameObject has no Collider"); }
 
         return null;
+    }
+
+    public static string CreateDynamicFilePath(string FileName)
+    {
+        return @"" + Application.dataPath + "/" + FileName + ".GData";
     }
 }

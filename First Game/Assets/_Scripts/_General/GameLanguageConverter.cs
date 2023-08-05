@@ -46,16 +46,12 @@ public class GameLanguageConverter
         // Seed wird vom FileName erstellt
         int Seed = GetSeed(FileName);
 
-        // Macht den FileName dynamisch, wenn nicht vorhanden
-        if (!FileName.Contains(Application.dataPath))
-            FileName = SceneDB.CreateDynamicFilePath(FileName);
-
         // Ändert den FileContent
         Content = ChangeBytes(Content, Seed, 1);
 
         // Wenn SaveFile dann speichert die File
         if (SaveFile)
-            File.WriteAllBytes(FileName, Content);
+            File.WriteAllBytes(SceneDB.CreateDynamicFilePath(FileName), Content);
 
         return Content;
     }
@@ -70,9 +66,6 @@ public class GameLanguageConverter
     // Coding Richtung ist 1
     public static byte[] Encode(string FileName, bool SaveFile = false)
     {
-        // Macht den FileName dynamisch, wenn nicht vorhanden
-        if (!FileName.Contains(Application.dataPath))
-            FileName = SceneDB.CreateDynamicFilePath(FileName);
         // Liest FileContent ein, wenn möglich
         byte[] Content;
         try
@@ -124,16 +117,12 @@ public class GameLanguageConverter
         // Seed wird vom FileName erstellt
         int Seed = GetSeed(FileName);
 
-        // Macht den FileName dynamisch, wenn nicht vorhanden
-        if (!FileName.Contains(Application.dataPath))
-            FileName = SceneDB.CreateDynamicFilePath(FileName);
-
         // Ändert den FileContent
         Content = ChangeBytes(Content, Seed, -1);
 
         // Wenn SaveFile dann speichert die File
         if (SaveFile)
-            File.WriteAllBytes(FileName, Content);
+            File.WriteAllBytes(SceneDB.CreateDynamicFilePath(FileName), Content);
 
         return Content;
     }
@@ -148,9 +137,6 @@ public class GameLanguageConverter
     // Coding Richtung ist -1
     public static byte[] Decode(string FileName, bool SaveFile = false)
     {
-        // Macht den FileName dynamisch, wenn nicht vorhanden
-        if (!FileName.Contains(Application.dataPath))
-            FileName = SceneDB.CreateDynamicFilePath(FileName);
         // Liest FileContent ein, wenn möglich
         byte[] Content;
         try

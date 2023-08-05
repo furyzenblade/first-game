@@ -1,9 +1,5 @@
-using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.UI.Image;
 
 // Prefab für alle Abilitys
 public class Ability : MonoBehaviour
