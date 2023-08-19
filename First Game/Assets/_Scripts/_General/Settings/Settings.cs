@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,7 @@ public class Settings
     public const char InformationSeparator = '\u2017';
 
     // Settings werden hier gespeichert, Default Settings sind im Code
-    public const string Path = "GData/Settings";
+    public const string Path = "/GData/Settings";
 
     // Settings werden hier gespeichert
     public List<KeyBinding> KeyBindings;
@@ -72,9 +73,13 @@ public class Settings
 
     private void DeSerialise()
     {
-        if (File.Exists(Path))
+        try
         {
-            string Content = GameLanguageConverter.StrDecode(Path, File.ReadAllBytes(Path));
+            // Lädt die Settings File aus dem Resources Folder
+            byte[] UnencodedSettings = File.ReadAllBytes(Application.dataPath + Path);
+
+
+            string Content = GameLanguageConverter.StrDecode(Path.Split('\\').Last(), UnencodedSettings);
 
             List<string> Settings = Content.Split(SettingSeparator).ToList();
 
@@ -85,7 +90,7 @@ public class Settings
             }
             // Wenn weitere Settings- Arten kommen, hier hinzufügen
         }
-        else
+        catch
         {
             LoadDefaultSettings();
             Serialise();
