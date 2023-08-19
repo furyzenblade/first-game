@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[SerializeField]
 public class KeyBinding : Setting
 {
     // Konstruktor für alle Settings auf einmal (überwiegend für Default Setting Speicherung)

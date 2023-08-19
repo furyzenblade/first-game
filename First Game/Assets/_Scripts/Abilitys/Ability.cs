@@ -8,7 +8,6 @@ public class Ability : MonoBehaviour
     public GameObject Origin { get; set; }
     public EntityBase OriginBase { get; set; }
 
-
     // Speichert, was alles von der Ability getroffen werden soll
     public bool HitsEnemys { get; set; }
     public bool HitsAllys { get; set; }
@@ -71,15 +70,17 @@ public class Ability : MonoBehaviour
         OriginBase = Origin.GetComponent<EntityBase>();
 
         // Basic Position wird gesetzt
-        transform.SetPositionAndRotation(OriginBase.GetPosition(), Quaternion.identity);
+        transform.SetPositionAndRotation(OriginBase.transform.position, Quaternion.identity);
 
         if (Origin.CompareTag("Enemy"))
             TargetBase = Target.GetComponent<EntityBase>();
 
         if (GetsSpawnRotation)
-            GetSpawnRotation();
-        if (GetsSpawnPosition)
-            GetSpawnPosition();
+            transform.rotation = GetSpawnRotation();
+        if (GetsSpawnRotation && Range > 100)
+            transform.position = GetInfiniteRangeSpawnPosition();
+        else if (GetsSpawnPosition)
+            transform.position = GetSpawnPosition();
 
         transform.position = new Vector3(transform.position.x, transform.position.y, -5.0f);
 
@@ -322,50 +323,69 @@ public class Ability : MonoBehaviour
         Stun.Duration = StunDuration;
     }
 
-    // Berechnet eine SpawnRotation für die Ability
+    private Vector3 GetInfiniteRangeSpawnPosition()
+    {
+        // Wenn ein Ally dann wird die Mausposition genommen
+        if (Origin.CompareTag("Ally"))
+            return GetMousePositionOnScreen();
+
+        else
+            return TargetBase.transform.position;
+    }
     private Quaternion GetSpawnRotation()
     {
-        // Berechnet & verändert die Rotation
-        Vector3 direction = GetTargetPosition() - GetPosition();
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        // Wenn ein Ally dann wird die Mausposition genommen
+        if (Origin.CompareTag("Ally"))
+            return GetRotation(GetMousePositionOnScreen());
 
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
-        return transform.rotation;
+        else
+            return GetRotation(TargetBase.transform.position);
     }
-
-    // Berechnet eine SpawnPosition für die Ability
-    private Vector3 GetSpawnPosition()
+    private Vector3 GetSpawnPosition(bool BreakIfNoHit = false)
     {
-        Vector3 direction = GetTargetPosition() - GetPosition();
-        float distance = direction.magnitude;
-        float clampedDistance = Mathf.Clamp(distance, 0f, Range);
-
-        transform.position += direction.normalized * clampedDistance;
-
-        return GetPosition();
-    }
-
-    // Berechnet die Position vom Target
-    private Vector3 GetTargetPosition()
-    {
-        // Wenn die Ability von einem Enemy kommt, wird die TargetPosition so bestimmt:
-        if (Origin.CompareTag("Enemy"))
+        if (Origin.CompareTag("Ally"))
         {
-            return TargetBase.GetPosition() - GetPosition();
-        }
+            Vector3 directionToTarget = GetMousePositionOnScreen() - transform.position;
+            float distanceToTarget = directionToTarget.magnitude;
 
-        // Wenn die Ability von einem Character kommt, wird sie so bestimmt: 
+            if (distanceToTarget > Range && BreakIfNoHit)
+                return Vector3.zero;
+
+            if (distanceToTarget > Range)
+                return transform.position + directionToTarget.normalized * Range;
+
+            return transform.position + directionToTarget;
+        }
         else
         {
-            Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = GetPosition().z;
-            return Camera.main.ScreenToWorldPoint(mousePosition);
+            Vector3 directionToTarget = Target.transform.position - transform.position;
+            float distanceToTarget = directionToTarget.magnitude;
+
+            if (distanceToTarget > Range && BreakIfNoHit)
+                return Vector3.zero;
+
+            return transform.position + directionToTarget.normalized * Range;
         }
     }
 
-    // Gibt die aktuelle Position, zentriert auf die Hitbox, an
-    public Vector3 GetPosition()
+
+    private Vector3 GetMousePositionOnScreen()
     {
-        return new Vector3(GetComponent<Collider2D>().bounds.center.x, GetComponent<Collider2D>().bounds.center.y, -5.0f);
+        Vector3 mousePosition = Input.mousePosition;
+
+        mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        mousePosition = new Vector3(mousePosition.x, mousePosition.y, -5.0f);
+
+        return mousePosition;
+    }
+
+    private Quaternion GetRotation(Vector3 TargetPosition)
+    {
+        Vector3 directionToTarget = TargetPosition - transform.position;
+        float angle = Mathf.Atan2(directionToTarget.y, directionToTarget.x) * Mathf.Rad2Deg;
+
+        Quaternion Rotation = Quaternion.Euler(0, 0, angle);
+        return Rotation;
     }
 }

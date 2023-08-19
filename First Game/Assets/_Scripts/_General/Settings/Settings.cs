@@ -3,12 +3,13 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
+[SerializeField]
 public class Settings
 {
     public Settings(bool LoadSettings = true)
     {
         if (LoadSettings)
-            this.LoadSettings();
+            DeSerialise();
     }
 
     // chars, die Settings separieren und nicht vom GameLanguageConverter erschaffen werden können
@@ -40,9 +41,10 @@ public class Settings
         }
 
 
+
     };
 
-    public void SaveSettings()
+    public void Serialise()
     {
         string strSettings = "";
 
@@ -68,7 +70,7 @@ public class Settings
         GameLanguageConverter.Encode(Path, strSettings, true);
     }
 
-    private void LoadSettings()
+    private void DeSerialise()
     {
         if (File.Exists(Path))
         {
@@ -86,7 +88,7 @@ public class Settings
         else
         {
             LoadDefaultSettings();
-            SaveSettings();
+            Serialise();
         }
     }
 

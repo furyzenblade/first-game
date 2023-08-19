@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using UnityEngine;
 
@@ -173,6 +174,47 @@ public class GameLanguageConverter
     public static string StrDecode(string FileName, bool SaveFile = false)
     {
         return Encoding.UTF8.GetString(Decode(FileName, SaveFile));
+    }
+
+
+    public static T Decode<T>(string FileName, bool SaveFile = false)
+    {
+        byte[] Content = Decode(FileName, SaveFile);
+
+        if (Content == null)
+            throw new ArgumentNullException(nameof(Content));
+
+        using MemoryStream memoryStream = new(Content);
+
+        BinaryFormatter binaryFormatter = new();
+        object obj = binaryFormatter.Deserialize(memoryStream);
+
+        if (obj is T result)
+        {
+            return result;
+        }
+        else
+        {
+            throw new InvalidCastException($"Failed to cast deserialized object to type {typeof(T)}.");
+        }
+    }
+    public static byte[] Encode<T>(string FileName, T obj, bool ReturnUnencodedByteArray = false, bool SaveFile = false)
+    {
+        if (obj == null)
+            throw new ArgumentNullException(nameof(obj));
+
+        using MemoryStream memoryStream = new();
+
+        BinaryFormatter binaryFormatter = new();
+        binaryFormatter.Serialize(memoryStream, obj);
+
+        // Returnt das verschlüsselte Byte Array
+        if (!ReturnUnencodedByteArray)
+            return Encode(FileName, memoryStream.ToArray(), SaveFile);
+
+        // Returnt das nicht verschlüsselte Byte Array
+        Encode(FileName, memoryStream.ToArray(), SaveFile);
+        return memoryStream.ToArray();
     }
 
 

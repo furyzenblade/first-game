@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using System.Linq;
-using System;
+using static UnityEngine.EventSystems.EventTrigger;
 
 // Kontrolliert einen Character mit allen Inputs etc., 
 public class CharacterController : EntityBase
@@ -34,6 +33,12 @@ public class CharacterController : EntityBase
         AbilityCooldowns.Add(3);*/
     }
 
+    private new void Update()
+    {
+        base.Update();
+        AddDamage(1);
+    }
+
     // Bewegt den Character jeden Frame in die global errechnete Richtung
     public void MoveCharacter(Vector3 Dir)
     {
@@ -59,7 +64,7 @@ public class CharacterController : EntityBase
             AbilityCooldowns[Index] += GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
 
             // Erstellt die Ability mit Position & Rotation
-            GameObject SpawnedAbility = Instantiate(Ability, GetPosition(), Quaternion.identity);
+            GameObject SpawnedAbility = Instantiate(Ability);
             SpawnedAbility.GetComponent<Ability>().Origin = gameObject;
         }
     }
@@ -83,9 +88,15 @@ public class CharacterController : EntityBase
     public new void AddDamage(float Damage, float CritChance = 0, float CritDamage = 0)
     {
         base.AddDamage(Damage, CritChance, CritDamage);
+        OnDeath += DeathHandler;
+    }
 
-        // Wenn der Character keine HP mehr hat, wird er inaktiv gesetzt
-        if (HP < 0)
-            gameObject.SetActive(false);
+    bool EntityIsDead = false;
+    private void DeathHandler()
+    {
+        if (!EntityIsDead)
+            Debug.Log($"{gameObject.name} has died.");
+        else
+            EntityIsDead = true;
     }
 }

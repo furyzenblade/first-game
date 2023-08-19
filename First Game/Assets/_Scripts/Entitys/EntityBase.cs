@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,10 +6,10 @@ using UnityEngine;
 // Grundlage für alle GameObjects, die getroffen werden können sollen
 public class EntityBase : MonoBehaviour
 {
-    public int ID { get; set; }
-
-    // Character Stats
+    // Properties
     #region Stats
+
+    public int ID { get; set; }
 
     // Defensive Stats
     public int MaxHP;
@@ -37,13 +38,14 @@ public class EntityBase : MonoBehaviour
 
     public int AbliltyHaste;
 
-    #endregion Stats
 
     // Ability Management
     public bool IsStunned { get; set; }
 
     public List<GameObject> Abilitys;
     public List<float> AbilityCooldowns { get; set; }
+
+    #endregion Stats
 
     public void Start()
     {
@@ -58,6 +60,9 @@ public class EntityBase : MonoBehaviour
         HandleAttributes();
         UpdateAbilityCooldowns();
     }
+
+    // Attribute Handling
+    #region Attributes
 
     // Handled effizient alle Attributes, die es gibt (Updaten bei neuen Attributes)
     private void HandleAttributes()
@@ -122,6 +127,8 @@ public class EntityBase : MonoBehaviour
         return GF.CalculateAntiHealing(gameObject.GetComponents<AntiHealAttribute>().ToList());
     }
 
+    #endregion Attributes
+
     private void UpdateAbilityCooldowns()
     {
         // Reduziert die Cooldowns aller abilitys slightly
@@ -148,9 +155,20 @@ public class EntityBase : MonoBehaviour
 
     // Gibt dem Enemy Damage abhängig von den Stats des Angreifers und der Armor
     public void AddDamage(float Damage, float CritChance = 0, float CritDamage = 0)
-    {
+    {        
         HP -= GF.CalculateDamage(Damage, CurrentArmor, CritChance, CritDamage);
+
+        // Wenn Entity getötet wird das GameObject zerstört. Es kann aber noch eine Custom Methode ausführen
+        if (HP < 0)
+        {
+            OnDeath?.Invoke();
+            Destroy(gameObject);
+        }
     }
+    // Methode, die auf dieser Klasse basierende Objekte fürs Death Handling nutzen können
+    public delegate void EntityDeathEvent();
+    public event EntityDeathEvent OnDeath;
+
 
     public bool HandleBasicAttacks(GameObject Enemy)
     {
@@ -172,11 +190,5 @@ public class EntityBase : MonoBehaviour
             }
         }
         return false;
-    }
-
-    // Gibt die aktuelle Position, zentriert auf die Hitbox, an
-    public Vector3 GetPosition()
-    {
-        return new Vector3(GetComponent<Collider2D>().bounds.center.x, GetComponent<Collider2D>().bounds.center.y, -5.0f);
     }
 }

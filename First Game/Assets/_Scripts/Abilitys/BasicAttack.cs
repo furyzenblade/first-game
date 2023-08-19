@@ -49,12 +49,12 @@ public class BasicAttack : MonoBehaviour
     private void MoveTowardsEnemy()
     {
         // Berechnet die Distanz zum targetet Character
-        float DistanceToEnemy = Vector2.Distance(TargetBase.GetPosition(), new Vector2(CurrentBase.GetPosition().x, CurrentBase.GetPosition().y));
+        float DistanceToEnemy = Vector2.Distance(TargetBase.transform.position, new Vector2(CurrentBase.transform.position.x, CurrentBase.transform.position.y));
 
         // Wenn Distanz > AttackRange bewegt sich das Enemy auf den Character zu
         if (DistanceToEnemy > Range / 10.0f)
         {
-            Vector3 direction = TargetBase.GetPosition() - CurrentBase.GetPosition();
+            Vector3 direction = TargetBase.transform.position - CurrentBase.transform.position;
 
             if (CompareTag("Enemy"))
                 transform.Translate(gameObject.GetComponent<EnemyAI>().Speed * Time.deltaTime * direction.normalized);
@@ -104,7 +104,7 @@ public class BasicAttack : MonoBehaviour
     private bool IsInRange(int AttackRange)
     {
         // Berechnet die Distanz zum targetet Character
-        float DistanceToEnemy = Vector2.Distance(TargetBase.GetPosition(), new Vector2(CurrentBase.GetPosition().x, CurrentBase.GetPosition().y));
+        float DistanceToEnemy = Vector2.Distance(TargetBase.transform.position, new Vector2(CurrentBase.transform.position.x, CurrentBase.transform.position.y));
 
         // Wenn nach dem Movement noch außerhalb der AttackRange ist, kann nicht angegriffen
         if (DistanceToEnemy > AttackRange / 10.0f)

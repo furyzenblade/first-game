@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
 using UnityEngine;
 
 // Eine globale, überwiegend statische Klasse, die z.B. User Inputs verwaltet, um Performance zu sparen
@@ -36,10 +36,10 @@ public class SceneDB : MonoBehaviour
         Application.targetFrameRate = 60;
 
         // Lädt die Settings
-        GetSettings();
-
+        try { GetSettings(); }
+        catch { Debug.LogError("Unable to load settings"); }
         // Load all prefabs
-        string pathToPrefabs = "Prefabs/Abilities"; // Update this to the correct path
+        string pathToPrefabs = "Abilitys"; // Relative path from "Resources" folder
 
         GameObject[] allPrefabs = Resources.LoadAll<GameObject>(pathToPrefabs);
 
@@ -52,7 +52,7 @@ public class SceneDB : MonoBehaviour
         }
 
         // Der erste Character wird controlled, weil bei Online Games eig. immer der lokale als erstes erscheint denke ich (philipp)
-        GameObject.FindGameObjectWithTag("Ally").GetComponent<CharacterController>().IsControlledChar = true;
+        //GameObject.FindGameObjectWithTag("Ally").GetComponent<CharacterController>().IsControlledChar = true;
 
         // EnemyID wird auf 0 gesetzt, weil noch kein Enemy gespawned wurde
         EntityID = 0;
@@ -212,7 +212,7 @@ public class SceneDB : MonoBehaviour
         }
 
         // Der Character mit der highest Aggro wird zurück gegeben
-        return Characters[Aggros.IndexOf(Aggros.Max())];
+        return Characters[Aggros.IndexOf(GetMaxValue(Aggros))];
     }
 
     public GameObject GetHoveredObject()
@@ -234,5 +234,11 @@ public class SceneDB : MonoBehaviour
     public static string CreateDynamicFilePath(string FileName)
     {
         return @"" + Application.dataPath + "/" + FileName + ".GData";
+    }
+
+    public static int GetMaxValue(List<int> List)
+    {
+        List.Sort();
+        return List[^1];
     }
 }
