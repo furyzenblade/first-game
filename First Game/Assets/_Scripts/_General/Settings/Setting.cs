@@ -14,12 +14,12 @@ public class Setting
     public bool IsMainSetting = true;
 
     // Convertet den Setting zu einer List<string> zum späteren Abspeichern
-    public List<string> SaveSetting()
+    public List<string> Serialise()
     {
         return new List<string>() { Name, Description, SplitUI.ToString(), IsMainSetting.ToString() };
     }
 
-    public List<string> LoadSetting(string Content)
+    public List<string> DeSerialise(string Content)
     {
         List<string> Data = Content.Split(Settings.InformationSeparator).ToList();
 

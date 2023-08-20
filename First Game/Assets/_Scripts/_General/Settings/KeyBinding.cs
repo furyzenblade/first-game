@@ -22,7 +22,7 @@ public class KeyBinding : Setting
     // Konstruktor für Laden von Settings aus Files
     public KeyBinding(string Content)
     {
-        LoadSetting(Content);
+        DeSerialise(Content);
     }
 
     // Speichert den Key für den Input
@@ -36,24 +36,31 @@ public class KeyBinding : Setting
 
     // Bestimmt, ob für einen Key alle Modifier exakt stimmen müssen oder ob es egal ist
     public bool IsMainKey = false;
-    public new List<string> SaveSetting()
+    public new List<string> Serialise()
     {
-        List<string> strSetting = base.SaveSetting();
+        List<string> strSetting = base.Serialise();
+
+        strSetting.Add(Key.ToString());
+        strSetting.Add(Modifier_Alt.ToString());
+        strSetting.Add(Modifier_CapsLock.ToString());
+        strSetting.Add(Modifier_Control.ToString());
+        strSetting.Add(Modifier_Shift.ToString());
 
         return strSetting;
     }
 
-    private new KeyBinding LoadSetting(string Content)
+    private new KeyBinding DeSerialise(string Content)
     {
         // Erstellt die Grundinformationen, die jedes Setting hat
-        List<string> Data = base.LoadSetting(Content);
+        List<string> Data = base.DeSerialise(Content);
 
         // Speichert die Werte ab
-        Key = (KeyCode)Convert.ToInt32(Data[0]);
+        //Key = (KeyCode)Convert.ToInt32(Data[0]);
+        Key = (KeyCode)Enum.Parse(typeof(KeyCode), Data[0]);
         Modifier_Alt = bool.Parse(Data[1]);
-        Modifier_CapsLock = bool.Parse(Data[1]);
-        Modifier_Control = bool.Parse(Data[1]);
-        Modifier_Shift = bool.Parse(Data[1]);
+        Modifier_CapsLock = bool.Parse(Data[2]);
+        Modifier_Control = bool.Parse(Data[3]);
+        Modifier_Shift = bool.Parse(Data[4]);
 
         return this;
     }

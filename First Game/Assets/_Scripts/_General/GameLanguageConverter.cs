@@ -15,9 +15,9 @@ public class GameLanguageConverter
     private static int GetSeed(string FileName)
     {
         // Wenn der komplette, dynamische Dateipfad vom Game vorhanden ist, wird er abgeschnitten
-        if (FileName.Contains(Application.dataPath))
+        if (FileName.Contains(Application.streamingAssetsPath))
         {
-            FileName = FileName[Application.dataPath.Count()..];
+            FileName = FileName[Application.streamingAssetsPath.Count()..];
             // Wenn das File Ending vom Game vorhanden ist, wird es abgeschnitten
             if (FileName.Contains(FileEnding))
                 FileName = FileName.Split(FileEnding)[0];
@@ -52,7 +52,7 @@ public class GameLanguageConverter
 
         // Wenn SaveFile dann speichert die File
         if (SaveFile)
-            File.WriteAllBytes(SceneDB.CreateDynamicFilePath(FileName), Content);
+            File.WriteAllBytes(FileName, Content);
 
         return Content;
     }
@@ -123,7 +123,7 @@ public class GameLanguageConverter
 
         // Wenn SaveFile dann speichert die File
         if (SaveFile)
-            File.WriteAllBytes(SceneDB.CreateDynamicFilePath(FileName), Content);
+            File.WriteAllBytes(FileName, Content);
 
         return Content;
     }

@@ -1,14 +1,20 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 [SerializeField]
 public class Settings
 {
     public Settings(bool LoadSettings = true)
     {
+        // Combines the File Path and correct Unity's Errors by hand
+        FullPath = Path.Combine(Application.streamingAssetsPath, path);
+        FullPath = FullPath.Split("\\")[0] + "/" + FullPath.Split("\\")[1];
+
         if (LoadSettings)
             DeSerialise();
     }
@@ -17,11 +23,8 @@ public class Settings
     public const char SettingSeparator = '\u2016';
     public const char InformationSeparator = '\u2017';
 
-    // Settings werden hier gespeichert, Default Settings sind im Code
-    public const string Path = "/GData/Settings";
-
     // Settings werden hier gespeichert
-    public List<KeyBinding> KeyBindings;
+    public List<KeyBinding> KeyBindings = new() { };
 
     // Property, was DefaultSettings zurück gibt
     public static readonly Settings DefaultSettings = new(false)
@@ -42,7 +45,7 @@ public class Settings
         }
 
 
-
+        
     };
 
     public void Serialise()
@@ -52,14 +55,14 @@ public class Settings
         foreach (KeyBinding KeyBinding in KeyBindings)
         {
             // Settings separieren sich und werden in eine Liste eingetragen
-            List<string> Data = KeyBinding.SaveSetting();
+            List<string> Data = KeyBinding.Serialise();
             for (int i = 0; i < Data.Count; i++)
             {
                 // Daten werden an strSettings angehangen
                 strSettings += Data[i];
 
                 // Wenn nicht das letzte Datenpacket wird separiert
-                if (Data[i] != Data.Last())
+                if (i != Data.Count - 1)
                     strSettings += InformationSeparator;
             }
 
@@ -68,23 +71,49 @@ public class Settings
                 strSettings += SettingSeparator;
         }
 
-        GameLanguageConverter.Encode(Path, strSettings, true);
+        GameLanguageConverter.Encode(FullPath, strSettings, true);
     }
+
+    // Settings werden hier gespeichert, Default Settings sind im Code
+    public const string path = "GData/Settings.GData";
+    public string FullPath;
+
+
+
+    #region LoadFile
+
+    private IEnumerator LoadFile()
+    {
+        using UnityWebRequest request = UnityWebRequest.Get(FullPath);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Failed to load settings: " + request.error);
+            yield break;
+        }
+
+        UnencodedSettings = request.downloadHandler.data;
+    }
+
+    private byte[] UnencodedSettings;
+
+    #endregion LoadFile
 
     private void DeSerialise()
     {
         try
         {
             // Lädt die Settings File aus dem Resources Folder
-            byte[] UnencodedSettings = File.ReadAllBytes(Application.dataPath + Path);
+            //LoadFile();
+            UnencodedSettings = File.ReadAllBytes(FullPath);
 
 
-            string Content = GameLanguageConverter.StrDecode(Path.Split('\\').Last(), UnencodedSettings);
+            string Content = GameLanguageConverter.StrDecode(FullPath, UnencodedSettings);
 
             List<string> Settings = Content.Split(SettingSeparator).ToList();
 
-            int i = 0;
-            for (; i < DefaultSettings.KeyBindings.Count; i++)
+            for (int i = 0; i < DefaultSettings.KeyBindings.Count; i++)
             {
                 KeyBindings.Add(new KeyBinding(Settings[i]));
             }
@@ -92,6 +121,7 @@ public class Settings
         }
         catch
         {
+            Debug.Log("Loading Default Settings");
             LoadDefaultSettings();
             Serialise();
         }

@@ -233,7 +233,7 @@ public class SceneDB : MonoBehaviour
 
     public static string CreateDynamicFilePath(string FileName)
     {
-        return @"" + Application.dataPath + "/" + FileName + ".GData";
+        return @"" + Application.dataPath + "/" + FileName + GameLanguageConverter.FileEnding;
     }
 
     public static int GetMaxValue(List<int> List)
