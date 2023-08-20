@@ -425,6 +425,11 @@ PrefabInstance:
       propertyPath: HP
       value: 50000
       objectReference: {fileID: 0}
+    - target: {fileID: 1668179546348340889, guid: a011f810e5f3df047aaccfb3df25aebd,
+        type: 3}
+      propertyPath: BasicAttackRange
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 1668179546348340894, guid: a011f810e5f3df047aaccfb3df25aebd,
         type: 3}
       propertyPath: m_Name
@@ -439,6 +444,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3118916692212053444, guid: dfc7206dd2e777941b9773617ff57108,
+        type: 3}
+      propertyPath: BasicAttackRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3118916692212053444, guid: dfc7206dd2e777941b9773617ff57108,
+        type: 3}
+      propertyPath: BasicAttackSlowDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3118916692212053447, guid: dfc7206dd2e777941b9773617ff57108,
         type: 3}
       propertyPath: m_RootOrder

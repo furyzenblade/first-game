@@ -191,4 +191,7 @@ public class EntityBase : MonoBehaviour
         }
         return false;
     }
+
+    // Cooldown vom BasicAttack zum Verhindern von Reset-Bugs
+    public float BasicAttackCooldown;
 }

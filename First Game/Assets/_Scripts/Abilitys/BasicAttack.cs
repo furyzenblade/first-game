@@ -25,6 +25,9 @@ public class BasicAttack : MonoBehaviour
         TargetBase = Target.GetComponent<EntityBase>();
         CurrentBase = GetComponent<EntityBase>();
 
+        AttackSpeed = CurrentBase.AttackSpeed;
+        Range = CurrentBase.BasicAttackRange;
+
         CustomAttributeHandling = false;
     }
 
@@ -40,8 +43,8 @@ public class BasicAttack : MonoBehaviour
         TryBasicAttack();
 
         // Cooldown wird um 1.0f pro Sekunde runter gesetzt
-        if (Cooldown > -Time.deltaTime)
-            Cooldown -= Time.deltaTime;
+        if (CurrentBase.BasicAttackCooldown > -Time.deltaTime)
+            CurrentBase.BasicAttackCooldown -= Time.deltaTime;
     }
 
     // Bewegt den Enemy in Richtung seines Targets
@@ -63,20 +66,18 @@ public class BasicAttack : MonoBehaviour
         }
     }
 
-    // Gibt an, wie viel Cooldown für einen Basic Attack herrscht
-    public float Cooldown;
     // Slapped den targeted Character, wenn möglich
     private bool TryBasicAttack()
     {
         // Wenn kein Cooldown & in AttackRange wird der Enemy attacked
-        bool CanAttack = IsInRange(Range) && (Cooldown < 0);
+        bool CanAttack = IsInRange(Range) && (CurrentBase.BasicAttackCooldown < 0);
 
         if (CanAttack)
         {
             try
             {
                 // Cooldown wird resettet
-                Cooldown += AttackSpeed;
+                CurrentBase.BasicAttackCooldown += AttackSpeed;
 
                 // Fügt dem angegriffenen Target Schaden hinzu, wenn möglich
                 HitIfEnemy();
