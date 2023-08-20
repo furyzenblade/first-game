@@ -63,7 +63,7 @@ public class Ability : MonoBehaviour
 
     public bool GetsSpawnRotation;
     public bool GetsSpawnPosition;
-
+    
     void Start()
     {
         // EntityBases werden gesetzt
@@ -85,7 +85,7 @@ public class Ability : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, -5.0f);
 
         if (Origin.CompareTag("Enemy"))
-            GetComponent<SpriteRenderer>().color = EnemyAbilityColor;
+            GetComponentInChildren<SpriteRenderer>().color = EnemyAbilityColor;
 
         HitEntityIDs = new List<int>() { };
         HitEntityFrequence = new List<float>() { };

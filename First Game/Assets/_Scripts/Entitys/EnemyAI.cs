@@ -50,18 +50,41 @@ public class EnemyAI : EntityBase
     }
 
     // Nutzt eine Ability
+    public void UseAbilitys(int AbilityIndex)
+    {
+        // Ability wird im RAM gespeichert
+        GameObject Ability = Abilitys[AbilityIndex];
+
+        // Ability Script wird gespeichert
+        Ability AbilityComponent = Ability.GetComponent<Ability>();
+
+        // Setzt den Origin der Ability
+        AbilityComponent.Origin = gameObject;
+
+        // Setzt das Target der Ability
+        AbilityComponent.Target = AttackedCharacter;
+
+        // Resettet den Cooldown der Ability
+        AbilityCooldowns[AbilityIndex] = GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
+
+        // Erschafft die Ability
+        Instantiate(Ability);
+    }
+
     public void UseAbility(int AbilityIndex)
     {
-        // Erschafft eine Ability
-        GameObject Ability = Instantiate(Abilitys[AbilityIndex]);
+        if (!IsStunned)
+        {
+            GameObject AbilityPrefab = Abilitys[AbilityIndex];
 
-        // Setzt die Werte für die Ability
-        Ability.GetComponent<Ability>().Origin = gameObject;
+            GameObject newAbilityObject = Instantiate(AbilityPrefab);
+            Ability AbilityComponent = newAbilityObject.GetComponent<Ability>();
 
-        // Setzt ein Target für die Ability
-        Ability.GetComponent<Ability>().Target = AttackedCharacter;
+            AbilityComponent.Origin = gameObject;
+            AbilityComponent.Target = AttackedCharacter;
 
-        // Setzt den Cooldown der Ability zurück
-        AbilityCooldowns[AbilityIndex] += GF.CalculateCooldown(Ability.GetComponent<Ability>().Cooldown, AbliltyHaste);
+            AbilityCooldowns[AbilityIndex] = GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
+        }
     }
+
 }

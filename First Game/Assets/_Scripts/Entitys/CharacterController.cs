@@ -11,9 +11,6 @@ public class CharacterController : EntityBase
     // Aggro 
     public int Aggro;
 
-    // Beim Start werden die Abilitys, die der Character hat, zugewiesen 
-    // Sobald es Einstellungen, Ability Trees etc. gibt, muss das hier reworked werden
-    // Mit "Skilltree" oder so reworken
     new void Start()
     {
         base.Start();
@@ -22,21 +19,11 @@ public class CharacterController : EntityBase
         {
             AbilityCooldowns.Add(-0.000001f);
         }
-        // Abilitys werden gesetzt (temporär disabled)
-        /*Abilitys.Add(0);
-        AbilityCooldowns.Add(0);
-        Abilitys.Add(1);
-        AbilityCooldowns.Add(1);
-        Abilitys.Add(2);
-        AbilityCooldowns.Add(2); 
-        Abilitys.Add(3);
-        AbilityCooldowns.Add(3);*/
     }
 
     private new void Update()
     {
         base.Update();
-        AddDamage(1);
     }
 
     // Bewegt den Character jeden Frame in die global errechnete Richtung
@@ -53,19 +40,24 @@ public class CharacterController : EntityBase
     // Bestimmungsverfahren, welche Ability genutzt wird, erfordert dringend ein Rework
     public void UseAbility(int Index)
     {
-        // Bestimmt & holt die Ability, die zu nutzen ist
-        GameObject Ability = Abilitys[Index];
-        Ability AbilityComponent = Ability.GetComponent<Ability>();
-
-        // Wenn die Ability keinen Cooldown hat, wird sie gezündet
-        if (AbilityCooldowns[Index] < 0.0f)
+        if (!IsStunned)
         {
-            // Setzt den Cooldown der Ability zurück
-            AbilityCooldowns[Index] += GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
+            // Bestimmt & holt die Ability, die zu nutzen ist
+            GameObject Ability = Abilitys[Index];
 
-            // Erstellt die Ability mit Position & Rotation
-            GameObject SpawnedAbility = Instantiate(Ability);
-            SpawnedAbility.GetComponent<Ability>().Origin = gameObject;
+            // Ability Script wird gespeichert
+            Ability AbilityComponent = Ability.GetComponent<Ability>();
+
+            // Wenn die Ability keinen Cooldown hat, wird sie gezündet
+            if (AbilityCooldowns[Index] < 0.0f)
+            {
+                // Setzt den Cooldown der Ability zurück
+                AbilityCooldowns[Index] += GF.CalculateCooldown(AbilityComponent.Cooldown, AbliltyHaste);
+
+                // Erstellt die Ability mit Position & Rotation
+                GameObject SpawnedAbility = Instantiate(Ability);
+                SpawnedAbility.GetComponent<Ability>().Origin = gameObject;
+            }
         }
     }
 
