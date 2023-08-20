@@ -119,6 +119,7 @@ public class Ability : MonoBehaviour
         CritDamage = OriginBase.CritDamage;
         Healing = GF.CalculateHealing(Healing, HealingScaling, OriginBase.HealingPower, OriginBase.GetAntiHealing());
     }
+
     public void Update()
     {
         // Reduziert das HitDelay der Ability für jeden einzelnen Entity
@@ -363,6 +364,8 @@ public class Ability : MonoBehaviour
 
             if (distanceToTarget > Range && BreakIfNoHit)
                 return Vector3.zero;
+            if (distanceToTarget < Range)
+                return Target.transform.position;
 
             return transform.position + directionToTarget.normalized * Range;
         }
