@@ -41,7 +41,7 @@ public class GF
 
 
     // Formeln zum Berechnen von Cooldowns
-    public static float CalculateCooldown(float Cooldown, float CDR)
+    public static float CalculateCooldown(float Cooldown, int CDR)
     {
         return Cooldown * (100f / (100 + CDR));
     }

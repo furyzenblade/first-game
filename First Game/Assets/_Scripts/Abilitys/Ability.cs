@@ -63,6 +63,8 @@ public class Ability : MonoBehaviour
 
     public bool GetsSpawnRotation;
     public bool GetsSpawnPosition;
+
+    public ushort MaxCharges = 1;
     
     void Start()
     {
