@@ -1,14 +1,14 @@
-using UnityEngine;
+/*using UnityEngine;
 
 // Das BasicAttack im Game
 public class BasicAttack : MonoBehaviour
 {
     // Attackiertes GameObject
-    public GameObject Target;
-    public EntityBase TargetBase { get; set; }
+    public Vector3 TargetPosition;
+    public Entity TargetBase { get; set; }
 
     // EntityBase des eigenen GameObjects
-    public EntityBase CurrentBase { get; set; }
+    public Entity CurrentBase { get; set; }
 
     // Damage Operatoren
     public float Damage;
@@ -17,16 +17,15 @@ public class BasicAttack : MonoBehaviour
 
     // Utility
     public float AttackSpeed;
-    public int Range;
+    public int AttackRange;
 
     void Start()
     {
-        // Setzt die EntityBases zum Aufrufen der richtigen Positionen
-        TargetBase = Target.GetComponent<EntityBase>();
-        CurrentBase = GetComponent<EntityBase>();
+        // Setzt die notwendigen Properties
+        CurrentBase = GetComponent<Entity>();
 
         AttackSpeed = CurrentBase.AttackSpeed;
-        Range = CurrentBase.BasicAttackRange;
+        AttackRange = CurrentBase.AttackRange;
 
         CustomAttributeHandling = false;
     }
@@ -35,27 +34,30 @@ public class BasicAttack : MonoBehaviour
     {
         Damage = gameObject.GetComponent<EntityBase>().CurrentDamage;
         AttackSpeed = gameObject.GetComponent<EntityBase>().CurrentAttackSpeed;
-
-        if (Target == null || !Target.activeSelf)
-            Destroy(this);
+        try
+        {
+            if (TargetBase.gameObject == null || !TargetBase.gameObject.activeSelf)
+                Destroy(this);
+        }
+        catch { Debug.LogError("BasicAttack Target probably dead"); }
 
         MoveTowardsEnemy();
         TryBasicAttack();
 
         // Cooldown wird um 1.0f pro Sekunde runter gesetzt
-        if (CurrentBase.BasicAttackCooldown > -Time.deltaTime)
-            CurrentBase.BasicAttackCooldown -= Time.deltaTime;
+        if (CurrentBase.AttackCooldown > -Time.deltaTime)
+            CurrentBase.AttackCooldown -= Time.deltaTime;
     }
 
     // Bewegt den Enemy in Richtung seines Targets
     // Unter Bedingungen wie: Nicht in Basic Attack Range sein etc.
     private void MoveTowardsEnemy()
     {
-        // Berechnet die Distanz zum targetet Character
+        // Berechnet die Distanz zum targetet Entity
         float DistanceToEnemy = Vector2.Distance(TargetBase.transform.position, new Vector2(CurrentBase.transform.position.x, CurrentBase.transform.position.y));
 
         // Wenn Distanz > AttackRange bewegt sich das Enemy auf den Character zu
-        if (DistanceToEnemy > Range / 10.0f)
+        if (DistanceToEnemy > AttackRange / 10.0f)
         {
             Vector3 direction = TargetBase.transform.position - CurrentBase.transform.position;
 
@@ -185,3 +187,4 @@ public class BasicAttack : MonoBehaviour
         Stun.Duration = StunDuration;
     }
 }
+*/

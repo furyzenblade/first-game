@@ -1,10 +1,9 @@
 // Base Klasse zum Erstellen eines Entitys
 // Behaviour Mode: NPC / Hosted Character / Online Character
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
@@ -15,20 +14,30 @@ public class Entity : MonoBehaviour
     public ControlMode ControlMode;
     public Faction Faction;
 
+    public static float DefaultZLayer;
+
     #endregion Identifier
 
-    #region Algorithm
+    #region TopAlgorithm
 
     public void Start()
     {
+        // Setzt für jedes Entity die Z Koordinate auf DefaultZLayer
+        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZLayer);
+
+        // Holt eine EntityID ab
         ID = SceneDB.AddEntityID();
 
+        // Entfernt nullwerte aus AbilityCooldowns
         AbilityCooldowns = new List<float>() { };
     }
 
     public void Update()
     {
         HandleAttributes();
+
+        BasicAttackAlgorithm();
+
         UpdateAbilityCooldowns();
     }
 
@@ -47,9 +56,6 @@ public class Entity : MonoBehaviour
     public float Damage;
     public float CurrentDamage { get; set; }
 
-    public float AttackSpeed;
-    public float CurrentAttackSpeed { get; set; }
-
     public int CritChance;
     public float CritDamage;
 
@@ -59,19 +65,14 @@ public class Entity : MonoBehaviour
 
     public float HealingPower;
 
-    // Basic Attack
-    public int AttackRange;
-
     public int AbliltyHaste;
 
     // Debug Values
     public bool CanBeRevived;
 
-    public float AttackCooldown;
-
     #endregion Stats
 
-    #region AttributeManagement
+    #region Attributes
 
     bool IsStunned;
 
@@ -86,7 +87,7 @@ public class Entity : MonoBehaviour
                 HandleSlows();
             // Wenn Roots existieren, wird speed = 0 gesetzt
             else
-                Speed = 0;
+                CurrentSpeed = 0;
 
             IsStunned = false;
             HandleDamageReductions();
@@ -96,7 +97,7 @@ public class Entity : MonoBehaviour
         // Wenn Stuns existieren, können keine Abilitys gecastet werden & Speed ist 0
         else
         {
-            Speed = 0;
+            CurrentSpeed = 0;
             IsStunned = true;
         }
     }
@@ -107,7 +108,7 @@ public class Entity : MonoBehaviour
 
         // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
         foreach (SlowAttribute Slow in gameObject.GetComponents<SlowAttribute>())
-            Speed *= 1f - (Slow.Strength / 100f);
+            CurrentSpeed *= 1f - (Slow.Strength / 100f);
     }
     private void HandleDamageReductions()
     {
@@ -138,9 +139,9 @@ public class Entity : MonoBehaviour
         return GF.CalculateAntiHealing(gameObject.GetComponents<AntiHealAttribute>().ToList());
     }
 
-    #endregion AttributeManagement
+    #endregion Attributes
 
-    #region AbilityManagement
+    #region Abilitys
 
     public List<GameObject> Abilitys;
     public List<float> AbilityCooldowns { get; set; }
@@ -164,31 +165,9 @@ public class Entity : MonoBehaviour
         }
     }
 
-    public bool HandleBasicAttacks(GameObject Enemy)
-    {
-        if (Enemy.CompareTag("Enemy") || Enemy.CompareTag("Ally"))
-        {
-            BasicAttack CurrentAttack = null;
-            try
-            {
-                CurrentAttack = gameObject.GetComponent<BasicAttack>();
-            }
-            catch { }
+    #endregion Abilitys
 
-            if (CurrentAttack == null)
-                return true;
-            else if (CurrentAttack.Target.name != Enemy.name)
-            {
-                Destroy(CurrentAttack);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    #endregion AbilityManagement
-
-    #region EventManagement
+    #region Events
 
     // Healt ein Entity um eine gewisse Value
     public void Heal(float Healing)
@@ -217,5 +196,112 @@ public class Entity : MonoBehaviour
     }
     // Methode, die auf dieser Klasse basierende Objekte fürs Death Handling nutzen können
 
-    #endregion EventManagement
+    #endregion Events
+
+    #region BasicAttack / Movement
+
+    // Properties
+    public float AttackRange;                   // Range, in der attackiert werden kann
+    public float AttackSpeed;                   // 1.0 = 1x pro Sekunde angreifen
+    private float CurrentAttackSpeed;           // Attackspeed nach Berechnung von Attributes
+    private float AttackCooldown = -0.0001f;    // Cooldown bis der nächste Attack folgen kann
+
+    private Entity Target;
+
+    // Algorithmus vom BasicAttack
+    private void BasicAttackAlgorithm()
+    {
+        // Wenn Entity nicht gestunnt ist, wird der Basic Attack ausgeführt
+        if (!IsStunned)
+        {
+            // Left Click wurde gedrückt => Movement / BasicAttack Event
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+                HandleMovementEvent();
+
+            // Target Position wird analysiert & drauf zu bewegt
+            MoveTowards(AnalyseTargetPosition());
+
+            // BasicAttack wird versucht
+            TryBasicAttack();
+        }
+
+        // Cooldown wird runter gesetzt
+        if (AttackCooldown > Time.deltaTime)
+            AttackCooldown -= Time.deltaTime;
+    }
+
+    public void HandleMovementEvent()
+    {
+        try
+        {
+            // Ray wird erstellt
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            // Hit Object wird geholt
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            // Wenn die Faction None oder eine andere als die 
+            if (hit.collider.gameObject.GetComponent<Entity>().Faction != Faction || hit.collider.gameObject.GetComponent<Entity>().Faction == Faction.None)
+                Target = hit.collider.gameObject.GetComponent<Entity>();
+
+            // Kein Entity also wird Target Location verändert
+            else
+                Target = null;
+        }
+        // Kein Entity also wird Target Location verändert
+        catch
+        { Target = null; }
+    }
+
+    // Analysiert die Target Position
+    private Vector3 AnalyseTargetPosition()
+    {
+        Vector3 TargetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        // Bewegt sich in Richtung der TargetPosition bzw. in AttackRange wenn Target != null
+        if (Target != null)
+        {
+            TargetPosition = Target.transform.position;
+
+            float DistanceToEnemy = Vector2.Distance(TargetPosition, transform.position);
+            if (DistanceToEnemy > AttackRange / 10.0f)
+                return TargetPosition;
+        }
+        else
+            return TargetPosition;
+
+        // null wird returned
+        return Vector3.zero;
+    }
+
+    // Bewegt das aktuelle GameObject möglichst nah an einen Punkt ran
+    private void MoveTowards(Vector3 Position)
+    {
+        // Direction wird ermittelt
+        Vector3 direction = Vector3.Normalize(Position - transform.position);
+
+        // Bewegung richtung Target Position
+        transform.Translate(CurrentSpeed * Time.deltaTime * direction);        
+    }
+
+    private void TryBasicAttack()
+    {
+        if (Target != null && AttackCooldown < 0f)
+        {
+            // Distance calculation
+            float DistanceToEnemy = Vector2.Distance(Target.transform.position, new Vector2(transform.position.x, transform.position.y));
+
+            // Prüft, ob der Gegner in Range ist
+            if (DistanceToEnemy < AttackRange / 10.0f)
+            {
+                // Damaged den Gegner
+                Target.AddDamage(Damage, CritChance, CritDamage);
+
+                // Resettet den Cooldown
+                AttackCooldown = CurrentAttackSpeed;
+            }
+        }
+    }
+
+    #endregion BasicAttack / Movement
 }
