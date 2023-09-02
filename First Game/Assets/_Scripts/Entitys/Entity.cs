@@ -199,8 +199,16 @@ public class Entity : MonoBehaviour
     // Nutzt eine Ability
     private void UseAbility(int index)
     {
+        // Erstellt eine Ability und setzt die nötigen Properties
         Ability NewAbility = Instantiate(Abilitys[index], transform.position, transform.rotation).GetComponent<Ability>();
         NewAbility.Origin = this;
+
+        // Setzt das Target der Ability
+        if (Target != null)
+            NewAbility.Target = Target;
+
+        // Resettet den Cooldown
+        AbilityCooldowns[index] = NewAbility.Cooldown;
     }
 
     #endregion Abilitys

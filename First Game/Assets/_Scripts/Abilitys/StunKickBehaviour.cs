@@ -14,8 +14,9 @@ public class StunKickBehaviour : Ability
         transform.Translate(Vector3.right * (MovementSpeed * Time.deltaTime));
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        DamageEntity(collision.gameObject.GetComponent<Entity>());
+        if (collision.gameObject.CompareTag("Entity"))
+            DamageEntity(collision.gameObject.GetComponent<Entity>());
     }
 }

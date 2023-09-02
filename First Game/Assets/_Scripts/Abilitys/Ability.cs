@@ -41,8 +41,8 @@ public class Ability : MonoBehaviour
     public float MultipleHitFrequence;
 
     // Listen zum Verhindern falschen Verhaltens wie multiple Hits etc. 
-    public List<int> HitEntityIDs { get; set; }
-    public List<float> HitEntityFrequence { get; set; }
+    public List<int> HitEntityIDs = new() { };
+    public List<float> HitEntityFrequence = new() { };
 
     // Timer bis die Ability despawned
     public float TimerTillDeath;
@@ -59,10 +59,14 @@ public class Ability : MonoBehaviour
 
     #endregion Properties
 
+    #region TopAlgorithm
+
     void Start()
     {
         // Setzt den ControlMode
         ControlMode = Origin.ControlMode;
+
+        // Property Nullwerte 
 
         // Spawn Position & Rotation werden gesetzt
         if (GetsSpawnRotation)
@@ -74,7 +78,7 @@ public class Ability : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, Entity.DefaultZLayer);
 
         // Stats der Ability werden berechnet / abgeholt
-        Damage += DamageScaling / 100 * Origin.Damage;
+        Damage += DamageScaling * Origin.Damage;
         CritChance = Origin.CritChance;
         CritDamage = Origin.CritDamage;
         Healing = GF.CalculateHealing(Healing, HealingScaling, Origin.HealingPower, Origin.GetAntiHealing());
@@ -94,17 +98,25 @@ public class Ability : MonoBehaviour
             Destroy(gameObject);
     }
 
+    #endregion TopAlgorithm
+
     // Fügt einem Entity unter Bedingungen Schaden hinzu
     public void DamageEntity(Entity Entity)
     {
         // Wenn die Faction None ist oder ungleich des Origins ist, kann Entity getroffen werden
-        if (CanHitEntity(Entity) && Entity.Faction != Target.Faction || Target.Faction == Faction.None)
+        if (CanHitEntity(Entity) && Entity.Faction != Origin.Faction || Origin.Faction == Faction.None)
         {
+            // Entity wird in die Liste hinzugefügt
+            HitEntityIDs.Add(Entity.ID);
+            HitEntityFrequence.Add(MultipleHitFrequence);
+
             // Damaged den Entity
             Entity.AddDamage(Damage, CritChance, CritDamage);
 
             // Resettet den Cooldown für den getroffenen Entity
-            HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence;
+            try
+            { HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence; }
+            catch { HitEntityFrequence.Add(MultipleHitFrequence); }
 
             // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
             if (!CustomAttributeHandling)
@@ -124,6 +136,10 @@ public class Ability : MonoBehaviour
         // Wenn die Faction gleich der Origin Faction ist, wird gehealed es sei denn Faction ist None
         if (CanHitEntity(Entity) && Entity.Faction == Target.Faction && Entity.Faction != Faction.None)
         {
+            // Entity wird in die Liste hinzugefügt
+            HitEntityIDs.Add(Entity.ID);
+            HitEntityFrequence.Add(MultipleHitFrequence);
+
             // Healt den Entity
             Entity.Heal(Healing);
 
@@ -155,12 +171,9 @@ public class Ability : MonoBehaviour
             // Entity kann gehittet werden weil Frequence < 0
             return true;
         }
+        // Entity ist nicht in der Liste also wird true returnt
         else
-        {
-            // Entity wird in die Liste hinzugefügt
-            HitEntityIDs.Add(Entity.ID);
             return true;
-        }
     }
 
     private void AddEntitysToList(int EntityID)
@@ -258,15 +271,15 @@ public class Ability : MonoBehaviour
     private Quaternion GetSpawnRotation()
     {
         // Wenn NPC dann wird die Target Position genommen
-        if (Origin.ControlMode == ControlMode.NPC)
+        if (ControlMode == ControlMode.NPC)
             return GetRotation(Target.transform.position);
 
         // Wenn HostControl dann wird Rotation von der MousePosition berechnet
-        else if (Origin.ControlMode == ControlMode.HostControl)
+        else if (ControlMode == ControlMode.HostControl)
             return GetRotation(GetMousePositionOnScreen());
 
         // Hier Receiver Mode erstellen
-        else if (Origin.ControlMode == ControlMode.Receiver) 
+        else if (ControlMode == ControlMode.Receiver) 
         {
             return new Quaternion(45, 0, 0, 0);
         }

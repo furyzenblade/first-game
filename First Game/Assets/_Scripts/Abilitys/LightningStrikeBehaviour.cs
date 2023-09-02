@@ -5,6 +5,7 @@ public class LightningStrikeBehaviour : Ability
 {
     private void OnCollisionStay2D(Collision2D collision)
     {
-        DamageEntity(collision.gameObject.GetComponent<Entity>());
+        if (collision.gameObject.CompareTag("Entity"))
+            DamageEntity(collision.gameObject.GetComponent<Entity>());
     }
 }
