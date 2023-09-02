@@ -139,10 +139,10 @@ MonoBehaviour:
   MultipleHitFrequence: 2
   TimerTillDeath: 3
   CanHitMultipleTargets: 0
-  EnemyAbilityColor: {r: 0, g: 1, b: 1, a: 1}
   Range: 0
   GetsSpawnRotation: 1
   GetsSpawnPosition: 0
+  MaxCharges: 1
   SlowDuration: 0
   SlowStrength: 0
   DamageReductionDuration: 0

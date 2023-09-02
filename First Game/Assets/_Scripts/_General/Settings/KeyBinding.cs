@@ -119,15 +119,15 @@ public class KeyBinding : Setting
     }
 
     // Prüft, ob das HotKeySetting aktuell gedrückt wurde
-    public bool InputIsValid()
+    public bool IsActive(InputMode InputMode = InputMode.WhileInput)
     {
         bool IsValid = false;
 
         // Wenn !IsMainKey wird alles auf direkte Übereinstimmung geprüft
-        if (!IsMainKey)
+        if (!IsMainKey && Key != KeyCode.None)
         {
             // Überprüft, ob Key aktiv ist
-            if (Input.GetKey(Key) && Key != KeyCode.None)
+            if (Input.GetKey(Key) && InputMode == InputMode.WhileInput || Input.GetKeyDown(Key) && InputMode == InputMode.OnFirstInput || Input.GetKeyUp(Key) && InputMode == InputMode.OnLastInput)
             {
                 IsValid = true;
 
@@ -143,10 +143,10 @@ public class KeyBinding : Setting
         }
 
         // Wenn IsMainKey dann wird nur geguckt, ob "true" Modifier stimmen
-        else
+        else if (Key != KeyCode.None)
         {
             // Überprüft, ob Key aktiv ist
-            if (Input.GetKey(Key) && Key != KeyCode.None)
+            if (Input.GetKey(Key) && InputMode == InputMode.WhileInput || Input.GetKeyDown(Key) && InputMode == InputMode.OnFirstInput || Input.GetKeyUp(Key) && InputMode == InputMode.OnLastInput)
             {
                 // Überprüft, ob alle Modifier von Key auch aktiv sind
                 IsValid = true;

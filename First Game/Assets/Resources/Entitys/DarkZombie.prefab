@@ -93,12 +93,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3118916692212053447}
-  - component: {fileID: 3118916692212053444}
   - component: {fileID: 3118916692212053442}
   - component: {fileID: 3118916692212053441}
+  - component: {fileID: 1315875426}
   m_Layer: 0
   m_Name: DarkZombie
-  m_TagString: Enemy
+  m_TagString: Entity
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,35 +119,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3118916692212053444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3118916692212053449}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d82122ed0032b3f4c88d4e2ca13ac04b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MaxHP: 100000
-  HP: 100000
-  Armor: 0
-  Damage: 10
-  AttackSpeed: 0.75
-  CritChance: 0
-  CritDamage: 0
-  MaxSpeed: 5
-  HealingPower: 0
-  BasicAttackRange: 1
-  AbliltyHaste: 0
-  Abilitys:
-  - {fileID: 5909526306438202683, guid: 097acf52383571a4e82382ac45ea5bfd, type: 3}
-  - {fileID: 583530166586894526, guid: f8e36bbd95bce16458ab5d1f6fe64b40, type: 3}
-  AttackedCharacter: {fileID: 0}
-  BasicAttackSlowDuration: 1
-  BasicAttackSlowStrength: 30
 --- !u!61 &3118916692212053442
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -195,3 +166,33 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &1315875426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3118916692212053449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4a741b7c1d0dbb429d74ebbf2f5c21c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ControlMode: 0
+  Faction: 1
+  MaxHP: 10000
+  HP: 10000
+  Armor: 30
+  Damage: 10
+  CritChance: 0
+  CritDamage: 0
+  Speed: 3
+  HealingPower: 0
+  AbliltyHaste: 0
+  CanBeRevived: 0
+  Abilitys:
+  - {fileID: 5909526306438202683, guid: 097acf52383571a4e82382ac45ea5bfd, type: 3}
+  - {fileID: 583530166586894526, guid: f8e36bbd95bce16458ab5d1f6fe64b40, type: 3}
+  AbilityCooldowns: []
+  AttackRange: 2
+  AttackSpeed: 1

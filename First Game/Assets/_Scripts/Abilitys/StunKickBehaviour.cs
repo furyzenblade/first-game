@@ -16,6 +16,6 @@ public class StunKickBehaviour : Ability
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        DamageEntity(collision.gameObject);
+        DamageEntity(collision.gameObject.GetComponent<Entity>());
     }
 }

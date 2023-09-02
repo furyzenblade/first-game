@@ -4,12 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Hostile
-  - KeyBindings
-  - Character
   - Ability
-  - Ally
-  - Enemy
+  - Entity
   layers:
   - Default
   - TransparentFX

@@ -111,7 +111,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4649180214062130378}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 0, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -168,18 +168,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa72f172a6c6e74599fe30377623ec3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cooldown: 1.27
-  Damage: 10
-  DamageScaling: 1.15
+  Cooldown: 1.25
+  Damage: 0
+  DamageScaling: 0
   Healing: 15
-  HealingScaling: 0
+  HealingScaling: 100
   MultipleHitFrequence: 0.35
   TimerTillDeath: 1.5
   CanHitMultipleTargets: 1
-  EnemyAbilityColor: {r: 0.83137256, g: 0.105882354, b: 0.33333334, a: 0.8352941}
   Range: 3
   GetsSpawnRotation: 0
   GetsSpawnPosition: 1
+  MaxCharges: 1
   SlowDuration: 0
   SlowStrength: 0
   DamageReductionDuration: 0

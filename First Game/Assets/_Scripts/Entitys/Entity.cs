@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
@@ -14,7 +13,7 @@ public class Entity : MonoBehaviour
     public ControlMode ControlMode;
     public Faction Faction;
 
-    public static float DefaultZLayer;
+    public static float DefaultZLayer = -5.0f;
 
     #endregion Identifier
 
@@ -28,8 +27,11 @@ public class Entity : MonoBehaviour
         // Holt eine EntityID ab
         ID = SceneDB.AddEntityID();
 
-        // Entfernt nullwerte aus AbilityCooldowns
-        AbilityCooldowns = new List<float>() { };
+        // Für jede Ability wird der Cooldown am Anfang auf 0 gesetzt
+        for (int i = 0; i < Abilitys.Count; i++)
+        {
+            AbilityCooldowns.Add(-0.0001f);
+        }
     }
 
     public void Update()
@@ -39,6 +41,8 @@ public class Entity : MonoBehaviour
         BasicAttackAlgorithm();
 
         UpdateAbilityCooldowns();
+
+        AbilityAlgorithm();
     }
 
     #endregion Algorithm
@@ -144,7 +148,7 @@ public class Entity : MonoBehaviour
     #region Abilitys
 
     public List<GameObject> Abilitys;
-    public List<float> AbilityCooldowns { get; set; }
+    public List<float> AbilityCooldowns = new() { };
 
     // Reduziert die Cooldowns aller Abilitys um -1.0f/s
     private void UpdateAbilityCooldowns()
@@ -158,11 +162,45 @@ public class Entity : MonoBehaviour
             if (AbilityCooldowns[i] > (-Time.deltaTime - (GF.CalculateCooldown(CurrentAbility.Cooldown, AbliltyHaste) * (CurrentAbility.MaxCharges - 1))))
                 AbilityCooldowns[i] -= Time.deltaTime;
         }
+    }
 
-        for (int i = 0; i < AbilityCooldowns.Count; i++)
+    // Algorithmus zum Nutzen von Abilitys
+    private void AbilityAlgorithm()
+    {
+        // Algorithmus für NPCs
+        if (ControlMode == ControlMode.NPC)
+        {
+            for (int i = 0; i < AbilityCooldowns.Count; i++)
+            {
+                // Nutzt eine Ability, wenn kein Cooldown
+                if (AbilityCooldowns[i] < 0)
+                    UseAbility(i);
+            }
+        }
+        // Algorithmus für den Host
+        else if (ControlMode == ControlMode.HostControl)
+        {
+            // Nutzt eine Ability, wenn kein Cooldown und der entsprechende Button gedrückt ist
+            for (int i = 0; i < AbilityCooldowns.Count; i++)
+            {
+                if (SceneDB.Settings.KeyBindings[i + 1].IsActive() && AbilityCooldowns[i] < 0)
+                    UseAbility(i);
+            }
+        }
+        // Algorithmus für Mitspieler
+        else if (ControlMode == ControlMode.Receiver)
         {
 
         }
+        else
+            Debug.LogError("Entity: " + name + " doesnt't have a ControlMode");
+    }
+
+    // Nutzt eine Ability
+    private void UseAbility(int index)
+    {
+        Ability NewAbility = Instantiate(Abilitys[index], transform.position, transform.rotation).GetComponent<Ability>();
+        NewAbility.Origin = this;
     }
 
     #endregion Abilitys
@@ -214,11 +252,10 @@ public class Entity : MonoBehaviour
         // Wenn Entity nicht gestunnt ist, wird der Basic Attack ausgeführt
         if (!IsStunned)
         {
-            // Left Click wurde gedrückt => Movement / BasicAttack Event
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-                HandleMovementEvent();
+            // Aktualisiert das Target
+            GetTarget();
 
-            // Target Position wird analysiert & drauf zu bewegt
+            // Bewegt sich in Richtung der Target Position
             MoveTowards(AnalyseTargetPosition());
 
             // BasicAttack wird versucht
@@ -230,6 +267,7 @@ public class Entity : MonoBehaviour
             AttackCooldown -= Time.deltaTime;
     }
 
+    // Analysiert ein Target für den Host
     public void HandleMovementEvent()
     {
         try
@@ -256,22 +294,45 @@ public class Entity : MonoBehaviour
     // Analysiert die Target Position
     private Vector3 AnalyseTargetPosition()
     {
-        Vector3 TargetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        // Bewegt sich in Richtung der TargetPosition bzw. in AttackRange wenn Target != null
         if (Target != null)
         {
-            TargetPosition = Target.transform.position;
-
-            float DistanceToEnemy = Vector2.Distance(TargetPosition, transform.position);
-            if (DistanceToEnemy > AttackRange / 10.0f)
-                return TargetPosition;
+            return Target.transform.position;
+        }
+        else if (ControlMode == ControlMode.HostControl)
+        {
+            return Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
         else
-            return TargetPosition;
+        {
+            Debug.LogError("Entity: " + gameObject.name + " doesn't have a Target Position");
+            return Vector3.zero;
+        }
+    }
 
-        // null wird returned
-        return Vector3.zero;
+    // Aktualisiert das aktuelle Target
+    private void GetTarget()
+    {
+        // NPC Handling (muss noch mit Aggro System überarbeitet werden)
+        if (ControlMode == ControlMode.NPC)
+        {
+            foreach (GameObject Entity in GameObject.FindGameObjectsWithTag("Entity"))
+            {
+                if (Entity.GetComponent<Entity>().Faction == Faction.Ally)
+                    Target = Entity.GetComponent<Entity>();
+            }
+        }
+        // Host Handling
+        else if (ControlMode == ControlMode.HostControl)
+        {
+            // Left Click wurde gedrückt => Movement / BasicAttack Event
+            if (SceneDB.Settings.KeyBindings[0].IsActive(InputMode.OnFirstInput))
+                HandleMovementEvent();
+        }
+        // Receiver Handling
+        else if (ControlMode == ControlMode.Receiver)
+        {
+            Target = null;
+        }
     }
 
     // Bewegt das aktuelle GameObject möglichst nah an einen Punkt ran
@@ -281,9 +342,11 @@ public class Entity : MonoBehaviour
         Vector3 direction = Vector3.Normalize(Position - transform.position);
 
         // Bewegung richtung Target Position
-        transform.Translate(CurrentSpeed * Time.deltaTime * direction);        
+        transform.Translate(CurrentSpeed * Time.deltaTime * direction);
+        AdjustZCoordinate();
     }
 
+    // Versucht, einen BasicAttack auszuführen
     private void TryBasicAttack()
     {
         if (Target != null && AttackCooldown < 0f)
@@ -304,4 +367,9 @@ public class Entity : MonoBehaviour
     }
 
     #endregion BasicAttack / Movement
+
+    private void AdjustZCoordinate()
+    {
+        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZLayer);
+    }
 }

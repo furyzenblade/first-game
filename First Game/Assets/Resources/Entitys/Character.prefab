@@ -93,12 +93,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1668179546348340888}
-  - component: {fileID: 1668179546348340889}
   - component: {fileID: 1668179546348340890}
   - component: {fileID: 1668179546348340891}
+  - component: {fileID: 878769024}
   m_Layer: 0
   m_Name: Character
-  m_TagString: Ally
+  m_TagString: Entity
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,36 +119,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1668179546348340889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1668179546348340894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91ad41c14bc801b43b1310b6d1204eae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MaxHP: 100000
-  HP: 50000
-  Armor: 0
-  Damage: 10
-  AttackSpeed: 0.5
-  CritChance: 50
-  CritDamage: 50
-  MaxSpeed: 5
-  HealingPower: 0
-  BasicAttackRange: 0
-  AbliltyHaste: 0
-  Abilitys:
-  - {fileID: 5909526306438202683, guid: 097acf52383571a4e82382ac45ea5bfd, type: 3}
-  - {fileID: 583530166586894526, guid: f8e36bbd95bce16458ab5d1f6fe64b40, type: 3}
-  - {fileID: 4649180214062130378, guid: ba23c0b516d9ea04e9e5fee7148be2eb, type: 3}
-  - {fileID: 7744277982228341752, guid: 5061ae016b0000f4c991c0dce0de9ffb, type: 3}
-  IsControlledChar: 1
-  Aggro: 0
 --- !u!70 &1668179546348340890
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -186,3 +156,35 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &878769024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668179546348340894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4a741b7c1d0dbb429d74ebbf2f5c21c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ControlMode: 1
+  Faction: 0
+  MaxHP: 10000
+  HP: 5000
+  Armor: 100
+  Damage: 20
+  CritChance: 50
+  CritDamage: 50
+  Speed: 5
+  HealingPower: 10
+  AbliltyHaste: 20
+  CanBeRevived: 1
+  Abilitys:
+  - {fileID: 5909526306438202683, guid: 097acf52383571a4e82382ac45ea5bfd, type: 3}
+  - {fileID: 583530166586894526, guid: f8e36bbd95bce16458ab5d1f6fe64b40, type: 3}
+  - {fileID: 4649180214062130378, guid: ba23c0b516d9ea04e9e5fee7148be2eb, type: 3}
+  - {fileID: 7744277982228341752, guid: 5061ae016b0000f4c991c0dce0de9ffb, type: 3}
+  AbilityCooldowns: []
+  AttackRange: 4
+  AttackSpeed: 2

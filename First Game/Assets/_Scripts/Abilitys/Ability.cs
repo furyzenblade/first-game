@@ -4,15 +4,12 @@ using UnityEngine;
 // Prefab für alle Abilitys
 public class Ability : MonoBehaviour
 {
-    // GameObject, das die Ability abgefeuert hat
-    public GameObject Origin { get; set; }
-    public EntityBase OriginBase { get; set; }
+    #region Properties
 
-    // Speichert, was alles von der Ability getroffen werden soll
-    public bool HitsEnemys { get; set; }
-    public bool HitsAllys { get; set; }
-    public bool HealsEnemys { get; set; }
-    public bool HealsAllys { get; set; } 
+    // GameObject, das die Ability abgefeuert hat
+    public Entity Origin { get; set; }
+    private ControlMode ControlMode;
+    public Entity Target { get; set; }
 
     // Utility Values
     public float Cooldown;
@@ -53,73 +50,34 @@ public class Ability : MonoBehaviour
     // Bestimmt, ob mehrere Targets getroffen werden können
     public bool CanHitMultipleTargets;
 
-    public GameObject Target { get; set; }
-    public EntityBase TargetBase { get; set; }
-
-    // Color für die Sprite, wenn sie von einem Enemy gespawned wurde
-    public Color EnemyAbilityColor;
-
     public float Range;
 
     public bool GetsSpawnRotation;
     public bool GetsSpawnPosition;
 
-    public ushort MaxCharges = 1;
-    
+    public ushort MaxCharges;
+
+    #endregion Properties
+
     void Start()
     {
-        // EntityBases werden gesetzt
-        OriginBase = Origin.GetComponent<EntityBase>();
+        // Setzt den ControlMode
+        ControlMode = Origin.ControlMode;
 
-        // Basic Position wird gesetzt
-        transform.SetPositionAndRotation(OriginBase.transform.position, Quaternion.identity);
-
-        if (Origin.CompareTag("Enemy"))
-            TargetBase = Target.GetComponent<EntityBase>();
-
+        // Spawn Position & Rotation werden gesetzt
         if (GetsSpawnRotation)
             transform.rotation = GetSpawnRotation();
-        if (GetsSpawnRotation && Range > 100)
-            transform.position = GetInfiniteRangeSpawnPosition();
         else if (GetsSpawnPosition)
             transform.position = GetSpawnPosition();
 
-        transform.position = new Vector3(transform.position.x, transform.position.y, -5.0f);
+        // Z Position wird gesetzt
+        transform.position = new Vector3(transform.position.x, transform.position.y, Entity.DefaultZLayer);
 
-        if (Origin.CompareTag("Enemy"))
-            GetComponentInChildren<SpriteRenderer>().color = EnemyAbilityColor;
-
-        HitEntityIDs = new List<int>() { };
-        HitEntityFrequence = new List<float>() { };
-
-        // Setzt das Tag der Ability, falls nicht default gesetzt (kann evtl. trotzdem manche bugs nicht verhindern) 
-        tag = "Ability";
-
-        // Wenn die bools nicht belegt wurden, werden sie automatisch zugewiesen
-        if (HitsEnemys == false && HitsAllys == false && HealsEnemys == false && HealsAllys == false)
-        {
-            // Wenn der Ersteller der Ability ein Enemy ist, hittet er Allys & healed Enemys
-            if (Origin.CompareTag("Enemy"))
-            {
-                HitsAllys = true;
-                HealsEnemys = true;
-            }
-            // Wenn der Ersteller der Ability ein Ally ist, hittet er Enemys & healed Allys
-            else if (Origin.CompareTag("Ally"))
-            {
-                HitsEnemys = true;
-                HealsAllys = true;
-            }
-            // GameObject wird zerstört, wenn es ungültig erschaffen wurde (von keinem Entity)
-            else
-                Destroy(gameObject);
-        }
-
-        // Stats der Ability werden berechnet
-        Damage += DamageScaling / 100 * OriginBase.Damage;
-        CritChance = OriginBase.CritChance;
-        CritDamage = OriginBase.CritDamage;
-        Healing = GF.CalculateHealing(Healing, HealingScaling, OriginBase.HealingPower, OriginBase.GetAntiHealing());
+        // Stats der Ability werden berechnet / abgeholt
+        Damage += DamageScaling / 100 * Origin.Damage;
+        CritChance = Origin.CritChance;
+        CritDamage = Origin.CritDamage;
+        Healing = GF.CalculateHealing(Healing, HealingScaling, Origin.HealingPower, Origin.GetAntiHealing());
     }
 
     public void Update()
@@ -130,127 +88,94 @@ public class Ability : MonoBehaviour
             HitEntityFrequence[i] -= Time.deltaTime;
         }
 
-        // Reduziert die Zeit bis zum Despawn um 1f/Sek
+        // Reduziert die Zeit bis zum Despawn um 1f/Sek und zerstört die Ability
         TimerTillDeath -= Time.deltaTime;
         if (TimerTillDeath < 0)
             Destroy(gameObject);
     }
 
     // Fügt einem Entity unter Bedingungen Schaden hinzu
-    public void DamageEntity(GameObject Entity)
+    public void DamageEntity(Entity Entity)
     {
-        if (CanHitEntity(Entity) && Entity.CompareTag("Enemy"))
+        // Wenn die Faction None ist oder ungleich des Origins ist, kann Entity getroffen werden
+        if (CanHitEntity(Entity) && Entity.Faction != Target.Faction || Target.Faction == Faction.None)
         {
             // Damaged den Entity
-            Entity.GetComponent<EnemyAI>().AddDamage(Damage, CritChance, CritDamage);
-            // Fügt, falls gewünscht, Statuseffekte hinzu
+            Entity.AddDamage(Damage, CritChance, CritDamage);
+
+            // Resettet den Cooldown für den getroffenen Entity
+            HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence;
+
+            // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
             if (!CustomAttributeHandling)
-                AttatchAllAttributes(Entity);
-            // Fügt den Entity in die Liste hinzu
-            AddEntitysToList(Entity.GetComponent<EntityBase>().ID);
+                AttatchAllAttributes(Entity.gameObject);
+
             // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
-        }
-        else if (CanHitEntity(Entity) && Entity.CompareTag("Ally"))
-        {
-            // Damaged den Entity
-            Entity.GetComponent<CharacterController>().AddDamage(Damage, CritChance, CritDamage);
-            // Fügt, falls gewünscht, Statuseffekte hinzu
-            if (!CustomAttributeHandling)
-                AttatchAllAttributes(Entity);
+
             // Fügt den Entity in die Liste hinzu
-            AddEntitysToList(Entity.GetComponent<EntityBase>().ID);
-            // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
-            if (!CanHitMultipleTargets)
-                Destroy(gameObject);
+            AddEntitysToList(Entity.ID);
         }
     }
     // Healed einen Entity unter Bedingungen
-    public void HealEntity(GameObject Entity)
+    public void HealEntity(Entity Entity)
     {
-        if (CanHitEntity(Entity, true) && Entity.CompareTag("Enemy"))
+        // Wenn die Faction gleich der Origin Faction ist, wird gehealed es sei denn Faction ist None
+        if (CanHitEntity(Entity) && Entity.Faction == Target.Faction && Entity.Faction != Faction.None)
         {
-            // Healed den Entity
-            Entity.GetComponent<EnemyAI>().Heal(Healing);
-            // Fügt, falls gewünscht, Statuseffekte hinzu
+            // Healt den Entity
+            Entity.Heal(Healing);
+
+            // Resettet den Cooldown für den getroffenen Entity
+            HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence;
+
+            // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
             if (!CustomAttributeHandling)
-                AttatchAllAttributes(Entity);
-            // Fügt den Entity in die Liste hinzu
-            AddEntitysToList(Entity.GetComponent<EntityBase>().ID);
+                AttatchAllAttributes(Entity.gameObject);
+
             // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
                 Destroy(gameObject);
-        }
-        else if(CanHitEntity(Entity, true) && Entity.CompareTag("Ally"))
-        {
-            // Healed den Entity
-            Entity.GetComponent<CharacterController>().Heal(Healing);
-            // Fügt, falls gewünscht, Statuseffekte hinzu
-            if (!CustomAttributeHandling)
-                AttatchAllAttributes(Entity);
+
             // Fügt den Entity in die Liste hinzu
-            AddEntitysToList(Entity.GetComponent<EntityBase>().ID);
-            // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
-            if (!CanHitMultipleTargets)
-                Destroy(gameObject);
+            AddEntitysToList(Entity.ID);
         }
     }
 
     // prüft, ob ein Entity gehittet werden kann & verwaltet die Liste für ihn
-    private bool CanHitEntity(GameObject Entity, bool heal = false)
+    private bool CanHitEntity(Entity Entity)
     {
-        // EntityBase wird gespeichert
-#pragma warning disable UNT0026
-        EntityBase EntityBase = Entity.GetComponent<EntityBase>();
-#pragma warning restore UNT0026
-
-        // Wenn keine EntityBase gefunden wurde, kann das Entity nicht getroffen werden
-        if (EntityBase == null) 
-            return false;
-
-        // bool zum speichern, ob ein Entity schonmal getroffen wurde
-        EntityWasHitBefore = false;
-
-        // Wenn das Entity schonmal getroffen wurde & der Cooldown größer 0 ist, kann es nicht getroffen werden
-        if (HitEntityIDs.Contains(EntityBase.ID))
+        // Wenn ein Entity in der Liste von EntityIDs ist, wird er genauer inspiziert
+        if (HitEntityIDs.Contains(Entity.ID))
         {
-            // Wenn der Entity bereits in der Liste ist, wurde er schonmal gehittet
-            EntityWasHitBefore = true;
-
-            if (HitEntityFrequence[HitEntityIDs.IndexOf(EntityBase.ID)] > 0)
+            // Wenn die Frequence > 0 ist, kann der Entity nicht gehittet werden
+            if (HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] > 0)
                 return false;
-        }
-
-        if (heal)
-        {
-            if (HealsEnemys && Entity.CompareTag("Enemy"))
-                return true;
-            else if (HealsAllys && Entity.CompareTag("Ally"))
-                return true;
+            // Entity kann gehittet werden weil Frequence < 0
+            return true;
         }
         else
         {
-            if (HitsEnemys && Entity.CompareTag("Enemy"))
-                return true;
-            else if (HitsAllys && Entity.CompareTag("Ally"))
-                return true;
+            // Entity wird in die Liste hinzugefügt
+            HitEntityIDs.Add(Entity.ID);
+            return true;
         }
-
-        return false;
     }
 
-    private bool EntityWasHitBefore = false;
     private void AddEntitysToList(int EntityID)
     {
-        if (!EntityWasHitBefore)
+        try
         {
+            // Wenn der Entity in der Liste ist, wird sein Cooldown resettet
+            HitEntityIDs.IndexOf(EntityID);
+            HitEntityFrequence[HitEntityIDs.IndexOf(EntityID)] = MultipleHitFrequence;
+        }
+        catch
+        {
+            // Entity ist nicht in der Liste also wird die Frequence und ID neu hinzugefügt
             HitEntityIDs.Add(EntityID);
             HitEntityFrequence.Add(MultipleHitFrequence);
-        }
-        else
-        {
-            HitEntityFrequence[HitEntityIDs.IndexOf(EntityID)] = MultipleHitFrequence;
         }
     }
 
@@ -275,6 +200,8 @@ public class Ability : MonoBehaviour
     public float StunDuration;
 
     #endregion SavedAttributes
+
+    #region AttributeAttatching
 
     // Bool zum Bestimmen, ob immer alle Attributes übergeben werden sollen
     public bool CustomAttributeHandling;
@@ -326,50 +253,62 @@ public class Ability : MonoBehaviour
         Stun.Duration = StunDuration;
     }
 
-    private Vector3 GetInfiniteRangeSpawnPosition()
-    {
-        // Wenn ein Ally dann wird die Mausposition genommen
-        if (Origin.CompareTag("Ally"))
-            return GetMousePositionOnScreen();
+    #endregion AttributeAttatching
 
-        else
-            return TargetBase.transform.position;
-    }
     private Quaternion GetSpawnRotation()
     {
-        // Wenn ein Ally dann wird die Mausposition genommen
-        if (Origin.CompareTag("Ally"))
+        // Wenn NPC dann wird die Target Position genommen
+        if (Origin.ControlMode == ControlMode.NPC)
+            return GetRotation(Target.transform.position);
+
+        // Wenn HostControl dann wird Rotation von der MousePosition berechnet
+        else if (Origin.ControlMode == ControlMode.HostControl)
             return GetRotation(GetMousePositionOnScreen());
 
-        else
-            return GetRotation(TargetBase.transform.position);
-    }
-    private Vector3 GetSpawnPosition(bool BreakIfNoHit = false)
-    {
-        if (Origin.CompareTag("Ally"))
+        // Hier Receiver Mode erstellen
+        else if (Origin.ControlMode == ControlMode.Receiver) 
         {
-            Vector3 directionToTarget = GetMousePositionOnScreen() - transform.position;
-            float distanceToTarget = directionToTarget.magnitude;
-
-            if (distanceToTarget > Range && BreakIfNoHit)
-                return Vector3.zero;
-
-            if (distanceToTarget > Range)
-                return transform.position + directionToTarget.normalized * Range;
-
-            return transform.position + directionToTarget;
+            return new Quaternion(45, 0, 0, 0);
         }
         else
+        {
+            Debug.LogError("Entity: " + Origin.name + " doesn't have a ControlMode");
+            return new Quaternion(0, 45, 0, 0);
+        }
+    }
+    private Vector3 GetSpawnPosition()
+    {
+        if (Origin.ControlMode == ControlMode.NPC)
         {
             Vector3 directionToTarget = Target.transform.position - transform.position;
             float distanceToTarget = directionToTarget.magnitude;
 
-            if (distanceToTarget > Range && BreakIfNoHit)
-                return Vector3.zero;
             if (distanceToTarget < Range)
                 return Target.transform.position;
 
             return transform.position + directionToTarget.normalized * Range;
+        }
+        else if (Origin.ControlMode == ControlMode.HostControl)
+        {
+            Vector3 directionToTarget = GetMousePositionOnScreen() - transform.position;
+            float distanceToTarget = directionToTarget.magnitude;
+
+            // Wenn die Target Position weiter entfernt ist als Range wird möglichst nah ran gesetzt
+            if (distanceToTarget > Range)
+                return transform.position + directionToTarget.normalized * Range;
+
+            // Sonst wird direkt die Target Position genommen
+            return transform.position + directionToTarget;
+        }
+        else if (Origin.ControlMode == ControlMode.Receiver)
+        {
+            // Hier Receiver Mode einfügen
+            return Vector3.zero;
+        }
+        else
+        {
+            Debug.LogError("Entity: " + Origin.name + " doesn't have a ControlMode");
+            return Vector3.zero;
         }
     }
 

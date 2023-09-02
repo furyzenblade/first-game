@@ -68,13 +68,13 @@ MonoBehaviour:
   DamageScaling: 0.9
   Healing: 0
   HealingScaling: 0
-  MultipleHitFrequence: 3.4028235e+38
+  MultipleHitFrequence: 2
   TimerTillDeath: 1.5
   CanHitMultipleTargets: 1
-  EnemyAbilityColor: {r: 0.735849, g: 0, b: 0, a: 1}
   Range: 3
   GetsSpawnRotation: 0
   GetsSpawnPosition: 1
+  MaxCharges: 1
   SlowDuration: 0
   SlowStrength: 0
   DamageReductionDuration: 0

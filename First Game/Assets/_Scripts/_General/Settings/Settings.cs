@@ -31,12 +31,7 @@ public class Settings
     {
         KeyBindings = new List<KeyBinding>
         {
-            new KeyBinding("MoveUp", "", false, true, KeyCode.W, false, false, false, false, true),
-            new KeyBinding("MoveLeft", "", false, true, KeyCode.A, false, false, false, false, true),
-            new KeyBinding("MoveDown", "", false, true, KeyCode.S, false, false, false, false, true),
-            new KeyBinding("MoveRight", "", false, true, KeyCode.D, false, false, false, false, true),
-            new KeyBinding("BasicAttack", "", false, true, KeyCode.Mouse0, false, false, false, false, true),
-            new KeyBinding("Base Ability", "", false, true, KeyCode.Mouse1, false, false, false, false, true),
+            new KeyBinding("Movement / BasicAttack", "", false, true, KeyCode.W, false, false, false, false, true),
             new KeyBinding("Ability 1", "", false, true, KeyCode.Alpha1, false, false, false, false, true),
             new KeyBinding("Ability 2", "", false, true, KeyCode.Alpha2, false, false, false, false, true),
             new KeyBinding("Ability 3", "", false, true, KeyCode.Alpha3, false, false, false, false, true),

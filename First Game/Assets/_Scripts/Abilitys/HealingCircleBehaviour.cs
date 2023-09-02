@@ -4,6 +4,6 @@ public class HealingCircleBehaviour : Ability
 {
     private void OnCollisionStay2D(Collision2D collision)
     {
-        HealEntity(collision.gameObject);
+        HealEntity(collision.gameObject.GetComponent<Entity>());
     }
 }

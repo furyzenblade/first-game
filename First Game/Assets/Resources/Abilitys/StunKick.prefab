@@ -96,7 +96,6 @@ GameObject:
   - component: {fileID: 7744277982228341754}
   - component: {fileID: 7744277982228341748}
   - component: {fileID: 7744277982228341749}
-  - component: {fileID: -7543300430732831160}
   m_Layer: 0
   m_Name: StunKick
   m_TagString: Ability
@@ -132,18 +131,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d080aad153345de42aefbd05da54871f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cooldown: 1
+  Cooldown: 5
   Damage: 0
   DamageScaling: 0
   Healing: 0
   HealingScaling: 0
-  MultipleHitFrequence: 5
+  MultipleHitFrequence: 1
   TimerTillDeath: 0.75
-  CanHitMultipleTargets: 1
-  EnemyAbilityColor: {r: 1, g: 0.1764706, b: 0.1764706, a: 1}
-  Range: 0.5
+  CanHitMultipleTargets: 0
+  Range: 1
   GetsSpawnRotation: 1
   GetsSpawnPosition: 1
+  MaxCharges: 2
   SlowDuration: 0
   SlowStrength: 0
   DamageReductionDuration: 0
@@ -194,16 +193,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
---- !u!114 &-7543300430732831160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7744277982228341752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eaeb8b2ac9aba549ba55f752263e22a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Duration: 5
