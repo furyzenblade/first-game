@@ -302,11 +302,16 @@ public class Entity : MonoBehaviour
     // Analysiert die Target Position
     private Vector3 AnalyseTargetPosition()
     {
+        if (SceneDB.Settings.KeyBindings[0].IsActive(InputMode.OnFirstInput))
+        {
+
+        }
+
         if (Target != null)
         {
             return Target.transform.position;
         }
-        else if (ControlMode == ControlMode.HostControl)
+        else if (ControlMode == ControlMode.HostControl && SceneDB.Settings.KeyBindings[0].IsActive(InputMode.OnFirstInput))
         {
             return Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }

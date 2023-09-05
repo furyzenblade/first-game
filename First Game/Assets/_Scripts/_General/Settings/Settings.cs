@@ -31,7 +31,7 @@ public class Settings
     {
         KeyBindings = new List<KeyBinding>
         {
-            new KeyBinding("Movement / BasicAttack", "", false, true, KeyCode.W, false, false, false, false, true),
+            new KeyBinding("Movement / BasicAttack", "", false, true, KeyCode.Mouse0, false, false, false, false, true),
             new KeyBinding("Ability 1", "", false, true, KeyCode.Alpha1, false, false, false, false, true),
             new KeyBinding("Ability 2", "", false, true, KeyCode.Alpha2, false, false, false, false, true),
             new KeyBinding("Ability 3", "", false, true, KeyCode.Alpha3, false, false, false, false, true),

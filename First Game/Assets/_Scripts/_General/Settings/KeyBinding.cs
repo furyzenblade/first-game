@@ -29,13 +29,13 @@ public class KeyBinding : Setting
     public KeyCode Key;
 
     // Speichern Values, ob die jeweiligen Modifier an oder aus sind
-    public bool Modifier_Alt = false;
-    public bool Modifier_CapsLock = false;
-    public bool Modifier_Control = false;
-    public bool Modifier_Shift = false;
+    public bool Modifier_Alt;
+    public bool Modifier_CapsLock;
+    public bool Modifier_Control;
+    public bool Modifier_Shift;
 
     // Bestimmt, ob für einen Key alle Modifier exakt stimmen müssen oder ob es egal ist
-    public bool IsMainKey = false;
+    public bool IsMainKey;
     public new List<string> Serialise()
     {
         List<string> strSetting = base.Serialise();
@@ -121,13 +121,18 @@ public class KeyBinding : Setting
     // Prüft, ob das HotKeySetting aktuell gedrückt wurde
     public bool IsActive(InputMode InputMode = InputMode.WhileInput)
     {
+        if (Input.GetKey(Key))
+        {
+
+        }
+
         bool IsValid = false;
 
         // Wenn !IsMainKey wird alles auf direkte Übereinstimmung geprüft
-        if (!IsMainKey && Key != KeyCode.None)
+        if (!IsMainKey)
         {
             // Überprüft, ob Key aktiv ist
-            if (Input.GetKey(Key) && InputMode == InputMode.WhileInput || Input.GetKeyDown(Key) && InputMode == InputMode.OnFirstInput || Input.GetKeyUp(Key) && InputMode == InputMode.OnLastInput)
+            if ((Input.GetKey(Key) && InputMode == InputMode.WhileInput) || (Input.GetKeyDown(Key) && InputMode == InputMode.OnFirstInput) || (Input.GetKeyUp(Key) && InputMode == InputMode.OnLastInput))
             {
                 IsValid = true;
 
@@ -143,23 +148,19 @@ public class KeyBinding : Setting
         }
 
         // Wenn IsMainKey dann wird nur geguckt, ob "true" Modifier stimmen
-        else if (Key != KeyCode.None)
+        else if ((Input.GetKey(Key) && InputMode == InputMode.WhileInput) || Input.GetKeyDown(Key) && InputMode == InputMode.OnFirstInput || Input.GetKeyUp(Key) && InputMode == InputMode.OnLastInput)
         {
-            // Überprüft, ob Key aktiv ist
-            if (Input.GetKey(Key) && InputMode == InputMode.WhileInput || Input.GetKeyDown(Key) && InputMode == InputMode.OnFirstInput || Input.GetKeyUp(Key) && InputMode == InputMode.OnLastInput)
-            {
-                // Überprüft, ob alle Modifier von Key auch aktiv sind
-                IsValid = true;
+            // Überprüft, ob alle Modifier von Key auch aktiv sind
+            IsValid = true;
 
-                if (Modifier_Alt && !AltIsPressed())
-                    IsValid = false;
-                if (Modifier_CapsLock && !CapsLockIsPressed())
-                    IsValid = false;
-                if (Modifier_CapsLock && !ControlIsPressed())
-                    IsValid = false;
-                if (Modifier_Shift && !ShiftIsPressed())
-                    IsValid = false;
-            }
+            if (Modifier_Alt && !AltIsPressed())
+                IsValid = false;
+            if (Modifier_CapsLock && !CapsLockIsPressed())
+                IsValid = false;
+            if (Modifier_CapsLock && !ControlIsPressed())
+                IsValid = false;
+            if (Modifier_Shift && !ShiftIsPressed())
+                IsValid = false;
         }
 
         return IsValid;
