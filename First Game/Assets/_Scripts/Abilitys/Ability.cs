@@ -114,8 +114,7 @@ public class Ability : MonoBehaviour
             Entity.AddDamage(Damage, CritChance, CritDamage);
 
             // Resettet den Cooldown für den getroffenen Entity
-            try
-            { HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence; }
+            try   { HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence; }
             catch { HitEntityFrequence.Add(MultipleHitFrequence); }
 
             // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
@@ -134,7 +133,7 @@ public class Ability : MonoBehaviour
     public void HealEntity(Entity Entity)
     {
         // Wenn die Faction gleich der Origin Faction ist, wird gehealed es sei denn Faction ist None
-        if (CanHitEntity(Entity) && Entity.Faction == Target.Faction && Entity.Faction != Faction.None)
+        if (CanHitEntity(Entity) && Entity.Faction == Origin.Faction && Entity.Faction != Faction.None)
         {
             // Entity wird in die Liste hinzugefügt
             HitEntityIDs.Add(Entity.ID);
@@ -144,8 +143,8 @@ public class Ability : MonoBehaviour
             Entity.Heal(Healing);
 
             // Resettet den Cooldown für den getroffenen Entity
-            HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence;
-
+            try   { HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence; }
+            catch { HitEntityFrequence.Add(MultipleHitFrequence); }
             // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
             if (!CustomAttributeHandling)
                 AttatchAllAttributes(Entity.gameObject);

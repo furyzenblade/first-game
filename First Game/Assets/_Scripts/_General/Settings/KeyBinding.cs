@@ -121,11 +121,6 @@ public class KeyBinding : Setting
     // Prüft, ob das HotKeySetting aktuell gedrückt wurde
     public bool IsActive(InputMode InputMode = InputMode.WhileInput)
     {
-        if (Input.GetKey(Key))
-        {
-
-        }
-
         bool IsValid = false;
 
         // Wenn !IsMainKey wird alles auf direkte Übereinstimmung geprüft

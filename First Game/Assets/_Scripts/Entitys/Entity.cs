@@ -3,7 +3,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Entity : MonoBehaviour
 {
@@ -167,33 +169,36 @@ public class Entity : MonoBehaviour
     // Algorithmus zum Nutzen von Abilitys
     private void AbilityAlgorithm()
     {
-        // Algorithmus für NPCs
-        if (ControlMode == ControlMode.NPC)
+        if (!IsStunned)
         {
-            for (int i = 0; i < AbilityCooldowns.Count; i++)
+            // Algorithmus für NPCs
+            if (ControlMode == ControlMode.NPC)
             {
-                // Nutzt eine Ability, wenn kein Cooldown
-                if (AbilityCooldowns[i] < 0)
-                    UseAbility(i);
+                for (int i = 0; i < AbilityCooldowns.Count; i++)
+                {
+                    // Nutzt eine Ability, wenn kein Cooldown
+                    if (AbilityCooldowns[i] < 0)
+                        UseAbility(i);
+                }
             }
-        }
-        // Algorithmus für den Host
-        else if (ControlMode == ControlMode.HostControl)
-        {
-            // Nutzt eine Ability, wenn kein Cooldown und der entsprechende Button gedrückt ist
-            for (int i = 0; i < AbilityCooldowns.Count; i++)
+            // Algorithmus für den Host
+            else if (ControlMode == ControlMode.HostControl)
             {
-                if (SceneDB.Settings.KeyBindings[i + 1].IsActive() && AbilityCooldowns[i] < 0)
-                    UseAbility(i);
+                // Nutzt eine Ability, wenn kein Cooldown und der entsprechende Button gedrückt ist
+                for (int i = 0; i < AbilityCooldowns.Count; i++)
+                {
+                    if (SceneDB.Settings.KeyBindings[i + 1].IsActive() && AbilityCooldowns[i] < 0)
+                        UseAbility(i);
+                }
             }
-        }
-        // Algorithmus für Mitspieler
-        else if (ControlMode == ControlMode.Receiver)
-        {
+            // Algorithmus für Mitspieler
+            else if (ControlMode == ControlMode.Receiver)
+            {
 
+            }
+            else
+                Debug.LogError("Entity: " + name + " doesnt't have a ControlMode");
         }
-        else
-            Debug.LogError("Entity: " + name + " doesnt't have a ControlMode");
     }
 
     // Nutzt eine Ability
@@ -246,37 +251,59 @@ public class Entity : MonoBehaviour
 
     #region BasicAttack / Movement
 
-    // Properties
-    public float AttackRange;                   // Range, in der attackiert werden kann
-    public float AttackSpeed;                   // 1.0 = 1x pro Sekunde angreifen
-    private float CurrentAttackSpeed;           // Attackspeed nach Berechnung von Attributes
-    private float AttackCooldown = -0.0001f;    // Cooldown bis der nächste Attack folgen kann
+    // Required Values
+    public Entity Target;                           // Vom BasicAttack anvisiertes Target
+    public Vector3 TargetPosition = Vector3.zero;   // Position, auf die sich zubewegt wird
 
-    private Entity Target;
+    // BasicAttack Stats
+    public float AttackRange;                       // Range, in der attackiert werden kann
+    public float AttackSpeed;                       // 1.0 = 1x pro Sekunde angreifen
+    private float CurrentAttackSpeed;               // Attackspeed nach Berechnung von Attributes
+    private float AttackCooldown = -0.0001f;        // Cooldown bis der nächste Attack folgen kann
 
-    // Algorithmus vom BasicAttack
+    // Fasst alle BasicAttack / Movement Algorithmen zusammen
     private void BasicAttackAlgorithm()
     {
-        // Wenn Entity nicht gestunnt ist, wird der Basic Attack ausgeführt
+        // Updatet Inputs / Events
+        UpdateTarget();
+        GetTargetPosition();
+
         if (!IsStunned)
         {
-            // Aktualisiert das Target
-            GetTarget();
-
-            // Bewegt sich in Richtung der Target Position
-            MoveTowards(AnalyseTargetPosition());
-
-            // BasicAttack wird versucht
+            // Lässt den Entity etwas ausführen
+            MoveEntity();
             TryBasicAttack();
         }
 
-        // Cooldown wird runter gesetzt
-        if (AttackCooldown > Time.deltaTime)
+        // Reduziert den AttackCooldown
+        if (AttackCooldown > -Time.deltaTime)
             AttackCooldown -= Time.deltaTime;
     }
 
-    // Analysiert ein Target für den Host
-    public void HandleMovementEvent()
+    // Überprüft, ob gewisse Ereignisse eingetroffen sind, die Movement / BasicAttacks verändern
+    public void UpdateTarget()
+    {
+        if (ControlMode == ControlMode.NPC)
+        {
+
+        }
+        else if (ControlMode == ControlMode.HostControl)
+        {
+            // Wenn Key gedrückt wurde
+            if (SceneDB.Settings.KeyBindings[0].IsActive())
+            {
+                // Versucht, ein Target zu holen
+                GetTarget();
+            }
+        }
+        else if (ControlMode == ControlMode.Receiver)
+        {
+
+        }
+    }
+
+    // Versucht, ein Target zu holen oder holt eine TargetPosition
+    private void GetTarget()
     {
         try
         {
@@ -288,93 +315,75 @@ public class Entity : MonoBehaviour
 
             // Wenn die Faction None oder eine andere als die 
             if (hit.collider.gameObject.GetComponent<Entity>().Faction != Faction || hit.collider.gameObject.GetComponent<Entity>().Faction == Faction.None)
+            {
                 Target = hit.collider.gameObject.GetComponent<Entity>();
+            }
 
             // Kein Entity also wird Target Location verändert
             else
+            {
                 Target = null;
+                TargetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            }
         }
         // Kein Entity also wird Target Location verändert
         catch
-        { Target = null; }
+        { 
+            Target = null;
+            TargetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        }
     }
 
-    // Analysiert die Target Position
-    private Vector3 AnalyseTargetPosition()
+    // Holt eine TargetPosition, wenn ein Target gesetzt ist
+    private void GetTargetPosition()
     {
-        if (SceneDB.Settings.KeyBindings[0].IsActive(InputMode.OnFirstInput))
-        {
-
-        }
-
         if (Target != null)
         {
-            return Target.transform.position;
+            // Calculate the direction from the current GameObject to the target.
+            Vector3 directionToTarget = Target.transform.position - transform.position;
+
+            // Calculate the distance to the target.
+            float distanceToTarget = directionToTarget.magnitude;
+
+            // Wenn Distance > AttackRange wird die Target Position nicht verändert (Entity bleibt stehen)
+            if (distanceToTarget > AttackRange)
+                TargetPosition = transform.position + directionToTarget.normalized * distanceToTarget;
+            else
+                TargetPosition = transform.position;
         }
-        else if (ControlMode == ControlMode.HostControl && SceneDB.Settings.KeyBindings[0].IsActive(InputMode.OnFirstInput))
-        {
-            return Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        }
+    }
+
+    // Moved den Entity in Richtung TargetPosition
+    private void MoveEntity()
+    {
+        // Holt die Richtung zur TargetPosition
+        Vector3 directionToTarget = (Vector2)TargetPosition - (Vector2)transform.position;
+
+        // Wenn die Distance größer als der Movement Speed ist, wird in Richtung des Targets bewegt
+        if (directionToTarget.magnitude > CurrentSpeed * Time.deltaTime)
+            transform.position += CurrentSpeed * Time.deltaTime * directionToTarget.normalized;
+
+        // Sonst wird direkt aufs Target gewarped
         else
-        {
-            Debug.LogError("Entity: " + gameObject.name + " doesn't have a Target Position");
-            return Vector3.zero;
-        }
-    }
+            transform.position = TargetPosition;
 
-    // Aktualisiert das aktuelle Target
-    private void GetTarget()
-    {
-        // NPC Handling (muss noch mit Aggro System überarbeitet werden)
-        if (ControlMode == ControlMode.NPC)
-        {
-            foreach (GameObject Entity in GameObject.FindGameObjectsWithTag("Entity"))
-            {
-                if (Entity.GetComponent<Entity>().Faction == Faction.Ally)
-                    Target = Entity.GetComponent<Entity>();
-            }
-        }
-        // Host Handling
-        else if (ControlMode == ControlMode.HostControl)
-        {
-            // Left Click wurde gedrückt => Movement / BasicAttack Event
-            if (SceneDB.Settings.KeyBindings[0].IsActive(InputMode.OnFirstInput))
-                HandleMovementEvent();
-        }
-        // Receiver Handling
-        else if (ControlMode == ControlMode.Receiver)
-        {
-            Target = null;
-        }
-    }
+        if (ControlMode == ControlMode.HostControl)
+            Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
 
-    // Bewegt das aktuelle GameObject möglichst nah an einen Punkt ran
-    private void MoveTowards(Vector3 Position)
-    {
-        // Direction wird ermittelt
-        Vector3 direction = Vector3.Normalize(Position - transform.position);
-
-        // Bewegung richtung Target Position
-        transform.Translate(CurrentSpeed * Time.deltaTime * direction);
+        // Korrigiert die Z-Koordinate
         AdjustZCoordinate();
     }
 
-    // Versucht, einen BasicAttack auszuführen
+    // Versucht, einen BasicAttack auszuführen (Wenn AttackRange > Distance zum Zentrum vom Target)
     private void TryBasicAttack()
     {
-        if (Target != null && AttackCooldown < 0f)
+        if (Target != null && AttackCooldown < 0)
         {
-            // Distance calculation
-            float DistanceToEnemy = Vector2.Distance(Target.transform.position, new Vector2(transform.position.x, transform.position.y));
-
-            // Prüft, ob der Gegner in Range ist
-            if (DistanceToEnemy < AttackRange / 10.0f)
+            if ((Target.transform.position - transform.position).magnitude < AttackRange)
             {
-                // Damaged den Gegner
                 Target.AddDamage(Damage, CritChance, CritDamage);
 
-                // Resettet den Cooldown
-                AttackCooldown = CurrentAttackSpeed;
+                AttackCooldown += 1.0f / CurrentAttackSpeed;
             }
         }
     }
