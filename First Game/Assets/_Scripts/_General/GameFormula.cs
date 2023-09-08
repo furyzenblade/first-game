@@ -10,7 +10,7 @@ public class GF
     public static float CalculateDamage(float Damage, float Armor, float CritChance = 0, float CritDamage = 0, float ArmorPen = 0f, int FlatArmorPen = 0)
     {
         // Wenn Crit eingetroffen hat, wird der Damage verändert
-        if (Random.Range(0, 100) <= Mathf.Abs(CritChance))
+        if (Random.Range(1, 101) <= Mathf.Abs(CritChance))
         {
             // Wenn negative Crit Chance wird der Crit Damage negativ hinzugefügt
             Damage += Damage * ((CritChance / Mathf.Abs(CritChance)) + (Mathf.Abs(CritDamage) / 100f));

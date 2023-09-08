@@ -3,9 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class Entity : MonoBehaviour
 {
@@ -52,8 +50,8 @@ public class Entity : MonoBehaviour
     #region Stats
 
     // Defensive Stats
-    public double MaxHP;
-    public double HP;
+    public float MaxHP;
+    public float HP;
 
     public float Armor;
     public float CurrentArmor { get; set; }
