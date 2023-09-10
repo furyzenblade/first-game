@@ -75,7 +75,7 @@ public class Ability : MonoBehaviour
             transform.position = GetSpawnPosition();
 
         // Z Position wird gesetzt
-        transform.position = new Vector3(transform.position.x, transform.position.y, Entity.DefaultZLayer);
+        transform.position = new Vector3(transform.position.x, transform.position.y, Entity.DefaultZCoordinate);
 
         // Stats der Ability werden berechnet / abgeholt
         Damage += DamageScaling * Origin.Damage;

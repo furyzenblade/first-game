@@ -68,7 +68,7 @@ public class KeyBinding : Setting
     public void SetKeyBinding()
     {
         Key = GetPressedKey();
-        
+
         UpdateModifiers();
     }
 

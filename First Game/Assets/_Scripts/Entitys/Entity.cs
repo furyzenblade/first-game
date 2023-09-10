@@ -13,7 +13,7 @@ public class Entity : MonoBehaviour
     public ControlMode ControlMode;
     public Faction Faction;
 
-    public static float DefaultZLayer = -5.0f;
+    public static float DefaultZCoordinate = -5.0f;
 
     #endregion Identifier
 
@@ -22,7 +22,7 @@ public class Entity : MonoBehaviour
     public void Start()
     {
         // Setzt für jedes Entity die Z Koordinate auf DefaultZLayer
-        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZLayer);
+        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZCoordinate);
 
         // Holt eine EntityID ab
         ID = SceneDB.AddEntityID();
@@ -229,9 +229,9 @@ public class Entity : MonoBehaviour
             HP = MaxHP;
     }
 
-    // Gibt dem Enemy Damage abhängig von den Stats des Angreifers und der Armor
-    public delegate void EntityDeathEvent();
+    public delegate bool EntityDeathEvent();
     public event EntityDeathEvent OnDeath;
+    // Gibt dem Enemy Damage abhängig von den Stats des Angreifers und der Armor
     public void AddDamage(float Damage, float CritChance = 0, float CritDamage = 0)
     {
         HP -= GF.CalculateDamage(Damage, CurrentArmor, CritChance, CritDamage);
@@ -239,10 +239,11 @@ public class Entity : MonoBehaviour
         // Wenn Entity getötet wird das GameObject zerstört. Es kann aber noch eine Custom Methode ausführen
         if (HP < 0)
         {
-            OnDeath?.Invoke();
-            Destroy(gameObject);
+            if ((bool)(OnDeath?.Invoke()))
+                Destroy(gameObject);
         }
     }
+
     // Methode, die auf dieser Klasse basierende Objekte fürs Death Handling nutzen können
 
     #endregion Events
@@ -390,6 +391,6 @@ public class Entity : MonoBehaviour
 
     private void AdjustZCoordinate()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZLayer);
+        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZCoordinate);
     }
 }
