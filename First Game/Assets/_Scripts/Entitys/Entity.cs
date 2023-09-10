@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
@@ -22,7 +23,7 @@ public class Entity : MonoBehaviour
     public void Start()
     {
         // Setzt für jedes Entity die Z Koordinate auf DefaultZLayer
-        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZCoordinate);
+        AdjustZCoordinate();
 
         // Holt eine EntityID ab
         ID = SceneDB.AddEntityID();
@@ -200,8 +201,13 @@ public class Entity : MonoBehaviour
     }
 
     // Nutzt eine Ability
+
+    public delegate void EntityAbilityUseEvent();
+    public event EntityAbilityUseEvent OnAbilityUse;
     private void UseAbility(int index)
     {
+        OnAbilityUse?.Invoke();
+
         // Erstellt eine Ability und setzt die nötigen Properties
         Ability NewAbility = Instantiate(Abilitys[index], transform.position, transform.rotation).GetComponent<Ability>();
         NewAbility.Origin = this;
@@ -218,9 +224,15 @@ public class Entity : MonoBehaviour
 
     #region Events
 
+    // Event, wenn der Entity gehealed wird
+    public delegate void EntityHealEvent();
+    public event EntityHealEvent OnHeal;
+
     // Healt ein Entity um eine gewisse Value
     public void Heal(float Healing)
     {
+        OnHeal?.Invoke();
+
         // Healing wird berechnet mit Healing, HealPower & AntiHeal
         HP += Healing;
 
@@ -229,18 +241,43 @@ public class Entity : MonoBehaviour
             HP = MaxHP;
     }
 
+    // Event, wenn der Entity Damage kassiert
+    public delegate void EntityDamageEvent(int OriginEntityID);
+    public event EntityDamageEvent OnDamage;
+
+    // Event beim Tod des Entitys
     public delegate bool EntityDeathEvent();
     public event EntityDeathEvent OnDeath;
+
     // Gibt dem Enemy Damage abhängig von den Stats des Angreifers und der Armor
-    public void AddDamage(float Damage, float CritChance = 0, float CritDamage = 0)
+    public void AddDamage(int OriginEntityID, float Damage, float CritChance = 0, float CritDamage = 0)
     {
+        OnDamage?.Invoke(OriginEntityID);
+
         HP -= GF.CalculateDamage(Damage, CurrentArmor, CritChance, CritDamage);
 
         // Wenn Entity getötet wird das GameObject zerstört. Es kann aber noch eine Custom Methode ausführen
         if (HP < 0)
         {
-            if ((bool)(OnDeath?.Invoke()))
+            try
+            {
+                // Wenn OnDeath Invoke true returned, wird der Entity deleted
+                if ((bool)(OnDeath?.Invoke()))
+                    Destroy(gameObject);
+                // Wenn false returned wird der Entity Death anders handled
+                else
+                {
+                    // Entity hier in reviveable status bringen oder so
+
+
+                }
+            }
+            // OnDeath?.Invoke() wird nicht behandelt also default: Entity wird deleted
+            catch
+            {
+                Debug.Log("Unhandled OnDeath Event at" + gameObject.name);
                 Destroy(gameObject);
+            }
         }
     }
 
@@ -352,6 +389,10 @@ public class Entity : MonoBehaviour
         }
     }
 
+    // Event was beim Movement eines Entitys auslöst
+    public delegate void EntityMoveEvent(float Distance, Vector3 Direction);
+    public event EntityMoveEvent OnMove;
+
     // Moved den Entity in Richtung TargetPosition
     private void MoveEntity()
     {
@@ -360,11 +401,23 @@ public class Entity : MonoBehaviour
 
         // Wenn die Distance größer als der Movement Speed ist, wird in Richtung des Targets bewegt
         if (directionToTarget.magnitude > CurrentSpeed * Time.deltaTime)
+        {
+            // Move
             transform.position += CurrentSpeed * Time.deltaTime * directionToTarget.normalized;
+
+            // Movement Event Trigger mit Distance & Direction
+            OnMove?.Invoke((CurrentSpeed * Time.deltaTime * directionToTarget.normalized).magnitude, directionToTarget.normalized);
+        }
 
         // Sonst wird direkt aufs Target gewarped
         else
+        {
+            // Move
             transform.position = TargetPosition;
+
+            // Movement Event Trigger mit Distance & Direction
+            OnMove?.Invoke((transform.position - TargetPosition).magnitude, directionToTarget);
+        }
 
         if (ControlMode == ControlMode.HostControl)
             Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
@@ -373,6 +426,10 @@ public class Entity : MonoBehaviour
         AdjustZCoordinate();
     }
 
+    // Event beim Ausführen eines BasicAttacks
+    public delegate void EntityBasicAttackEvent(int TargetID);
+    public event EntityBasicAttackEvent OnBasicAttack;
+
     // Versucht, einen BasicAttack auszuführen (Wenn AttackRange > Distance zum Zentrum vom Target)
     private void TryBasicAttack()
     {
@@ -380,7 +437,9 @@ public class Entity : MonoBehaviour
         {
             if ((Target.transform.position - transform.position).magnitude < AttackRange)
             {
-                Target.AddDamage(Damage, CritChance, CritDamage);
+                OnBasicAttack?.Invoke(Target.ID);
+
+                Target.AddDamage(ID, Damage, CritChance, CritDamage);
 
                 AttackCooldown += 1.0f / CurrentAttackSpeed;
             }

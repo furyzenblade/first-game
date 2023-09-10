@@ -111,7 +111,7 @@ public class Ability : MonoBehaviour
             HitEntityFrequence.Add(MultipleHitFrequence);
 
             // Damaged den Entity
-            Entity.AddDamage(Damage, CritChance, CritDamage);
+            Entity.AddDamage(Origin.ID, Damage, CritChance, CritDamage);
 
             // Resettet den Cooldown für den getroffenen Entity
             try   { HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence; }
