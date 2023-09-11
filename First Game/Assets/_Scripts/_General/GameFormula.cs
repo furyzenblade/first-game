@@ -47,20 +47,8 @@ public class GF
     }
 
     // Formeln zum Berechnen von Healing
-    public static float CalculateHealing(float Healing, float HealingScaling = 1, float HealingPower = 0, float AntiHeal = 0)
+    public static float CalculateHealing(float Healing, float HealingScaling = 1, float HealingPower = 0, float HealingModifier = 1)
     {
-        return (Healing + (HealingScaling * HealingPower)) * AntiHeal;
-    }
-    public static float CalculateAntiHealing(List<AntiHealAttribute> AntiHeals)
-    {
-        // Healing ist anfangs auf 1 also 100%
-        float Healing = 1;
-
-        // Healing wird für jede AntiHeal Quelle reduziert
-        foreach (AntiHealAttribute AntiHeal in AntiHeals)
-            Healing -= Healing * (AntiHeal.Strength / 100f);
-
-        // Healing wird als effektive Value zum direkten Multiplizieren übergeben
-        return Healing;
+        return HealingModifier * (Healing + (HealingScaling * HealingPower));
     }
 }

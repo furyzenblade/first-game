@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2144401692}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.27, y: 0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5909526306438202687}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2144401694
 SpriteRenderer:
@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 5909526306438202680}
   - component: {fileID: 5909526306438202682}
   - component: {fileID: 6182918964015115993}
+  - component: {fileID: 1319306322330459847}
   m_Layer: 0
   m_Name: fireball
   m_TagString: Ability
@@ -110,6 +111,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5909526306438202683}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -117,7 +119,6 @@ Transform:
   m_Children:
   - {fileID: 2144401693}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5909526306438202680
 MonoBehaviour:
@@ -137,23 +138,15 @@ MonoBehaviour:
   Healing: 0
   HealingScaling: 0
   MultipleHitFrequence: 2
+  HitEntityIDs: 
+  HitEntityFrequence: []
   TimerTillDeath: 3
   CanHitMultipleTargets: 0
   Range: 0
   GetsSpawnRotation: 1
   GetsSpawnPosition: 0
   MaxCharges: 1
-  SlowDuration: 0
-  SlowStrength: 0
-  DamageReductionDuration: 0
-  DamageReductionStrength: 0
-  ArmorReductionDuration: 0
-  ArmorReductionStrength: 0
-  AttackSpeedSlowDuration: 0
-  AttackSpeedSlowStrength: 0
-  AntiHealDuration: 0
-  AntiHealStrength: 0
-  StunDuration: 0
+  Attributes: []
   CustomAttributeHandling: 0
   MovementSpeed: 7.5
 --- !u!58 &5909526306438202682
@@ -164,13 +157,33 @@ CircleCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5909526306438202683}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
   m_Radius: 0.53
 --- !u!50 &6182918964015115993
 Rigidbody2D:
@@ -189,7 +202,30 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &1319306322330459847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5909526306438202683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10cafb9f8f045b64e85e12b7730a17a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Strength: 0.9
+  Identifier: 0
+  Duration: 1
+  IsContainer: 1
+  ContainerDuration: 3.4028235e+38

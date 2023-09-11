@@ -57,6 +57,8 @@ public class Ability : MonoBehaviour
 
     public ushort MaxCharges;
 
+    public List<Attribute> Attributes = new() { };
+
     #endregion Properties
 
     #region TopAlgorithm
@@ -81,7 +83,7 @@ public class Ability : MonoBehaviour
         Damage += DamageScaling * Origin.Damage;
         CritChance = Origin.CritChance;
         CritDamage = Origin.CritDamage;
-        Healing = GF.CalculateHealing(Healing, HealingScaling, Origin.HealingPower, Origin.GetAntiHealing());
+        Healing = GF.CalculateHealing(Healing, HealingScaling, Origin.HealingPower, Origin.HealModifier);
     }
 
     public void Update()
@@ -96,6 +98,14 @@ public class Ability : MonoBehaviour
         TimerTillDeath -= Time.deltaTime;
         if (TimerTillDeath < 0)
             Destroy(gameObject);
+
+
+        foreach (Attribute Attribute in GetComponents<Attribute>())
+        {
+            // Wenn das Attribut ein Container ist, der nicht in der Liste ist, wird er hinzugefügt
+            if (!Attributes.Contains(Attribute) && Attribute.IsContainer)
+                Attributes.Add(Attribute);
+        }
     }
 
     #endregion TopAlgorithm
@@ -119,7 +129,7 @@ public class Ability : MonoBehaviour
 
             // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
             if (!CustomAttributeHandling)
-                AttatchAllAttributes(Entity.gameObject);
+                AttatchAttributes(Entity.gameObject);
 
             // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
@@ -147,7 +157,7 @@ public class Ability : MonoBehaviour
             catch { HitEntityFrequence.Add(MultipleHitFrequence); }
             // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
             if (!CustomAttributeHandling)
-                AttatchAllAttributes(Entity.gameObject);
+                AttatchAttributes(Entity.gameObject);
 
             // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
@@ -191,78 +201,22 @@ public class Ability : MonoBehaviour
         }
     }
 
-    // Speichert alle übergebenen Statuseffekte 
-    #region SavedAttributes
-
-    public float SlowDuration;
-    public int SlowStrength;
-
-    public float DamageReductionDuration;
-    public int DamageReductionStrength;
-
-    public float ArmorReductionDuration;
-    public int ArmorReductionStrength;
-
-    public float AttackSpeedSlowDuration;
-    public int AttackSpeedSlowStrength;
-
-    public float AntiHealDuration;
-    public int AntiHealStrength;
-
-    public float StunDuration;
-
-    #endregion SavedAttributes
-
     #region AttributeAttatching
 
     // Bool zum Bestimmen, ob immer alle Attributes übergeben werden sollen
     public bool CustomAttributeHandling;
 
     // Fügt dem Target alle gespeicherten Attribute hinzu
-    public void AttatchAllAttributes(GameObject Entity)
+    public void AttatchAttributes(GameObject Entity)
     {
-        AttatchSlow(Entity);
-        AttatchDamageReduction(Entity);
-        AttatchArmorReduction(Entity);
-        AttatchAttackSpeedSlow(Entity);
-        AttatchAntiHeal(Entity);
-        AttatchStun(Entity);
-    }
+        foreach (Attribute Attribute in Attributes)
+        {
+            Attribute a = Entity.AddComponent<Attribute>();
 
-    public void AttatchSlow(GameObject Entity)
-    {
-        SlowAttribute Slow = Entity.AddComponent<SlowAttribute>();
-        Slow.Duration = SlowDuration;
-        Slow.Strength = SlowStrength;
-    }
-    public void AttatchDamageReduction(GameObject Entity)
-    {
-        DamageReductionAttribute DamageReduction = Entity.AddComponent<DamageReductionAttribute>();
-        DamageReduction.Duration = DamageReductionDuration;
-        DamageReduction.Strength = DamageReductionStrength;
-    }
-    public void AttatchArmorReduction(GameObject Entity)
-    {
-        ArmorReductionAttribute ArmorReduction = Entity.AddComponent<ArmorReductionAttribute>();
-        ArmorReduction.Duration = ArmorReductionDuration;
-        ArmorReduction.Strength = ArmorReductionStrength;
-    }
-    public void AttatchAttackSpeedSlow(GameObject Entity)
-    {
-        AttackSpeedChange AttackSpeedSlow = Entity.AddComponent<AttackSpeedChange>();
-        AttackSpeedSlow.Duration = AttackSpeedSlowDuration;
-        AttackSpeedSlow.Strength = AttackSpeedSlowStrength;
-    }
-    public void AttatchAntiHeal(GameObject Entity)
-    {
-        AntiHealAttribute AntiHeal = Entity.AddComponent<AntiHealAttribute>();
-        AntiHeal.Duration = AntiHealDuration;
-        AntiHeal.Strength = AntiHealStrength;
-    }
-    public void AttatchStun(GameObject Entity)
-    {
-        StunAttribute Stun = Entity.AddComponent<StunAttribute>();
-        Stun.Duration = StunDuration;
+            a.Identifier = Attribute.Identifier;
+            a.Strength = Attribute.Strength;
+            a.Duration = Attribute.Duration;
+        }
     }
 
     #endregion AttributeAttatching

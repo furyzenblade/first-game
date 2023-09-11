@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
@@ -69,6 +70,7 @@ public class Entity : MonoBehaviour
     public float CurrentSpeed { get; set; }
 
     public float HealingPower;
+    public float HealModifier { get; set; }
 
     public int AbliltyHaste;
 
@@ -80,68 +82,60 @@ public class Entity : MonoBehaviour
     #region Attributes
 
     bool IsStunned;
+    public List<Attribute> Attributes = new() { };
 
-    // Handled effizient alle Attributes, die es gibt (Updaten bei neuen Attributes)
     private void HandleAttributes()
     {
-        // Wenn keine Stuns existieren, werden Roots alle Attributes gehandled
-        if (gameObject.GetComponents<StunAttribute>().Length == 0)
-        {
-            // Wenn keine Roots existieren, wird speed normal berechnet
-            if (gameObject.GetComponents<RootAttribute>().Length == 0)
-                HandleSlows();
-            // Wenn Roots existieren, wird speed = 0 gesetzt
-            else
-                CurrentSpeed = 0;
+        #region StatReset
 
-            IsStunned = false;
-            HandleDamageReductions();
-            HandleArmorReductions();
-            HandleAttackspeedSlows();
-        }
-        // Wenn Stuns existieren, können keine Abilitys gecastet werden & Speed ist 0
-        else
-        {
-            CurrentSpeed = 0;
-            IsStunned = true;
-        }
-    }
-
-    private void HandleSlows()
-    {
         CurrentSpeed = Speed;
-
-        // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
-        foreach (SlowAttribute Slow in gameObject.GetComponents<SlowAttribute>())
-            CurrentSpeed *= 1f - (Slow.Strength / 100f);
-    }
-    private void HandleDamageReductions()
-    {
+        IsStunned = false;
         CurrentDamage = Damage;
-
-        // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
-        foreach (DamageReductionAttribute DamageReduction in gameObject.GetComponents<DamageReductionAttribute>())
-            CurrentDamage *= 1f - (DamageReduction.Strength / 100f);
-    }
-    private void HandleArmorReductions()
-    {
+        HealModifier = 1;
+        CurrentAttackSpeed = AttackSpeed;
         CurrentArmor = Armor;
 
-        // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
-        foreach (ArmorReductionAttribute ArmorReduction in gameObject.GetComponents<ArmorReductionAttribute>())
-            CurrentArmor *= 1f - (ArmorReduction.Strength / 100f);
-    }
-    private void HandleAttackspeedSlows()
-    {
-        CurrentAttackSpeed = AttackSpeed;
+        #endregion StatReset
 
-        // Bestimmt, wie viel MovementSpeed der Character hat, abhängig von Slows
-        foreach (AttackSpeedChange AttackSpeedSlow in gameObject.GetComponents<AttackSpeedChange>())
-            CurrentAttackSpeed *= 1f - (AttackSpeedSlow.Strength / 100f);
-    }
-    public float GetAntiHealing()
-    {
-        return GF.CalculateAntiHealing(gameObject.GetComponents<AntiHealAttribute>().ToList());
+        foreach (Attribute Attribute in GetComponents<Attribute>())
+        {
+            AttributeIdentifier Identifier = Attribute.Identifier;
+
+            // Wenn das Attribut ein Container ist, der nicht in der Liste ist, wird er hinzugefügt
+            if (Attribute.IsContainer)
+                if (!Attributes.Contains(Attribute))
+                    Attributes.Add(Attribute);
+
+            // Container werden hier geskipped
+            else if (Identifier == AttributeIdentifier.SpeedChange)
+            {
+                CurrentSpeed *= Attribute.Strength;
+            }
+            else if (Identifier == AttributeIdentifier.Root)
+            {
+                CurrentSpeed = 0;
+            }
+            else if (Identifier == AttributeIdentifier.Stun)
+            {
+                IsStunned = true;
+            }
+            else if (Identifier == AttributeIdentifier.DamageChange)
+            {
+                CurrentDamage *= Attribute.Strength;
+            }
+            else if (Identifier == AttributeIdentifier.HealChange)
+            {
+                HealModifier *= Attribute.Strength;
+            }
+            else if (Identifier == AttributeIdentifier.AttackSpeedChange)
+            {
+                CurrentAttackSpeed *= Attribute.Strength;
+            }
+            else if (Identifier == AttributeIdentifier.ArmorChange)
+            {
+                CurrentArmor *= Attribute.Strength;
+            }
+        }
     }
 
     #endregion Attributes
