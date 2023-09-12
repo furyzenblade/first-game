@@ -1,6 +1,7 @@
 // Base Klasse zum Erstellen eines Entitys
 // Behaviour Mode: NPC / Hosted Character / Online Character
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -72,10 +73,39 @@ public class Entity : MonoBehaviour
     public float HealingPower;
     public float HealModifier { get; set; }
 
-    public int AbliltyHaste;
+    public int AbilityHaste;    
 
     // Debug Values
     public bool CanBeRevived;
+
+    public float GetStat(EntityStat Stat)
+    {
+        if (Stat == EntityStat.MaxHP)
+            return MaxHP;
+        else if (Stat == EntityStat.CurrentHP)
+            return HP;
+        else if (Stat == EntityStat.MissingHP)
+            return 100 * (1 - (HP / MaxHP));
+        else if (Stat == EntityStat.Armor)
+            return CurrentArmor;
+        else if (Stat == EntityStat.Damage)
+            return CurrentDamage;
+        else if (Stat == EntityStat.CritChance)
+            return CritChance;
+        else if (Stat == EntityStat.CritDamage)
+            return CritDamage;
+        else if (Stat == EntityStat.Speed)
+            return CurrentSpeed;
+        else if (Stat == EntityStat.HealingPower)
+            return HealingPower;
+        else if (Stat == EntityStat.AbilityHaste)
+            return AbilityHaste;
+        else if (Stat == EntityStat.AttackSpeed)
+            return AttackSpeed;
+
+        // Kein Stat gefunden => 0
+        else return 0;
+    }
 
     #endregion Stats
 
@@ -83,6 +113,10 @@ public class Entity : MonoBehaviour
 
     bool IsStunned;
     public List<Attribute> Attributes = new() { };
+    public List<Attribute> SavedAttributes = new() { };
+    public float Tenacity;
+
+    public bool CustomAttributeHandling = true;
 
     private void HandleAttributes()
     {
@@ -97,17 +131,12 @@ public class Entity : MonoBehaviour
 
         #endregion StatReset
 
-        foreach (Attribute Attribute in GetComponents<Attribute>())
+        foreach (Attribute Attribute in Attributes)
         {
             AttributeIdentifier Identifier = Attribute.Identifier;
 
-            // Wenn das Attribut ein Container ist, der nicht in der Liste ist, wird er hinzugefügt
-            if (Attribute.IsContainer)
-                if (!Attributes.Contains(Attribute))
-                    Attributes.Add(Attribute);
-
             // Container werden hier geskipped
-            else if (Identifier == AttributeIdentifier.SpeedChange)
+            if (Identifier == AttributeIdentifier.SpeedChange)
             {
                 CurrentSpeed *= Attribute.Strength;
             }
@@ -118,6 +147,7 @@ public class Entity : MonoBehaviour
             else if (Identifier == AttributeIdentifier.Stun)
             {
                 IsStunned = true;
+                CurrentSpeed = 0;
             }
             else if (Identifier == AttributeIdentifier.DamageChange)
             {
@@ -135,6 +165,8 @@ public class Entity : MonoBehaviour
             {
                 CurrentArmor *= Attribute.Strength;
             }
+
+            Attribute.ReduceDuration();
         }
     }
 
@@ -154,7 +186,7 @@ public class Entity : MonoBehaviour
             Ability CurrentAbility = Abilitys[i].GetComponent<Ability>();
 
             // Wenn die Ability mehr als einen Charge hat, wird der Cooldown so lange runter gesetzt bis sie X-Mal gedrückt werden kann
-            if (AbilityCooldowns[i] > (-Time.deltaTime - (GF.CalculateCooldown(CurrentAbility.Cooldown, AbliltyHaste) * (CurrentAbility.MaxCharges - 1))))
+            if (AbilityCooldowns[i] > (-Time.deltaTime - (GF.CalculateCooldown(CurrentAbility.Cooldown, AbilityHaste) * (CurrentAbility.MaxCharges - 1))))
                 AbilityCooldowns[i] -= Time.deltaTime;
         }
     }
@@ -433,6 +465,12 @@ public class Entity : MonoBehaviour
             {
                 OnBasicAttack?.Invoke(Target.ID);
 
+                // Überträgt alle Attribute wenn kein custom handling
+                if (!CustomAttributeHandling)
+                    foreach (Attribute Attribute in SavedAttributes)
+                        Target.Attributes.Add(Attribute);
+
+                // Damaged das Target
                 Target.AddDamage(ID, Damage, CritChance, CritDamage);
 
                 AttackCooldown += 1.0f / CurrentAttackSpeed;
@@ -440,10 +478,22 @@ public class Entity : MonoBehaviour
         }
     }
 
+    public void AttatchAllAttributes(Entity Target)
+    {
+        foreach (Attribute Attribute in SavedAttributes)
+        {
+            AttatchAttribute(Attribute, Target);
+        }
+    }
+    public void AttatchAttribute(Attribute Attribute, Entity Target)
+    {
+        Target.Attributes.Add(Attribute);
+    }
+
     #endregion BasicAttack / Movement
 
     private void AdjustZCoordinate()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZCoordinate);
+        transform.position = new Vector3(transform.position.x, transform.position.y, DefaultZCoordinate);        
     }
 }

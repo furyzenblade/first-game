@@ -28,7 +28,7 @@ public class Ability : MonoBehaviour
 
     // Damage Operatoren
     public float Damage;
-    public float DamageScaling;
+    public List<Scaling> DamageScalings = new() { };
 
     public float CritChance { get; set; }
     public float CritDamage { get; set; }
@@ -57,7 +57,7 @@ public class Ability : MonoBehaviour
 
     public ushort MaxCharges;
 
-    public List<Attribute> Attributes = new() { };
+    public List<Attribute> SavedAttributes = new() { };
 
     #endregion Properties
 
@@ -80,7 +80,8 @@ public class Ability : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, Entity.DefaultZCoordinate);
 
         // Stats der Ability werden berechnet / abgeholt
-        Damage += DamageScaling * Origin.Damage;
+        foreach (Scaling Scaling in DamageScalings)
+            Damage += Scaling.GetScale();
         CritChance = Origin.CritChance;
         CritDamage = Origin.CritDamage;
         Healing = GF.CalculateHealing(Healing, HealingScaling, Origin.HealingPower, Origin.HealModifier);
@@ -98,14 +99,6 @@ public class Ability : MonoBehaviour
         TimerTillDeath -= Time.deltaTime;
         if (TimerTillDeath < 0)
             Destroy(gameObject);
-
-
-        foreach (Attribute Attribute in GetComponents<Attribute>())
-        {
-            // Wenn das Attribut ein Container ist, der nicht in der Liste ist, wird er hinzugefügt
-            if (!Attributes.Contains(Attribute) && Attribute.IsContainer)
-                Attributes.Add(Attribute);
-        }
     }
 
     #endregion TopAlgorithm
@@ -127,9 +120,10 @@ public class Ability : MonoBehaviour
             try   { HitEntityFrequence[HitEntityIDs.IndexOf(Entity.ID)] = MultipleHitFrequence; }
             catch { HitEntityFrequence.Add(MultipleHitFrequence); }
 
-            // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
+            // Überträgt alle Attribute wenn kein custom handling
             if (!CustomAttributeHandling)
-                AttatchAttributes(Entity.gameObject);
+                foreach (Attribute Attribute in SavedAttributes)
+                    Target.Attributes.Add(Attribute);
 
             // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
@@ -157,7 +151,7 @@ public class Ability : MonoBehaviour
             catch { HitEntityFrequence.Add(MultipleHitFrequence); }
             // Fügt, falls gewünscht, Statuseffekte zum Entity hinzu
             if (!CustomAttributeHandling)
-                AttatchAttributes(Entity.gameObject);
+                AttatchAttributes(Entity);
 
             // Zerstört die Ability, wenn sie nicht mehrere targets hitten darf
             if (!CanHitMultipleTargets)
@@ -207,15 +201,11 @@ public class Ability : MonoBehaviour
     public bool CustomAttributeHandling;
 
     // Fügt dem Target alle gespeicherten Attribute hinzu
-    public void AttatchAttributes(GameObject Entity)
+    public void AttatchAttributes(Entity Entity)
     {
-        foreach (Attribute Attribute in Attributes)
+        foreach (Attribute Attribute in SavedAttributes)
         {
-            Attribute a = Entity.AddComponent<Attribute>();
-
-            a.Identifier = Attribute.Identifier;
-            a.Strength = Attribute.Strength;
-            a.Duration = Attribute.Duration;
+            Entity.Attributes.Add(Attribute);
         }
     }
 

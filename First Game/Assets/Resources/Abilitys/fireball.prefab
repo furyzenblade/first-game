@@ -96,7 +96,6 @@ GameObject:
   - component: {fileID: 5909526306438202680}
   - component: {fileID: 5909526306438202682}
   - component: {fileID: 6182918964015115993}
-  - component: {fileID: 1319306322330459847}
   m_Layer: 0
   m_Name: fireball
   m_TagString: Ability
@@ -146,7 +145,6 @@ MonoBehaviour:
   GetsSpawnRotation: 1
   GetsSpawnPosition: 0
   MaxCharges: 1
-  Attributes: []
   CustomAttributeHandling: 0
   MovementSpeed: 7.5
 --- !u!58 &5909526306438202682
@@ -212,20 +210,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
---- !u!114 &1319306322330459847
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5909526306438202683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10cafb9f8f045b64e85e12b7730a17a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Strength: 0.9
-  Identifier: 0
-  Duration: 1
-  IsContainer: 1
-  ContainerDuration: 3.4028235e+38

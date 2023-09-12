@@ -6,14 +6,20 @@ public class CharacterExample : Entity
 {
     private new void Start()
     {
-        // Subscribe to the OnDeath event and specify the method to execute
+        base.Start();
+
+        #region ActivateEvents
+
         OnDeath += HandleCharacterDeath;
         OnBasicAttack += HandleBasicAttack;
         OnAbilityUse += HandleAbilityUse;
         OnDamage += HandleDamage;
         OnHeal += HandleHeal;
         OnMove += HandleMove;
-        base.Start();
+
+        #endregion ActivateEvents
+
+        SavedAttributes.Add(new Attribute(AttributeIdentifier.Stun, 1, 5));
     }
 
     private bool HandleCharacterDeath()
