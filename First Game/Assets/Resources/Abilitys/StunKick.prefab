@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1614079592263318088}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.1, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7744277982228341755}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7890782783633873760
 SpriteRenderer:
@@ -110,6 +110,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7744277982228341752}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
@@ -117,7 +118,6 @@ Transform:
   m_Children:
   - {fileID: 2901158705689379884}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7744277982228341754
 MonoBehaviour:
@@ -133,29 +133,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cooldown: 5
   Damage: 0
-  DamageScaling: 0
   Healing: 0
   HealingScaling: 0
   MultipleHitFrequence: 1
+  HitEntityIDs: 
+  HitEntityFrequence: []
   TimerTillDeath: 0.75
   CanHitMultipleTargets: 0
   Range: 1
   GetsSpawnRotation: 1
   GetsSpawnPosition: 1
   MaxCharges: 2
-  SlowDuration: 0
-  SlowStrength: 0
-  DamageReductionDuration: 0
-  DamageReductionStrength: 0
-  ArmorReductionDuration: 0
-  ArmorReductionStrength: 0
-  AttackSpeedSlowDuration: 0
-  AttackSpeedSlowStrength: 0
-  AntiHealDuration: 0
-  AntiHealStrength: 0
-  StunDuration: 3
   CustomAttributeHandling: 0
-  MovementSpeed: 2
+  MovementSpeed: 3.5
 --- !u!70 &7744277982228341748
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -164,11 +154,32 @@ CapsuleCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7744277982228341752}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 4, y: 2.08}
   m_Direction: 1
@@ -189,6 +200,12 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1

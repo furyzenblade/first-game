@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Verwaltet die Hitboxen & Spawns der FireBall Ability
-public class FireBallAbility : Ability
+public class FireBall : Ability
 {
     // Movement Zeugs
     public float MovementSpeed;

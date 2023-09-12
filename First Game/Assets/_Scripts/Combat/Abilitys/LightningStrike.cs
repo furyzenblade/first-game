@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Verwaltet die Hitboxen & Spawns der LightningStrike Ability
-public class LightningStrikeBehaviour : Ability
+public class LightningStrike : Ability
 {
     private void OnCollisionStay2D(Collision2D collision)
     {

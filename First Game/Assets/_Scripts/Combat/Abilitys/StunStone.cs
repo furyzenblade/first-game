@@ -2,9 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StunKickBehaviour : Ability
+public class StunStone : Ability
 {
     public float MovementSpeed;
+
+    new void Start()
+    {
+        base.Start();
+
+        // Stun Attribut wird hinzugefügt
+        SavedAttributes.Add(new Attribute(AttributeIdentifier.Stun, 1, 1.5f));
+    }
 
     new void Update()
     {

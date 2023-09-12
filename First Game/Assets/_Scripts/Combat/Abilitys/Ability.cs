@@ -63,7 +63,7 @@ public class Ability : MonoBehaviour
 
     #region TopAlgorithm
 
-    void Start()
+    public void Start()
     {
         // Setzt den ControlMode
         ControlMode = Origin.ControlMode;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HealingCircleBehaviour : Ability
+public class HealingCircle : Ability
 {
     private void OnCollisionStay2D(Collision2D collision)
     {

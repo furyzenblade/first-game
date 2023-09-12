@@ -18,8 +18,6 @@ public class CharacterExample : Entity
         OnMove += HandleMove;
 
         #endregion ActivateEvents
-
-        SavedAttributes.Add(new Attribute(AttributeIdentifier.Stun, 1, 5));
     }
 
     private bool HandleCharacterDeath()
