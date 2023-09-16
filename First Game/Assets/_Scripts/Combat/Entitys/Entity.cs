@@ -224,14 +224,16 @@ public class Entity : MonoBehaviour
 
     // Nutzt eine Ability
 
-    public delegate void EntityAbilityUseEvent();
-    public event EntityAbilityUseEvent OnAbilityUse;
+    public delegate void AbilityUseEvent(Ability Ability);
+    public event AbilityUseEvent OnAbilityUse;
     private void UseAbility(int index)
     {
-        OnAbilityUse?.Invoke();
-
         // Erstellt eine Ability und setzt die nötigen Properties
         Ability NewAbility = Instantiate(Abilitys[index], transform.position, transform.rotation).GetComponent<Ability>();
+
+        // Ability Use Event wird getriggert
+        OnAbilityUse?.Invoke(NewAbility);
+
         NewAbility.Origin = this;
 
         // Setzt das Target der Ability

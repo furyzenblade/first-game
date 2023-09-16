@@ -18,6 +18,8 @@ public class CharacterExample : Entity
         #endregion ActivateEvents
     }
 
+    #region EventManagement
+
     private bool HandleCharacterDeath()
     {
         // Place your logic here for what should happen when the character dies
@@ -29,14 +31,16 @@ public class CharacterExample : Entity
 
         return true;
     }
-
     private void HandleBasicAttack(int TargetID)
     {
         Debug.Log("Entity: " + name + " performed a BasicAttack");
     }
-    private void HandleAbilityUse()
+    private void HandleAbilityUse(Ability Ability)
     {
         Debug.Log("Entity: " + name + " used an Ability");
+
+        Ability.OnDamage += HandleAbilityDamage;
+        Ability.OnHeal += HandleAbilityHeal;
     }
     private void HandleDamage(int TargetID)
     {
@@ -50,5 +54,16 @@ public class CharacterExample : Entity
     {
         Debug.Log("Entity: " + name + " moved");
     }
+
+    private void HandleAbilityDamage(Ability Ability, Entity HitEntity)
+    {
+        Debug.Log("Ability: " + Ability.name + " hit Entity: " + HitEntity.name);
+    }
+    private void HandleAbilityHeal(Ability Ability, Entity HitEntity)
+    {
+        Debug.Log("Ability: " + Ability.name + " healed Entity: " + HitEntity.name);
+    }
+
+    #endregion EventManagement
 }
 

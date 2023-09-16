@@ -103,6 +103,12 @@ public class Ability : MonoBehaviour
 
     #endregion TopAlgorithm
 
+    #region Events
+
+    // Event bei Damagen eines Entitys
+    public delegate void DamageEvent (Ability Ability, Entity HitEntity);
+    public event DamageEvent OnDamage;
+
     // Fügt einem Entity unter Bedingungen Schaden hinzu
     public void DamageEntity(Entity Entity)
     {
@@ -112,6 +118,9 @@ public class Ability : MonoBehaviour
             // Entity wird in die Liste hinzugefügt
             HitEntityIDs.Add(Entity.ID);
             HitEntityFrequence.Add(MultipleHitFrequence);
+
+            // OnAbilityDamage Event wird aufgerufen
+            OnDamage?.Invoke(this, Entity);
 
             // Damaged den Entity
             Entity.AddDamage(Origin.ID, Damage, CritChance, CritDamage);
@@ -133,6 +142,12 @@ public class Ability : MonoBehaviour
             AddEntitysToList(Entity.ID);
         }
     }
+
+    // Event bei Healen eines Entitys
+    public delegate void HealEvent(Ability Ability, Entity HitEntity);
+    public event HealEvent OnHeal;
+
+
     // Healed einen Entity unter Bedingungen
     public void HealEntity(Entity Entity)
     {
@@ -142,6 +157,9 @@ public class Ability : MonoBehaviour
             // Entity wird in die Liste hinzugefügt
             HitEntityIDs.Add(Entity.ID);
             HitEntityFrequence.Add(MultipleHitFrequence);
+
+            // EntityHealEvent wird ausgelöst
+            OnHeal?.Invoke(this, Entity);
 
             // Healt den Entity
             Entity.Heal(Healing);
@@ -195,7 +213,9 @@ public class Ability : MonoBehaviour
         }
     }
 
-    #region AttributeAttatching
+    #endregion Events
+
+    #region Attributes
 
     // Bool zum Bestimmen, ob immer alle Attributes übergeben werden sollen
     public bool CustomAttributeHandling;
@@ -209,7 +229,9 @@ public class Ability : MonoBehaviour
         }
     }
 
-    #endregion AttributeAttatching
+    #endregion Attributes
+
+    #region Placement
 
     private Quaternion GetSpawnRotation()
     {
@@ -268,7 +290,6 @@ public class Ability : MonoBehaviour
         }
     }
 
-
     private Vector3 GetMousePositionOnScreen()
     {
         Vector3 mousePosition = Input.mousePosition;
@@ -288,4 +309,6 @@ public class Ability : MonoBehaviour
         Quaternion Rotation = Quaternion.Euler(0, 0, angle);
         return Rotation;
     }
+
+    #endregion Placement
 }
